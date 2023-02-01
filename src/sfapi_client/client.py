@@ -4,6 +4,7 @@ from typing import Dict, Any
 from authlib.integrations.httpx_client.oauth2_client import AsyncOAuth2Client
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
 import httpx
+import tenacity
 
 from .compute import Machines, Compute
 from .common import SfApiError
@@ -36,6 +37,13 @@ class Client:
         if self._oauth2_session is not None:
             await self._oauth2_session.aclose()
 
+    @tenacity.retry(
+        retry=tenacity.retry_if_exception_type(httpx.TimeoutException)
+        | tenacity.retry_if_exception_type(httpx.ConnectError)
+        | tenacity.retry_if_exception_type(httpx.HTTPStatusError),
+        wait=tenacity.wait_exponential(max=10),
+        stop=tenacity.stop_after_attempt(10),
+    )
     async def get(self, url: str, params: Dict[str, Any] = {}) -> httpx.Response:
         await self._oauth2_session.ensure_active_token(self._oauth2_session.token)
 
@@ -51,6 +59,13 @@ class Client:
 
         return r
 
+    @tenacity.retry(
+        retry=tenacity.retry_if_exception_type(httpx.TimeoutException)
+        | tenacity.retry_if_exception_type(httpx.ConnectError)
+        | tenacity.retry_if_exception_type(httpx.HTTPStatusError),
+        wait=tenacity.wait_exponential(max=10),
+        stop=tenacity.stop_after_attempt(10),
+    )
     async def post(self, url: str, data: Dict[str, Any]) -> httpx.Response:
         await self._oauth2_session.ensure_active_token(self._oauth2_session.token)
 
@@ -66,6 +81,13 @@ class Client:
 
         return r
 
+    @tenacity.retry(
+        retry=tenacity.retry_if_exception_type(httpx.TimeoutException)
+        | tenacity.retry_if_exception_type(httpx.ConnectError)
+        | tenacity.retry_if_exception_type(httpx.HTTPStatusError),
+        wait=tenacity.wait_exponential(max=10),
+        stop=tenacity.stop_after_attempt(10),
+    )
     async def delete(self, url: str) -> httpx.Response:
         await self._oauth2_session.ensure_active_token(self._oauth2_session.token)
 
