@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sfapi_client"
+version = "0.0.1"
+authors = [
+  { name="Chris Harrs", email="cjh@lbl.gov" },
+]
+description = "Python client for NERSC SF API"
+readme = "README.md"
+requires-python = ">=3.7"
+dependencies = [
+  "authlib",
+  "httpx",
+  "pydantic",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+]
