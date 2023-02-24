@@ -22,3 +22,11 @@ classifiers = [
     "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
 ]
+
+[tool.black]
+exclude = '''
+(
+  src/sfapi_client/_sync |
+  src/sfapi_client/_async/_models.py
+)
+'''
