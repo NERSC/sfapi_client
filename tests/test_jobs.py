@@ -5,32 +5,28 @@ from sfapi_client import JobState
 from sfapi_client import Machines
 
 
-@pytest.mark.asyncio
-async def test_submit(client_id, client_secret, test_job_path):
-    async with Client(client_id, client_secret) as client:
-        cori = await client.compute(Machines.CORI)
-        job = await cori.submit_job(test_job_path)
+def test_submit(client_id, client_secret, test_job_path):
+    with Client(client_id, client_secret) as client:
+        perl = client.compute(Machines.perlmutter)
+        job = perl.submit_job(test_job_path)
 
-        await job.complete()
+        job.complete()
 
         assert job.state == JobState.COMPLETED
 
 
-@pytest.mark.asyncio
-async def test_cancel(client_id, client_secret, test_job_path):
-    async with Client(client_id, client_secret) as client:
-        cori = await client.compute(Machines.CORI)
-        job = await cori.submit_job(test_job_path)
+def test_cancel(client_id, client_secret, test_job_path):
+    with Client(client_id, client_secret) as client:
+        perl = client.compute(Machines.perlmutter)
+        job = perl.submit_job(test_job_path)
 
-        await job.cancel()
+        job.cancel()
 
 
-@pytest.mark.asyncio
-async def test_cancel_wait_for_it(client_id, client_secret, test_job_path):
-    async with Client(client_id, client_secret) as client:
-        cori = await client.compute(Machines.CORI)
-        job = await cori.submit_job(test_job_path)
-
-        await job.cancel(wait=True)
+def test_cancel_wait_for_it(client_id, client_secret, test_job_path):
+    with Client(client_id, client_secret) as client:
+        perl = client.compute(Machines.perlmutter)
+        job = perl.submit_job(test_job_path)
+        job.cancel(wait=True)
 
         assert job.state == JobState.CANCELLED
