@@ -1,13 +1,18 @@
 from __future__ import annotations
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
-from authlib.integrations.httpx_client.oauth2_client import AsyncOAuth2Client
+from authlib.integrations.httpx_client.oauth2_client import OAuth2Client
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
 import httpx
 import tenacity
 
 from .compute import Machines, Compute
 from .common import SfApiError
+from ._models import (
+    JobOutput as JobStatusResponse,
+    UserInfo as User,
+    AppRoutersComputeModelsStatus as JobStatus,
+)
 
 SFAPI_TOKEN_URL = "https://oidc.nersc.gov/c2id/token"
 SFAPI_BASE_URL = "https://api.nersc.gov/api/v1.2"
@@ -19,8 +24,8 @@ class Client:
         self._secret = secret
         self._oauth2_session = None
 
-    async def __aenter__(self):
-        self._oauth2_session = AsyncOAuth2Client(
+    def __enter__(self):
+        self._oauth2_session = OAuth2Client(
             client_id=self._client_id,
             client_secret=self._secret,
             token_endpoint_auth_method=PrivateKeyJWT(SFAPI_TOKEN_URL),
@@ -29,13 +34,13 @@ class Client:
             timeout=10.0,
         )
 
-        await self._oauth2_session.fetch_token()
+        self._oauth2_session.fetch_token()
 
         return self
 
-    async def __aexit__(self, type, value, traceback):
+    def __exit__(self, type, value, traceback):
         if self._oauth2_session is not None:
-            await self._oauth2_session.aclose()
+            self._oauth2_session.close()
 
     @tenacity.retry(
         retry=tenacity.retry_if_exception_type(httpx.TimeoutException)
@@ -44,10 +49,10 @@ class Client:
         wait=tenacity.wait_exponential(max=10),
         stop=tenacity.stop_after_attempt(10),
     )
-    async def get(self, url: str, params: Dict[str, Any] = {}) -> httpx.Response:
-        await self._oauth2_session.ensure_active_token(self._oauth2_session.token)
+    def get(self, url: str, params: Dict[str, Any] = {}) -> httpx.Response:
+        self._oauth2_session.ensure_active_token(self._oauth2_session.token)
 
-        r = await self._oauth2_session.get(
+        r = self._oauth2_session.get(
             f"{SFAPI_BASE_URL}/{url}",
             headers={
                 "Authorization": self._oauth2_session.token["access_token"],
@@ -66,10 +71,10 @@ class Client:
         wait=tenacity.wait_exponential(max=10),
         stop=tenacity.stop_after_attempt(10),
     )
-    async def post(self, url: str, data: Dict[str, Any]) -> httpx.Response:
-        await self._oauth2_session.ensure_active_token(self._oauth2_session.token)
+    def post(self, url: str, data: Dict[str, Any]) -> httpx.Response:
+        self._oauth2_session.ensure_active_token(self._oauth2_session.token)
 
-        r = await self._oauth2_session.post(
+        r = self._oauth2_session.post(
             f"{SFAPI_BASE_URL}/{url}",
             headers={
                 "Authorization": self._oauth2_session.token["access_token"],
@@ -88,10 +93,10 @@ class Client:
         wait=tenacity.wait_exponential(max=10),
         stop=tenacity.stop_after_attempt(10),
     )
-    async def delete(self, url: str) -> httpx.Response:
-        await self._oauth2_session.ensure_active_token(self._oauth2_session.token)
+    def delete(self, url: str) -> httpx.Response:
+        self._oauth2_session.ensure_active_token(self._oauth2_session.token)
 
-        r = await self._oauth2_session.delete(
+        r = self._oauth2_session.delete(
             f"{SFAPI_BASE_URL}/{url}",
             headers={
                 "Authorization": self._oauth2_session.token["access_token"],
@@ -102,24 +107,20 @@ class Client:
 
         return r
 
-    async def compute(self, machine: Machines) -> Compute:
-        response = await self.get(f"status/{machine}")
+    def compute(self, machine: Machines) -> Compute:
+        response = self.get(f"status/{machine.value}")
 
         compute = Compute.parse_obj(response.json())
         compute.client = self
 
         return compute
 
-    async def _fetch_job_status(self, jobid: int):
-        params = {"sacct": True}
-        r = await self.get(f"compute/jobs/cori/{jobid}", params)
-        r.raise_for_status()
+    def user(self, username: Optional[str] = None) -> User:
+        params = {}
+        if username is not None:
+            params["username"] = username
 
-        json_response = r.json()
-        if json_response.get("status").lower() != "ok":
-            error = json_response["error"]
-            raise SfApiError(error)
+        response = self.get("account/", params)
+        json_response = response.json()
 
-        output = json_response["output"]
-
-        return output[0]
+        return User.parse_obj(json_response)
