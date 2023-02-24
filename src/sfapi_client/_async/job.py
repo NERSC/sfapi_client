@@ -2,6 +2,8 @@ from __future__ import annotations
 import asyncio
 from enum import Enum
 from typing import Any, Optional, Dict
+from .common import _ASYNC_SLEEP, SfApiError
+from ._models import OutputItem as JobBase
 
 from pydantic import BaseModel, Field, validator
 
@@ -43,57 +45,8 @@ TERMINAL_STATES = [
 ]
 
 
-class Job(BaseModel):
+class Job(JobBase):
     compute: Optional["Compute"] = None
-    machine: Optional[str] = None
-    account: Optional[str] = None
-    tres_per_node: Optional[str] = None
-    min_cpus: Optional[str] = None
-    min_tmp_disk: Optional[str] = None
-    end_time: Optional[str] = None
-    features: Optional[str] = None
-    group: Optional[str] = None
-    over_subscribe: Optional[str] = None
-    jobid: Optional[str] = None
-    name: Optional[str] = None
-    comment: Optional[str] = None
-    time_limit: Optional[str] = None
-    min_memory: Optional[str] = None
-    req_nodes: Optional[str] = None
-    command: Optional[str] = None
-    priority: Optional[str] = None
-    qos: Optional[str] = None
-    reason: Optional[str] = None
-    st: Optional[str] = None
-    user: Optional[str] = None
-    reservation: Optional[str] = None
-    wckey: Optional[str] = None
-    exc_nodes: Optional[str] = None
-    nice: Optional[str] = None
-    s_c_t: Optional[str] = Field(None, alias="s:c:t")
-    exec_host: Optional[str] = None
-    cpus: Optional[str] = None
-    nodes: Optional[str] = None
-    dependency: Optional[str] = None
-    array_job_id: Optional[str] = None
-    sockets_per_node: Optional[str] = None
-    cores_per_socket: Optional[str] = None
-    threads_per_core: Optional[str] = None
-    array_task_id: Optional[str] = None
-    time_left: Optional[str] = None
-    time: Optional[str] = None
-    nodelist: Optional[str] = None
-    contiguous: Optional[str] = None
-    partition: Optional[str] = None
-    nodelist_reason_: Optional[str] = Field(None, alias="nodelist(reason)")
-    start_time: Optional[str] = None
-    state: Optional[JobState] = None
-    uid: Optional[str] = None
-    submit_time: Optional[str] = None
-    licenses: Optional[str] = None
-    core_spec: Optional[str] = None
-    schednodes: Optional[str] = None
-    work_dir: Optional[str] = None
 
     @validator("state", pre=True)
     def state_validate(cls, v):
@@ -106,7 +59,7 @@ class Job(BaseModel):
         return v
 
     async def update(self):
-        job_status = await self.compute.client._fetch_job_status(self.jobid)
+        job_status = await self.compute._fetch_job_status(self.jobid)
         self._update(job_status)
 
     def _update(self, data: Dict) -> Any:
@@ -121,7 +74,7 @@ class Job(BaseModel):
     async def _wait_until_complete(self):
         while self.state not in TERMINAL_STATES:
             await self.update()
-            await asyncio.sleep(10)
+            await _ASYNC_SLEEP(10)
 
         return self
 
@@ -129,12 +82,12 @@ class Job(BaseModel):
         return self._wait_until_complete().__await__()
 
     async def complete(self):
-        await self
+        await self._wait_until_complete()
 
     async def cancel(self, wait=False):
         # We have wait for a jobid before we can cancel
         while self.jobid is None:
-            await asyncio.sleep()
+            await _ASYNC_SLEEP()
 
         await self.compute.client.delete(
             f"compute/jobs/{self.compute.name}/{self.jobid}"
@@ -143,4 +96,4 @@ class Job(BaseModel):
         if wait:
             while self.state != JobState.CANCELLED:
                 await self.update()
-                await asyncio.sleep(10)
+                await _ASYNC_SLEEP(10)
