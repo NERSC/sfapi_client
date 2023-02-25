@@ -89,14 +89,15 @@ def datamodel_codegen(
         dir_okay=False,
         writable=True,
     ),
-    job_json: Optional[Path] = typer.Option(None, dir_okay=False, writable=True),
+    json_models: Optional[Path] = typer.Option(None, dir_okay=True, writable=True),
 ):
     with output.open("w") as fp:
         fp.write(_from_open_api())
-        if job_json is not None:
+        models = Path(json_models).glob("*.json")
+        for model in models:
             fp.write("\n")
 
-            job_model = _from_json(job_json, "JobStatusResponse")
+            job_model = _from_json(model, model.stem)
             # Strip out from __future__ import annotations
             job_model = job_model.replace("from __future__ import annotations\n", "")
             fp.write(job_model)
