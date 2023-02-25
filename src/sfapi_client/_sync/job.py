@@ -3,7 +3,7 @@ import asyncio
 from enum import Enum
 from typing import Any, Optional, Dict
 from .common import _SLEEP, SfApiError
-from ._models import OutputItem as JobBase
+from ._models import OutputItemSacct as JobBase
 
 from pydantic import BaseModel, Field, validator
 

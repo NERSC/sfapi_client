@@ -97,9 +97,12 @@ def datamodel_codegen(
         for model in models:
             fp.write("\n")
 
-            job_model = _from_json(model, model.stem)
+            job_model = _from_json(model, f"JobStatusResponse{model.stem}")
             # Strip out from __future__ import annotations
             job_model = job_model.replace("from __future__ import annotations\n", "")
+            # This is kind of a hack to get unique OutputItem names so they don't clober
+            # TODO: There may be a beter way in the generate function to do this
+            job_model = job_model.replace("OutputItem", f"OutputItem{model.stem}")
             fp.write(job_model)
 
 
