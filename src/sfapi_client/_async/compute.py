@@ -11,7 +11,8 @@ from ._models import (
     AppRoutersComputeModelsStatus as JobStatus,
     PublicHost as Machines,
     Task,
-    JobStatusResponse,
+    JobStatusResponseSacct,
+    JobStatusResponseSqueue,
 )
 
 
@@ -73,6 +74,7 @@ class Compute(ComputeBase):
 
     async def _fetch_job_status(self, jobid: int):
         params = {"sacct": True}
+        JobStatusResponse = JobStatusResponseSacct
         r = await self.client.get(f"compute/jobs/{self.name}/{jobid}", params)
 
         json_response = r.json()
