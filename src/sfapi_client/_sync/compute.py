@@ -95,3 +95,23 @@ class Compute(ComputeBase):
         job.compute = self
 
         return job
+
+    def squeue(self, user: Optional[str] = None, partition: Optional[str] = None):
+        params = {"sacct": False}
+        JobStatusResponse = JobStatusResponseSqueue
+        if user is not None:
+            params["kwargs"] = f"user={user}"
+        elif partition is not None:
+            params["kwargs"] = f"partition={partition}"
+
+        r = self.client.get(f"compute/jobs/{self.name}", params)
+
+        json_response = r.json()
+
+        job_status = JobStatusResponse.parse_obj(json_response)
+
+        if job_status.status == JobStatus.ERROR:
+            error = job_status.error
+            raise SfApiError(error)
+
+        return job_status.output
