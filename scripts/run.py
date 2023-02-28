@@ -83,9 +83,13 @@ def _from_json(json: Path, class_name: str) -> str:
 # only on the OpenAPI spec.
 #
 @cli.command(name="codegen")
-def oneapimodel_codegen(
+def openapimodel_codegen(
     output: Path = typer.Option(
-        Path(__file__).parent.parent / "src" / "sfapi_client" / "_async" / "_models.py",
+        Path(__file__).parent.parent
+        / "src"
+        / "sfapi_client"
+        / "_models"
+        / "__init__.py",
         dir_okay=False,
         writable=True,
     ),
@@ -100,9 +104,10 @@ def datamodel_codegen(
         None, dir_okay=True, writable=True
     ),
 ):
+    base_dir = Path(__file__).parent.parent / "src" / "sfapi_client" / "_models"
     for model in json_models:
         model = model.resolve(strict=False)
-        output = Path(f"{model.parent}/{model.stem}.py")
+        output = Path(f"{base_dir}/{model.stem}.py")
 
         with output.open("w") as fp:
             name_split = model.stem.split("_")
