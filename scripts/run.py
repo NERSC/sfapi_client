@@ -6,7 +6,7 @@ import unasync
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from urllib.parse import urlparse
-from typing import Optional
+from typing import List, Optional
 
 from datamodel_code_generator import InputFileType, generate
 import typer
@@ -83,26 +83,31 @@ def _from_json(json: Path, class_name: str) -> str:
 # only on the OpenAPI spec.
 #
 @cli.command(name="codegen")
-def datamodel_codegen(
+def oneapimodel_codegen(
     output: Path = typer.Option(
         Path(__file__).parent.parent / "src" / "sfapi_client" / "_async" / "_models.py",
         dir_okay=False,
         writable=True,
     ),
-    json_models: Optional[Path] = typer.Option(None, dir_okay=True, writable=True),
 ):
     with output.open("w") as fp:
         fp.write(_from_open_api())
-        models = Path(json_models).glob("*.json")
-        for model in models:
-            fp.write("\n")
 
-            job_model = _from_json(model, f"JobStatusResponse{model.stem}")
-            # Strip out from __future__ import annotations
-            job_model = job_model.replace("from __future__ import annotations\n", "")
-            # This is kind of a hack to get unique OutputItem names so they don't clober
-            # TODO: There may be a beter way in the generate function to do this
-            job_model = job_model.replace("OutputItem", f"OutputItem{model.stem}")
+
+@cli.command(name="datacodegen")
+def datamodel_codegen(
+    json_models: Optional[List[Path]] = typer.Option(
+        None, dir_okay=True, writable=True
+    ),
+):
+    for model in json_models:
+        model = model.resolve(strict=False)
+        output = Path(f"{model.parent}/{model.stem}.py")
+
+        with output.open("w") as fp:
+            name_split = model.stem.split("_")
+            name_split = [name.capitalize() for name in name_split]
+            job_model = _from_json(model, f"{''.join(name_split)}")
             fp.write(job_model)
 
 

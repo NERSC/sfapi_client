@@ -11,9 +11,10 @@ from ._models import (
     AppRoutersComputeModelsStatus as JobStatus,
     PublicHost as Machines,
     Task,
-    JobStatusResponseSacct,
-    JobStatusResponseSqueue,
 )
+
+from .._module.job_status_response_sacct import JobStatusResponseSacct
+from .._module.job_status_response_squeue import JobStatusResponseSqueue
 
 
 class SubmitJobResponseStatus(Enum):
