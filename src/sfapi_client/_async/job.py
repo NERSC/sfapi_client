@@ -1,10 +1,11 @@
 from __future__ import annotations
 import asyncio
 from enum import Enum
+import json
 from typing import Any, Optional, Dict
 from .common import _ASYNC_SLEEP, SfApiError
-from .._module.job_status_response_sacct import OutputItem as JobBaseSacct
-from .._module.job_status_response_squeue import OutputItem as JobBaseSqueue
+from .._models.job_status_response_sacct import OutputItem as JobSacctBase
+from .._models.job_status_response_squeue import OutputItem as JobSqueueBase
 
 from pydantic import BaseModel, Field, validator
 
@@ -46,10 +47,10 @@ TERMINAL_STATES = [
 ]
 
 
-class Job(JobBaseSacct):
+class Job(BaseModel):
     compute: Optional["Compute"] = None
 
-    @validator("state", pre=True)
+    @validator("state", pre=True, check_fields=False)
     def state_validate(cls, v):
         # sacct return a state of the form "CANCELLED by XXXX" for the
         # cancelled state, coerce into value that will match a state
@@ -98,3 +99,15 @@ class Job(JobBaseSacct):
             while self.state != JobState.CANCELLED:
                 await self.update()
                 await _ASYNC_SLEEP(10)
+
+    def __str__(self) -> str:
+        output = self.dict(exclude={"compute"})
+        return json.dumps(output)
+
+
+class JobSacct(Job, JobSacctBase):
+    pass
+
+
+class JobSqueue(Job, JobSqueueBase):
+    pass
