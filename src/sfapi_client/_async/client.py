@@ -8,7 +8,7 @@ import tenacity
 
 from .compute import Machines, Compute
 from .common import SfApiError
-from ._models import (
+from .._models import (
     JobOutput as JobStatusResponse,
     UserInfo as User,
     AppRoutersComputeModelsStatus as JobStatus,
