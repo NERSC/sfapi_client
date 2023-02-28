@@ -3,7 +3,8 @@ import asyncio
 from enum import Enum
 from typing import Any, Optional, Dict
 from .common import _ASYNC_SLEEP, SfApiError
-from ._models import OutputItemSacct as JobBase
+from .._module.job_status_response_sacct import OutputItem as JobBaseSacct
+from .._module.job_status_response_squeue import OutputItem as JobBaseSqueue
 
 from pydantic import BaseModel, Field, validator
 
@@ -45,7 +46,7 @@ TERMINAL_STATES = [
 ]
 
 
-class Job(JobBase):
+class Job(JobBaseSacct):
     compute: Optional["Compute"] = None
 
     @validator("state", pre=True)
