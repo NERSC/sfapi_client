@@ -5,16 +5,16 @@ from enum import Enum
 from pydantic import BaseModel
 
 from .common import SfApiError, _ASYNC_SLEEP
-from .job import Job
-from ._models import (
+from .job import JobSacct, JobSqueue, Job
+from .._models import (
     AppRoutersStatusModelsStatus as ComputeBase,
     AppRoutersComputeModelsStatus as JobStatus,
     PublicHost as Machines,
     Task,
 )
 
-from .._module.job_status_response_sacct import JobStatusResponseSacct
-from .._module.job_status_response_squeue import JobStatusResponseSqueue
+from .._models.job_status_response_sacct import JobStatusResponseSacct
+from .._models.job_status_response_squeue import JobStatusResponseSqueue
 
 
 class SubmitJobResponseStatus(Enum):
@@ -73,42 +73,28 @@ class Compute(ComputeBase):
 
             return job
 
-    async def _fetch_job_status(self, jobid: int):
-        params = {"sacct": True}
-        JobStatusResponse = JobStatusResponseSacct
-        r = await self.client.get(f"compute/jobs/{self.name}/{jobid}", params)
+    async def _fetch_job_status(
+        self,
+        jobid: Optional[int],
+        user: Optional[str] = None,
+        partition: Optional[str] = None,
+        sacct: Optional[bool] = False,
+    ):
+        params = {"sacct": sacct}
+        # Use sacct if sacct option else use the
+        JobStatusResponse = JobStatusResponseSacct if sacct else JobStatusResponseSqueue
+        job_url = f"compute/jobs/{self.name}"
 
-        json_response = r.json()
-        job_status = JobStatusResponse.parse_obj(json_response)
-
-        if job_status.status == JobStatus.ERROR:
-            error = job_status.error
-            raise SfApiError(error)
-
-        output = job_status.output
-
-        return output[0]
-
-    async def job(self, jobid: int) -> "Job":
-        job_status = await self._fetch_job_status(jobid)
-
-        job = Job.parse_obj(job_status)
-        job.compute = self
-
-        return job
-
-    async def squeue(self, user: Optional[str] = None, partition: Optional[str] = None):
-        params = {"sacct": False}
-        JobStatusResponse = JobStatusResponseSqueue
-        if user is not None:
+        if jobid is not None:
+            job_url = f"{job_url}/{jobid}"
+        elif user is not None:
             params["kwargs"] = f"user={user}"
         elif partition is not None:
             params["kwargs"] = f"partition={partition}"
 
-        r = await self.client.get(f"compute/jobs/{self.name}", params)
+        r = await self.client.get(job_url, params)
 
         json_response = r.json()
-
         job_status = JobStatusResponse.parse_obj(json_response)
 
         if job_status.status == JobStatus.ERROR:
@@ -116,3 +102,23 @@ class Compute(ComputeBase):
             raise SfApiError(error)
 
         return job_status.output
+
+    async def job(
+        self,
+        jobid: Optional[int] = None,
+        user: Optional[str] = None,
+        partition: Optional[str] = None,
+        sacct: Optional[bool] = False,
+    ) -> List["Job"]:
+        job_status = await self._fetch_job_status(
+            jobid=jobid, user=user, partition=partition, sacct=sacct
+        )
+        # Get different job depending on query
+        Job = JobSacct if sacct else JobSqueue
+
+        jobs = []
+        for _job in job_status:
+            jobs.append(Job.parse_obj(_job))
+            jobs[-1].compute = self
+
+        return jobs
