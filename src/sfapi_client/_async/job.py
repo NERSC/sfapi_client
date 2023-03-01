@@ -10,6 +10,11 @@ from .._models.job_status_response_squeue import OutputItem as JobSqueueBase
 from pydantic import BaseModel, Field, validator
 
 
+class JobCommand(str, Enum):
+    sacct = "sacct"
+    squeue = "squeue"
+
+
 class JobState(str, Enum):
     BOOT_FAIL = "BOOT_FAIL"
     CANCELLED = "CANCELLED"
