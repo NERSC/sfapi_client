@@ -5,7 +5,7 @@ from enum import Enum
 from pydantic import BaseModel
 
 from .common import SfApiError, _SLEEP
-from .job import JobSacct, JobSqueue, Job
+from .job import JobSacct, JobSqueue, Job, JobCommand
 from .._models import (
     AppRoutersStatusModelsStatus as ComputeBase,
     AppRoutersComputeModelsStatus as JobStatus,
@@ -75,14 +75,22 @@ class Compute(ComputeBase):
 
     def _fetch_job_status(
         self,
-        jobid: Optional[int],
+        jobid: Optional[int] = None,
         user: Optional[str] = None,
         partition: Optional[str] = None,
-        sacct: Optional[bool] = False,
+        command: Optional[JobCommand] = None,
     ):
-        params = {"sacct": sacct}
-        # Use sacct if sacct option else use the
-        JobStatusResponse = JobStatusResponseSacct if sacct else JobStatusResponseSqueue
+        # Default from api
+        params = {"sacct": False}
+
+        # Could be changed to `match case` but that limits to 3.10+
+        if command == JobCommand.sacct:
+            params = {"sacct": True}
+            JobStatusResponse = JobStatusResponseSacct
+        elif command == JobCommand.squeue:
+            params = {"sacct": False}
+            JobStatusResponse = JobStatusResponseSqueue
+
         job_url = f"compute/jobs/{self.name}"
 
         if jobid is not None:
@@ -104,19 +112,31 @@ class Compute(ComputeBase):
         return job_status.output
 
     def job(
+        self, jobid: int, command: Optional[JobCommand] = JobCommand.sacct
+    ) -> "Job":
+        job_status = self._fetch_job_status(jobid=jobid, command=command)
+        # Get different job depending on query
+        Job = JobSacct if (command == JobCommand.sacct) else JobSqueue
+        job = Job.parse_obj(job_status[0])
+        job.compute = self
+
+        return job
+
+    def jobs(
         self,
-        jobid: Optional[int] = None,
         user: Optional[str] = None,
         partition: Optional[str] = None,
-        sacct: Optional[bool] = False,
+        command: Optional[JobCommand] = JobCommand.squeue,
     ) -> List["Job"]:
         job_status = self._fetch_job_status(
-            jobid=jobid, user=user, partition=partition, sacct=sacct
+            user=user, partition=partition, command=command
         )
-        # Get different job depending on query
-        Job = JobSacct if sacct else JobSqueue
+        # Get different job depending on command
+        Job = JobSacct if (command == JobCommand.sacct) else JobSqueue
 
         jobs = []
+        # Fills jobs list with a Job object
+        # parsed from json into pydantic model object
         for _job in job_status:
             jobs.append(Job.parse_obj(_job))
             jobs[-1].compute = self
