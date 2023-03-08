@@ -6,22 +6,22 @@ from sfapi_client import Machines
 
 
 @pytest.mark.asyncio
-async def test_compute(client_id, client_secret):
+async def test_compute(client_id, client_secret, test_machine):
     async with AsyncClient(client_id, client_secret) as client:
-        perl = await client.compute(Machines.perlmutter)
+        machine = await client.compute(test_machine)
 
-        assert perl.name == Machines.perlmutter.value
+        assert machine.name == test_machine.value
 
 
 @pytest.mark.asyncio
-async def test_job(client_id, client_secret, test_job_path):
+async def test_job(client_id, client_secret, test_job_path, test_machine):
     async with AsyncClient(client_id, client_secret) as client:
-        perl = await client.compute(Machines.perlmutter)
+        machine = await client.compute(test_machine)
 
-        job = await perl.submit_job(test_job_path)
+        job = await machine.submit_job(test_job_path)
         await job.complete()
         assert job.state == JobState.COMPLETED
 
-        perl_job = await perl.job(job.jobid)
+        job_looked_up = await machine.job(job.jobid)
 
-        assert perl_job.jobid == job.jobid
+        assert job.jobid == job_looked_up.jobid
