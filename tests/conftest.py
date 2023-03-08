@@ -4,6 +4,8 @@ import json
 import pytest
 from authlib.jose import JsonWebKey
 
+from sfapi_client import Machines
+
 
 @pytest.fixture
 def client_id():
@@ -20,3 +22,14 @@ def client_secret():
 @pytest.fixture
 def test_job_path():
     return os.environ["TEST_JOB_PATH"]
+
+
+TEST_MACHINE_ENV = "TEST_MACHINE"
+
+
+@pytest.fixture
+def test_machine():
+    if TEST_MACHINE_ENV in os.environ:
+        return Machines[os.environ[TEST_MACHINE_ENV]]
+    else:
+        return Machines.perlmutter
