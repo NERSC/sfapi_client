@@ -5,7 +5,7 @@ from enum import Enum
 from pydantic import BaseModel
 
 from .common import SfApiError, _ASYNC_SLEEP
-from .job import JobSacct, JobSqueue, Job, JobCommand
+from .job import JobSacct, JobSqueue, JobSqueue, JobCommand
 from .._models import (
     AppRoutersStatusModelsStatus as ComputeBase,
     AppRoutersComputeModelsStatus as JobStatus,
@@ -68,59 +68,21 @@ class Compute(ComputeBase):
             if jobid is None:
                 raise SfApiError(f"Unable to extract jobid if for task: {task_id}")
 
-            job = Job(jobid=jobid)
+            job = JobSqueue(jobid=jobid)
             job.compute = self
 
             return job
 
-    async def _fetch_job_status(
-        self,
-        jobid: Optional[int] = None,
-        user: Optional[str] = None,
-        partition: Optional[str] = None,
-        command: Optional[JobCommand] = None,
-    ):
-        # Default from api
-        params = {"sacct": False}
-
-        # Could be changed to `match case` but that limits to 3.10+
-        if command == JobCommand.sacct:
-            params = {"sacct": True}
-            JobStatusResponse = JobStatusResponseSacct
-        elif command == JobCommand.squeue:
-            params = {"sacct": False}
-            JobStatusResponse = JobStatusResponseSqueue
-
-        job_url = f"compute/jobs/{self.name}"
-
-        if jobid is not None:
-            job_url = f"{job_url}/{jobid}"
-        elif user is not None:
-            params["kwargs"] = f"user={user}"
-        elif partition is not None:
-            params["kwargs"] = f"partition={partition}"
-
-        r = await self.client.get(job_url, params)
-
-        json_response = r.json()
-        job_status = JobStatusResponse.parse_obj(json_response)
-
-        if job_status.status == JobStatus.ERROR:
-            error = job_status.error
-            raise SfApiError(error)
-
-        return job_status.output
-
     async def job(
         self, jobid: int, command: Optional[JobCommand] = JobCommand.sacct
-    ) -> "Job":
-        job_status = await self._fetch_job_status(jobid=jobid, command=command)
+    ) -> "Union[JobSacct, JobSqueue]":
         # Get different job depending on query
         Job = JobSacct if (command == JobCommand.sacct) else JobSqueue
-        job = Job.parse_obj(job_status[0])
-        job.compute = self
+        jobs = await Job._fetch_jobs(self, jobid=jobid)
+        if len(jobs) == 0:
+            raise SfApiError(f"Job not found: ${jobid}")
 
-        return job
+        return jobs[0]
 
     async def jobs(
         self,
@@ -128,17 +90,6 @@ class Compute(ComputeBase):
         partition: Optional[str] = None,
         command: Optional[JobCommand] = JobCommand.squeue,
     ) -> List["Job"]:
-        job_status = await self._fetch_job_status(
-            user=user, partition=partition, command=command
-        )
-        # Get different job depending on command
         Job = JobSacct if (command == JobCommand.sacct) else JobSqueue
 
-        jobs = []
-        # Fills jobs list with a Job object
-        # parsed from json into pydantic model object
-        for _job in job_status:
-            jobs.append(Job.parse_obj(_job))
-            jobs[-1].compute = self
-
-        return jobs
+        return Job._fetch_jobs(self, user=user, partition=partition)
