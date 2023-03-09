@@ -33,3 +33,8 @@ def test_machine():
         return Machines[os.environ[TEST_MACHINE_ENV]]
     else:
         return Machines.perlmutter
+
+
+@pytest.fixture
+def test_username():
+    return os.environ["TEST_USERNAME"]
