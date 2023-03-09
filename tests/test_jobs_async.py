@@ -6,10 +6,10 @@ from sfapi_client import Machines
 
 
 @pytest.mark.asyncio
-async def test_submit(client_id, client_secret, test_job_path):
+async def test_submit(client_id, client_secret, test_job_path, test_machine):
     async with AsyncClient(client_id, client_secret) as client:
-        perl = await client.compute(Machines.perlmutter)
-        job = await perl.submit_job(test_job_path)
+        machine = await client.compute(test_machine)
+        job = await machine.submit_job(test_job_path)
 
         await job.complete()
 
@@ -17,19 +17,21 @@ async def test_submit(client_id, client_secret, test_job_path):
 
 
 @pytest.mark.asyncio
-async def test_cancel(client_id, client_secret, test_job_path):
+async def test_cancel(client_id, client_secret, test_job_path, test_machine):
     async with AsyncClient(client_id, client_secret) as client:
-        perl = await client.compute(Machines.perlmutter)
-        job = await perl.submit_job(test_job_path)
+        machine = await client.compute(test_machine)
+        job = await machine.submit_job(test_job_path)
 
         await job.cancel()
 
 
 @pytest.mark.asyncio
-async def test_cancel_wait_for_it(client_id, client_secret, test_job_path):
+async def test_cancel_wait_for_it(
+    client_id, client_secret, test_job_path, test_machine
+):
     async with AsyncClient(client_id, client_secret) as client:
-        perl = await client.compute(Machines.perlmutter)
-        job = await perl.submit_job(test_job_path)
+        machine = await client.compute(test_machine)
+        job = await machine.submit_job(test_job_path)
 
         await job.cancel(wait=True)
 

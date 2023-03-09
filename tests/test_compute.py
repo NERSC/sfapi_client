@@ -5,21 +5,27 @@ from sfapi_client import JobState
 from sfapi_client import Machines
 
 
-def test_compute(client_id, client_secret):
+def test_compute(client_id, client_secret, test_machine):
     with Client(client_id, client_secret) as client:
-        perl = client.compute(Machines.perlmutter)
+        machine = client.compute(test_machine)
 
-        assert perl.name == Machines.perlmutter.value
+        assert machine.name == test_machine.value
 
 
-def test_job(client_id, client_secret, test_job_path):
+def test_job(client_id, client_secret, test_job_path, test_machine):
     with Client(client_id, client_secret) as client:
-        perl = client.compute(Machines.perlmutter)
+        machine = client.compute(test_machine)
 
-        job = perl.submit_job(test_job_path)
+        job = machine.submit_job(test_job_path)
         job.complete()
         assert job.state == JobState.COMPLETED
 
-        perl_job = perl.job(job.jobid)
+        job_looked_up = machine.job(job.jobid)
 
-        assert perl_job.jobid == job.jobid
+        assert job.jobid == job_looked_up.jobid
+
+
+def test_fetch_jobs(client_id, client_secret, test_machine, test_username):
+    with Client(client_id, client_secret) as client:
+        machine = client.compute(test_machine)
+        machine.jobs(user=test_username)

@@ -1,11 +1,25 @@
 from __future__ import annotations
-import asyncio
 from enum import Enum
-from typing import Any, Optional, Dict
+import json
+from abc import ABC, abstractmethod
+from typing import Any, Optional, Dict, List, ClassVar
 from .common import _ASYNC_SLEEP, SfApiError
-from ._models import OutputItem as JobBase
+from .._models.job_status_response_sacct import OutputItem as JobSacctBase
+from .._models.job_status_response_squeue import OutputItem as JobSqueueBase
+from .._models import AppRoutersComputeModelsStatus as JobResponseStatus
 
 from pydantic import BaseModel, Field, validator
+
+
+class JobCommand(str, Enum):
+    sacct = "sacct"
+    squeue = "squeue"
+
+
+class JobStateResponse(BaseModel):
+    status: Optional[str] = None
+    output: Optional[List[Dict]] = None
+    error: Optional[Any] = None
 
 
 class JobState(str, Enum):
@@ -45,10 +59,61 @@ TERMINAL_STATES = [
 ]
 
 
-class Job(JobBase):
-    compute: Optional["Compute"] = None
+async def _fetch_raw_state(
+    compute: "Compute",
+    jobid: Optional[int] = None,
+    user: Optional[str] = None,
+    partition: Optional[str] = None,
+    sacct: Optional[bool] = False,
+):
+    params = {"sacct": sacct}
 
-    @validator("state", pre=True)
+    job_url = f"compute/jobs/{compute.name}"
+
+    if jobid is not None:
+        job_url = f"{job_url}/{jobid}"
+    elif user is not None:
+        params["kwargs"] = f"user={user}"
+    elif partition is not None:
+        params["kwargs"] = f"partition={partition}"
+
+    r = await compute.client.get(job_url, params)
+
+    json_response = r.json()
+    job_state_response = JobStateResponse.parse_obj(json_response)
+
+    if job_state_response == JobResponseStatus.ERROR:
+        error = json_response.error
+        raise SfApiError(error)
+
+    return job_state_response.output
+
+
+async def _fetch_jobs(
+    job_type: Union["JobSacct", "JobSqueue"],
+    compute: "Compute",
+    jobid: Optional[int] = None,
+    user: Optional[str] = None,
+    partition: Optional[str] = None,
+):
+    job_states = await _fetch_raw_state(
+        compute, jobid, user, partition, job_type._command == JobCommand.sacct
+    )
+
+    jobs = [job_type.parse_obj(state) for state in job_states]
+
+    for job in jobs:
+        job.compute = compute
+
+    return jobs
+
+
+class Job(BaseModel, ABC):
+    compute: Optional["Compute"] = None
+    state: Optional[JobState]
+    jobid: Optional[str]
+
+    @validator("state", pre=True, check_fields=False)
     def state_validate(cls, v):
         # sacct return a state of the form "CANCELLED by XXXX" for the
         # cancelled state, coerce into value that will match a state
@@ -59,12 +124,10 @@ class Job(JobBase):
         return v
 
     async def update(self):
-        job_status = await self.compute._fetch_job_status(self.jobid)
-        self._update(job_status)
+        job_state = await self._fetch_state()
+        self._update(job_state)
 
-    def _update(self, data: Dict) -> Any:
-        new_job_state = Job.parse_obj(data)
-
+    def _update(self, new_job_state: Any) -> Job:
         for k in new_job_state.__fields_set__:
             v = getattr(new_job_state, k)
             setattr(self, k, v)
@@ -97,3 +160,65 @@ class Job(JobBase):
             while self.state != JobState.CANCELLED:
                 await self.update()
                 await _ASYNC_SLEEP(10)
+
+    def __str__(self) -> str:
+        output = self.dict(exclude={"compute"})
+        return json.dumps(output)
+
+    @abstractmethod
+    async def _fetch_state(self):
+        pass
+
+
+class JobSacct(Job, JobSacctBase):
+    _command: ClassVar[JobCommand] = JobCommand.sacct
+
+    async def _fetch_state(self):
+        jobs = await self._fetch_jobs(jobid=self.jobid)
+        if len(jobs) != 1:
+            raise SfApiError(f"Job not found: ${self.jobid}")
+
+        return jobs[0]
+
+    @classmethod
+    async def _fetch_jobs(
+        cls,
+        compute: "Compute",
+        jobid: Optional[int] = None,
+        user: Optional[str] = None,
+        partition: Optional[str] = None,
+    ):
+        return await _fetch_jobs(cls, compute, jobid, user, partition)
+
+
+class JobSqueue(Job, JobSqueueBase):
+    _command: ClassVar[JobCommand] = JobCommand.squeue
+
+    async def _fetch_state(self):
+        jobs = await self._fetch_jobs(self.compute, jobid=self.jobid)
+        # If the job state comes back empty the job is probably no longer in
+        # the queue, so we use sacct to get the final state.
+        if len(jobs) == 0:
+            jobs = await JobSacct._fetch_jobs(self.compute, jobid=self.jobid)
+            if len(jobs) != 1:
+                raise SfApiError(f"Job not found: ${self.jobid}")
+
+            # We create a new squeue job instance and set the state on it,
+            # the update method will then use this to update just the job
+            # state field.
+            job = JobSqueue()
+            job.state = jobs[0].state
+
+            return job
+
+        return jobs[0]
+
+    @classmethod
+    async def _fetch_jobs(
+        cls,
+        compute: "Compute",
+        jobid: Optional[int] = None,
+        user: Optional[str] = None,
+        partition: Optional[str] = None,
+    ):
+        return await _fetch_jobs(cls, compute, jobid, user, partition)
