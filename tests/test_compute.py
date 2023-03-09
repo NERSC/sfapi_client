@@ -23,3 +23,9 @@ def test_job(client_id, client_secret, test_job_path, test_machine):
         job_looked_up = machine.job(job.jobid)
 
         assert job.jobid == job_looked_up.jobid
+
+
+def test_fetch_jobs(client_id, client_secret, test_machine, test_username):
+    with Client(client_id, client_secret) as client:
+        machine = client.compute(test_machine)
+        machine.jobs(user=test_username)

@@ -92,4 +92,4 @@ class Compute(ComputeBase):
     ) -> List["Job"]:
         Job = JobSacct if (command == JobCommand.sacct) else JobSqueue
 
-        return Job._fetch_jobs(self, user=user, partition=partition)
+        return await Job._fetch_jobs(self, user=user, partition=partition)

@@ -25,3 +25,10 @@ async def test_job(client_id, client_secret, test_job_path, test_machine):
         job_looked_up = await machine.job(job.jobid)
 
         assert job.jobid == job_looked_up.jobid
+
+
+@pytest.mark.asyncio
+async def test_fetch_jobs(client_id, client_secret, test_machine, test_username):
+    async with AsyncClient(client_id, client_secret) as client:
+        machine = await client.compute(test_machine)
+        await machine.jobs(user=test_username)
