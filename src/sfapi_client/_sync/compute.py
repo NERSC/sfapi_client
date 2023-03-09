@@ -5,14 +5,16 @@ from enum import Enum
 from pydantic import BaseModel
 
 from .common import SfApiError, _SLEEP
-from .job import Job
-from ._models import (
+from .job import JobSacct, JobSqueue, JobSqueue, JobCommand
+from .._models import (
     AppRoutersStatusModelsStatus as ComputeBase,
     AppRoutersComputeModelsStatus as JobStatus,
     PublicHost as Machines,
     Task,
-    JobStatusResponse,
 )
+
+from .._models.job_status_response_sacct import JobStatusResponseSacct
+from .._models.job_status_response_squeue import JobStatusResponseSqueue
 
 
 class SubmitJobResponseStatus(Enum):
@@ -66,30 +68,28 @@ class Compute(ComputeBase):
             if jobid is None:
                 raise SfApiError(f"Unable to extract jobid if for task: {task_id}")
 
-            job = Job(jobid=jobid)
+            job = JobSqueue(jobid=jobid)
             job.compute = self
 
             return job
 
-    def _fetch_job_status(self, jobid: int):
-        params = {"sacct": True}
-        r = self.client.get(f"compute/jobs/{self.name}/{jobid}", params)
+    def job(
+        self, jobid: int, command: Optional[JobCommand] = JobCommand.sacct
+    ) -> "Union[JobSacct, JobSqueue]":
+        # Get different job depending on query
+        Job = JobSacct if (command == JobCommand.sacct) else JobSqueue
+        jobs = Job._fetch_jobs(self, jobid=jobid)
+        if len(jobs) == 0:
+            raise SfApiError(f"Job not found: ${jobid}")
 
-        json_response = r.json()
-        job_status = JobStatusResponse.parse_obj(json_response)
+        return jobs[0]
 
-        if job_status.status == JobStatus.ERROR:
-            error = job_status.error
-            raise SfApiError(error)
+    def jobs(
+        self,
+        user: Optional[str] = None,
+        partition: Optional[str] = None,
+        command: Optional[JobCommand] = JobCommand.squeue,
+    ) -> List["Job"]:
+        Job = JobSacct if (command == JobCommand.sacct) else JobSqueue
 
-        output = job_status.output
-
-        return output[0]
-
-    def job(self, jobid: int) -> "Job":
-        job_status = self._fetch_job_status(jobid)
-
-        job = Job.parse_obj(job_status)
-        job.compute = self
-
-        return job
+        return Job._fetch_jobs(self, user=user, partition=partition)

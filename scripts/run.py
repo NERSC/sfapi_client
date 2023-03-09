@@ -6,7 +6,7 @@ import unasync
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from urllib.parse import urlparse
-from typing import Optional
+from typing import List, Optional
 
 from datamodel_code_generator import InputFileType, generate
 import typer
@@ -83,22 +83,36 @@ def _from_json(json: Path, class_name: str) -> str:
 # only on the OpenAPI spec.
 #
 @cli.command(name="codegen")
-def datamodel_codegen(
+def openapimodel_codegen(
     output: Path = typer.Option(
-        Path(__file__).parent.parent / "src" / "sfapi_client" / "_async" / "_models.py",
+        Path(__file__).parent.parent
+        / "src"
+        / "sfapi_client"
+        / "_models"
+        / "__init__.py",
         dir_okay=False,
         writable=True,
     ),
-    job_json: Optional[Path] = typer.Option(None, dir_okay=False, writable=True),
 ):
     with output.open("w") as fp:
         fp.write(_from_open_api())
-        if job_json is not None:
-            fp.write("\n")
 
-            job_model = _from_json(job_json, "JobStatusResponse")
-            # Strip out from __future__ import annotations
-            job_model = job_model.replace("from __future__ import annotations\n", "")
+
+@cli.command(name="datacodegen")
+def datamodel_codegen(
+    json_models: Optional[List[Path]] = typer.Option(
+        None, dir_okay=True, writable=True
+    ),
+):
+    base_dir = Path(__file__).parent.parent / "src" / "sfapi_client" / "_models"
+    for model in json_models:
+        model = model.resolve(strict=False)
+        output = Path(f"{base_dir}/{model.stem}.py")
+
+        with output.open("w") as fp:
+            name_split = model.stem.split("_")
+            name_split = [name.capitalize() for name in name_split]
+            job_model = _from_json(model, f"{''.join(name_split)}")
             fp.write(job_model)
 
 
