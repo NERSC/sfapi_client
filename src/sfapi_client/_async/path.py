@@ -1,12 +1,21 @@
-from typing import Optional
+from typing import Union, Optional
 from pathlib import PurePosixPath
 from pydantic import PrivateAttr
+from io import StringIO, BytesIO
+from base64 import b64decode
 
-from .._models import DirectoryEntry as PathBase
+from .._models import (
+    DirectoryEntry as PathBase,
+    FileDownload as FileDownloadResponse,
+    AppRoutersUtilsModelsStatus as FileDownloadResponseStatus,
+)
+from .common import SfApiError
 
 
 class RemotePath(PathBase):
     compute: Optional["Compute"]
+    # It would be nice to be able subclass PurePosixPath, however, this
+    # require using private interfaces. So we derive by composition.
     _path: PurePosixPath = PrivateAttr()
 
     def __init__(self, path=None, **kwargs):
@@ -48,3 +57,20 @@ class RemotePath(PathBase):
     @property
     def parts(self):
         return self._path.parts
+
+    async def download(self, binary=False) -> Union[StringIO, BytesIO]:
+        r = await self.compute.client.get(
+            f"utilities/download/{self.compute.name}/{self._path}?binary={binary}"
+        )
+        json_response = r.json()
+        download_response = FileDownloadResponse.parse_obj(json_response)
+
+        if download_response.status == FileDownloadResponseStatus.ERROR:
+            raise SfApiError(download_response.error)
+
+        file_data = download_response.file
+        if download_response.is_binary:
+            binary_file_data = b64decode(file_data)
+            return BytesIO(binary_file_data)
+        else:
+            return StringIO(file_data)
