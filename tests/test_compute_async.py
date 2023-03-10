@@ -1,4 +1,5 @@
 import pytest
+from pathlib import Path
 
 from sfapi_client import AsyncClient
 from sfapi_client import JobState
@@ -32,3 +33,22 @@ async def test_fetch_jobs(client_id, client_secret, test_machine, test_username)
     async with AsyncClient(client_id, client_secret) as client:
         machine = await client.compute(test_machine)
         await machine.jobs(user=test_username)
+
+@pytest.mark.asyncio
+async def test_listdir(client_id, client_secret, test_machine, test_job_path):
+    async with AsyncClient(client_id, client_secret) as client:
+        machine = await client.compute(test_machine)
+        test_job  = Path(test_job_path)
+        test_path = test_job.parent
+        test_name = test_job.name
+
+        paths = await machine.listdir(test_path)
+
+        found = False
+        for p in paths:
+            if p.name == test_name:
+                found = True
+                break
+
+        assert found
+
