@@ -40,11 +40,11 @@ class RemotePath(PathBase):
 
     @property
     def parent(self):
-        return self._path.parent
+        return RemotePath(str(self._path.parent))
 
     @property
     def parents(self):
-        return self._path.parents
+        return [RemotePath(str(p)) for p in self._path.parents]
 
     @property
     def stem(self):
