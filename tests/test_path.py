@@ -37,7 +37,7 @@ def test_download_text(client_id, client_secret, test_machine, test_job_path):
         test_path = test_job.parent
         test_name = test_job.name
 
-        paths = machine.listdir(test_path)
+        paths = machine.ls(test_path)
 
         remote_path = None
         for p in paths:
@@ -59,7 +59,7 @@ def test_download_binary(client_id, client_secret, test_machine, test_job_path):
         test_path = test_job.parent
         test_name = test_job.name
 
-        paths = machine.listdir(test_path)
+        paths = machine.ls(test_path)
 
         remote_path = None
         for p in paths:

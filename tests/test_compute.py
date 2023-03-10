@@ -32,18 +32,34 @@ def test_fetch_jobs(client_id, client_secret, test_machine, test_username):
         machine.jobs(user=test_username)
 
 
-def test_listdir(client_id, client_secret, test_machine, test_job_path):
+def test_list_dir(client_id, client_secret, test_machine, test_job_path):
     with Client(client_id, client_secret) as client:
         machine = client.compute(test_machine)
         test_job = Path(test_job_path)
         test_path = test_job.parent
         test_name = test_job.name
 
-        paths = machine.listdir(test_path)
+        paths = machine.ls(test_path)
 
         found = False
         for p in paths:
             if p.name == test_name:
+                found = True
+                break
+
+        assert found
+
+
+def test_list_file(client_id, client_secret, test_machine, test_job_path):
+    with Client(client_id, client_secret) as client:
+        machine = client.compute(test_machine)
+        test_job_filename = Path(test_job_path).name
+
+        paths = machine.ls(test_job_path)
+
+        found = False
+        for p in paths:
+            if p.name == test_job_filename:
                 found = True
                 break
 
