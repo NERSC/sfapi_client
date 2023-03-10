@@ -50,8 +50,11 @@ async def test_download_binary(client_id, client_secret, test_machine, test_job_
         bytes = fp.read()
         assert "#SBATCH" in bytes.decode()
 
+
 @pytest.mark.asyncio
-async def test_download_directory(client_id, client_secret, test_machine, test_job_path):
+async def test_download_directory(
+    client_id, client_secret, test_machine, test_job_path
+):
     async with AsyncClient(client_id, client_secret) as client:
         machine = await client.compute(test_machine)
         test_job = Path(test_job_path)
