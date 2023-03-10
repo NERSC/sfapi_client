@@ -11,7 +11,10 @@ from .._models import (
     AppRoutersComputeModelsStatus as JobStatus,
     PublicHost as Machines,
     Task,
+    DirectoryOutput as DirectoryListingResponse,
+    AppRoutersUtilsModelsStatus as DirectoryListingResponseStatus,
 )
+from .path import RemotePath
 
 from .._models.job_status_response_sacct import JobStatusResponseSacct
 from .._models.job_status_response_squeue import JobStatusResponseSqueue
@@ -93,3 +96,20 @@ class Compute(ComputeBase):
         Job = JobSacct if (command == JobCommand.sacct) else JobSqueue
 
         return Job._fetch_jobs(self, user=user, partition=partition)
+
+    def listdir(self, path) -> List[RemotePath]:
+        r = self.client.get(f"utilities/ls/{self.name}/{path}")
+
+        json_response = r.json()
+        directory_listing_response = DirectoryListingResponse.parse_obj(json_response)
+        if directory_listing_response.status == DirectoryListingResponseStatus.ERROR:
+            raise SfApiError(directory_listing_response.error)
+
+        paths = []
+
+        for entry in directory_listing_response.entries:
+            kwargs = entry.dict()
+            kwargs.update(path=f"{path}/{entry.name}")
+            paths.append(RemotePath(**kwargs))
+
+        return paths
