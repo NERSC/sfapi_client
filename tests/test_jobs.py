@@ -10,9 +10,9 @@ def test_submit(client_id, client_secret, test_job_path, test_machine):
         machine = client.compute(test_machine)
         job = machine.submit_job(test_job_path)
 
-        job.complete()
+        state = job.complete()
 
-        assert job.state == JobState.COMPLETED
+        assert state == JobState.COMPLETED
 
 
 def test_cancel(client_id, client_secret, test_job_path, test_machine):
