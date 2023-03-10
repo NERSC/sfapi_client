@@ -13,7 +13,7 @@ async def test_download_text(client_id, client_secret, test_machine, test_job_pa
         test_path = test_job.parent
         test_name = test_job.name
 
-        paths = await machine.listdir(test_path)
+        paths = await machine.ls(test_path)
 
         remote_path = None
         for p in paths:
@@ -36,7 +36,7 @@ async def test_download_binary(client_id, client_secret, test_machine, test_job_
         test_path = test_job.parent
         test_name = test_job.name
 
-        paths = await machine.listdir(test_path)
+        paths = await machine.ls(test_path)
 
         remote_path = None
         for p in paths:
@@ -61,7 +61,7 @@ async def test_download_directory(
         test_path = test_job.parent
         test_name = test_job.name
 
-        paths = await machine.listdir(test_path)
+        paths = await machine.ls(test_path)
 
         remote_path = None
         for p in paths:

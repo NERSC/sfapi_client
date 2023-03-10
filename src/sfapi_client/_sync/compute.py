@@ -3,6 +3,7 @@ from typing import List, Optional
 import json
 from enum import Enum
 from pydantic import BaseModel
+from pathlib import PurePosixPath
 
 from .common import SfApiError, _SLEEP
 from .job import JobSacct, JobSqueue, JobSqueue, JobCommand
@@ -97,7 +98,7 @@ class Compute(ComputeBase):
 
         return Job._fetch_jobs(self, user=user, partition=partition)
 
-    def listdir(self, path) -> List[RemotePath]:
+    def ls(self, path) -> List[RemotePath]:
         r = self.client.get(f"utilities/ls/{self.name}/{path}")
 
         json_response = r.json()
@@ -107,11 +108,26 @@ class Compute(ComputeBase):
 
         paths = []
 
-        for entry in directory_listing_response.entries:
+        def _to_remote_path(path, entry):
             kwargs = entry.dict()
-            kwargs.update(path=f"{path}/{entry.name}")
+            kwargs.update(path=path)
             p = RemotePath(**kwargs)
             p.compute = self
-            paths.append(p)
+
+            return p
+
+        # Special case for listing file
+        if len(directory_listing_response.entries) == 1:
+            entry = directory_listing_response.entries[0]
+            # The API can add an extra /
+            path = entry.name
+            if entry.name.startswith("//"):
+                path = path[1:]
+            filename = PurePosixPath(path).name
+            entry.name = filename
+            paths.append(_to_remote_path(path, entry))
+        else:
+            for entry in directory_listing_response.entries:
+                paths.append(_to_remote_path(f"{path}/{entry.name}", entry))
 
         return paths
