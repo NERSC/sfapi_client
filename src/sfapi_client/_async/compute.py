@@ -12,7 +12,7 @@ from .._models import (
     PublicHost as Machines,
     Task,
     DirectoryOutput as DirectoryListingResponse,
-    AppRoutersUtilsModelsStatus as DirectoryListingResponseStatus
+    AppRoutersUtilsModelsStatus as DirectoryListingResponseStatus,
 )
 from .path import RemotePath
 
@@ -108,7 +108,6 @@ class Compute(ComputeBase):
         paths = []
 
         for entry in directory_listing_response.entries:
-
             kwargs = entry.dict()
             kwargs.update(path=f"{path}/{entry.name}")
             paths.append(RemotePath(**kwargs))
