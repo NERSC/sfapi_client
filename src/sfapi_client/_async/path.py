@@ -1,3 +1,4 @@
+from typing import Optional
 from pathlib import PurePosixPath
 from pydantic import PrivateAttr
 
@@ -5,6 +6,7 @@ from .._models import DirectoryEntry as PathBase
 
 
 class RemotePath(PathBase):
+    compute: Optional["Compute"]
     _path: PurePosixPath = PrivateAttr()
 
     def __init__(self, path=None, **kwargs):
