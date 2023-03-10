@@ -63,6 +63,9 @@ class RemotePath(PathBase):
         return self._path.parts
 
     def download(self, binary=False) -> Union[StringIO, BytesIO]:
+        if self.perms[0] == 'd':
+            raise IsADirectoryError(self._path)
+
         r = self.compute.client.get(
             f"utilities/download/{self.compute.name}/{self._path}?binary={binary}"
         )
