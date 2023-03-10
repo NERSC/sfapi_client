@@ -110,6 +110,8 @@ class Compute(ComputeBase):
         for entry in directory_listing_response.entries:
             kwargs = entry.dict()
             kwargs.update(path=f"{path}/{entry.name}")
-            paths.append(RemotePath(**kwargs))
+            p = RemotePath(**kwargs)
+            p.compute = self
+            paths.append(p)
 
         return paths
