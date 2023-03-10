@@ -22,6 +22,11 @@ def test_concat():
     assert new_path.group is None
     assert str(new_path) == "c/b"
 
+def test_parent():
+    test_path = RemotePath("/foo")
+    assert isinstance(test_path.parent, RemotePath)
+    for p in test_path.parents:
+        assert isinstance(p, RemotePath)
 
 def test_download_text(client_id, client_secret, test_machine, test_job_path):
     with Client(client_id, client_secret) as client:
