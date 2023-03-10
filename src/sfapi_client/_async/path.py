@@ -13,6 +13,10 @@ from .common import SfApiError
 
 
 class RemotePath(PathBase):
+    """
+     RemotePath is used to model a remote path, it takes inspiration from
+     pathlib and shares some of its interface.
+    """
     compute: Optional["Compute"]
     # It would be nice to be able subclass PurePosixPath, however, this
     # require using private interfaces. So we derive by composition.
