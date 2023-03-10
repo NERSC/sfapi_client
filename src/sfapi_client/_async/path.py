@@ -14,9 +14,10 @@ from .common import SfApiError
 
 class RemotePath(PathBase):
     """
-     RemotePath is used to model a remote path, it takes inspiration from
-     pathlib and shares some of its interface.
+    RemotePath is used to model a remote path, it takes inspiration from
+    pathlib and shares some of its interface.
     """
+
     compute: Optional["Compute"]
     # It would be nice to be able subclass PurePosixPath, however, this
     # require using private interfaces. So we derive by composition.
@@ -63,7 +64,7 @@ class RemotePath(PathBase):
         return self._path.parts
 
     async def download(self, binary=False) -> Union[StringIO, BytesIO]:
-        if self.perms[0] == 'd':
+        if self.perms[0] == "d":
             raise IsADirectoryError(self._path)
 
         r = await self.compute.client.get(
