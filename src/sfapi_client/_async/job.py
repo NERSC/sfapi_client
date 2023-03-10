@@ -139,13 +139,13 @@ class Job(BaseModel, ABC):
             await self.update()
             await _ASYNC_SLEEP(10)
 
-        return self
+        return self.state
 
     def __await__(self):
         return self._wait_until_complete().__await__()
 
     async def complete(self):
-        await self._wait_until_complete()
+        return await self._wait_until_complete()
 
     async def cancel(self, wait=False):
         # We have wait for a jobid before we can cancel

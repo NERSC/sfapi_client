@@ -11,9 +11,9 @@ async def test_submit(client_id, client_secret, test_job_path, test_machine):
         machine = await client.compute(test_machine)
         job = await machine.submit_job(test_job_path)
 
-        await job.complete()
+        state = await job.complete()
 
-        assert job.state == JobState.COMPLETED
+        assert state == JobState.COMPLETED
 
 
 @pytest.mark.asyncio
