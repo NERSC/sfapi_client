@@ -71,3 +71,35 @@ async def test_download_directory(
 
         with pytest.raises(IsADirectoryError):
             await remote_path.download()
+
+
+@pytest.mark.asyncio
+async def test_ls_dir(
+    client_id, client_secret, test_machine, test_job_path, test_username
+):
+    async with AsyncClient(client_id, client_secret) as client:
+        machine = await client.compute(test_machine)
+        test_job = Path(test_job_path)
+        test_job_directory_name = test_job.parent.name
+        test_job_filename = test_job.name
+        test_job_parent_directory = test_job.parent.parent
+
+        paths = await machine.ls(test_job_parent_directory)
+
+        test_job_directory = None
+        for p in paths:
+            if p.name == test_job_directory_name:
+                test_job_directory = p
+                break
+
+        assert test_job_directory is not None
+
+        # Now list the job path an assert the at we can find the test job
+        found = False
+        job_path_entries = await test_job_directory.ls()
+        for p in job_path_entries:
+            if p.name == test_job_filename:
+                found = True
+                break
+
+        assert found

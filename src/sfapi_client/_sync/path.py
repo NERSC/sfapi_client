@@ -1,4 +1,4 @@
-from typing import Union, Optional
+from typing import Union, Optional, List
 from pathlib import PurePosixPath
 from pydantic import PrivateAttr
 from io import StringIO, BytesIO
@@ -8,6 +8,8 @@ from .._models import (
     DirectoryEntry as PathBase,
     FileDownload as FileDownloadResponse,
     AppRoutersUtilsModelsStatus as FileDownloadResponseStatus,
+    DirectoryOutput as DirectoryListingResponse,
+    AppRoutersUtilsModelsStatus as DirectoryListingResponseStatus,
 )
 from .common import SfApiError
 
@@ -82,3 +84,41 @@ class RemotePath(PathBase):
             return BytesIO(binary_file_data)
         else:
             return StringIO(file_data)
+
+    @staticmethod
+    def _ls(compute: "Compute", path) -> List["RemotePath"]:
+        r = compute.client.get(f"utilities/ls/{compute.name}/{path}")
+
+        json_response = r.json()
+        directory_listing_response = DirectoryListingResponse.parse_obj(json_response)
+        if directory_listing_response.status == DirectoryListingResponseStatus.ERROR:
+            raise SfApiError(directory_listing_response.error)
+
+        paths = []
+
+        def _to_remote_path(path, entry):
+            kwargs = entry.dict()
+            kwargs.update(path=path)
+            p = RemotePath(**kwargs)
+            p.compute = compute
+
+            return p
+
+        # Special case for listing file
+        if len(directory_listing_response.entries) == 1:
+            entry = directory_listing_response.entries[0]
+            # The API can add an extra /
+            path = entry.name
+            if entry.name.startswith("//"):
+                path = path[1:]
+            filename = PurePosixPath(path).name
+            entry.name = filename
+            paths.append(_to_remote_path(path, entry))
+        else:
+            for entry in directory_listing_response.entries:
+                paths.append(_to_remote_path(f"{path}/{entry.name}", entry))
+
+        return paths
+
+    def ls(self) -> List["RemotePath"]:
+        return self._ls(self.compute, str(self._path))
