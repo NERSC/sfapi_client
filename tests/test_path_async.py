@@ -58,14 +58,14 @@ async def test_download_directory(
     async with AsyncClient(client_id, client_secret) as client:
         machine = await client.compute(test_machine)
         test_job = Path(test_job_path)
-        test_path = test_job.parent
+        test_path = test_job.parent.parent
         test_name = test_job.name
 
         paths = await machine.ls(test_path)
 
         remote_path = None
         for p in paths:
-            if p.name == ".":
+            if p.name == test_job.parent.name:
                 remote_path = p
                 break
 
@@ -103,3 +103,21 @@ async def test_ls_dir(
                 break
 
         assert found
+
+
+@pytest.mark.asyncio
+async def test_ls_excludes_dots(client_id, client_secret, test_machine, test_job_path):
+    async with AsyncClient(client_id, client_secret) as client:
+        machine = await client.compute(test_machine)
+        test_job = Path(test_job_path)
+        test_job_directory = test_job.parent
+
+        paths = await machine.ls(test_job_directory)
+
+        dots = False
+
+        for p in paths:
+            if p.name in [".", ".."]:
+                dots = True
+
+        assert not dots

@@ -116,6 +116,9 @@ class RemotePath(PathBase):
             paths.append(_to_remote_path(path, entry))
         else:
             for entry in directory_listing_response.entries:
+                if entry.name in [".", ".."]:
+                    continue
+
                 paths.append(_to_remote_path(f"{path}/{entry.name}", entry))
 
         return paths
