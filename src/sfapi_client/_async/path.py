@@ -1,4 +1,4 @@
-from typing import Union, Optional
+from typing import Dict, Union, Optional
 from pathlib import PurePosixPath
 from pydantic import PrivateAttr
 from io import StringIO, BytesIO
@@ -62,6 +62,10 @@ class RemotePath(PathBase):
     @property
     def parts(self):
         return self._path.parts
+
+    @property
+    def to_dict(self) -> Dict:
+        return self.dict(exclude={"compute"})
 
     async def download(self, binary=False) -> Union[StringIO, BytesIO]:
         if self.perms[0] == "d":
