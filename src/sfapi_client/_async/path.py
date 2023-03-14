@@ -33,21 +33,45 @@ class RemotePath(PathBase):
             self.name = self._path.name
 
     def __truediv__(self, key):
-        return RemotePath(str(self._path / key))
+        remote_path = RemotePath(str(self._path / key))
+        # We have to set the compute field separately otherwise
+        # we run into ForwardRef issue because of circular deps
+        remote_path.compute = self.compute
+
+        return remote_path
 
     def __rtruediv__(self, key):
-        return RemotePath(str(key / self._path))
+        remote_path = RemotePath(str(key / self._path))
+        # We have to set the compute field separately otherwise
+        # we run into ForwardRef issue because of circular deps
+        remote_path.compute = self.compute
+
+        return remote_path
 
     def __str__(self):
         return str(self._path)
 
     @property
     def parent(self):
-        return RemotePath(str(self._path.parent))
+        parent_path = RemotePath(str(self._path.parent))
+        # We have to set the compute field separately otherwise
+        # we run into ForwardRef issue because of circular deps
+        parent_path.compute = self.compute
+
+        return parent_path
 
     @property
     def parents(self):
-        return [RemotePath(str(p)) for p in self._path.parents]
+        parents = [RemotePath(str(p)) for p in self._path.parents]
+        # We have to set the compute field separately otherwise
+        # we run into ForwardRef issue because of circular deps
+        def _set_compute(p):
+            p.compute = self.compute
+            return p
+
+        parents = map(_set_compute, parents)
+
+        return parents
 
     @property
     def stem(self):

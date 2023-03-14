@@ -23,7 +23,6 @@ def client_secret():
 def test_job_path():
     return os.environ["TEST_JOB_PATH"]
 
-
 TEST_MACHINE_ENV = "TEST_MACHINE"
 
 
