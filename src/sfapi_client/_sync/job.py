@@ -161,9 +161,11 @@ class Job(BaseModel, ABC):
                 self.update()
                 _SLEEP(10)
 
-    def __str__(self) -> str:
+    @property
+    def to_dict(self) -> Dict:
         output = self.dict(exclude={"compute"})
-        return json.dumps(output)
+        output["state"] = output["state"].value
+        return output
 
     @abstractmethod
     def _fetch_state(self):

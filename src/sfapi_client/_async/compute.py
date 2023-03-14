@@ -1,5 +1,5 @@
 import asyncio
-from typing import List, Optional
+from typing import Dict, List, Optional
 import json
 from enum import Enum
 from pydantic import BaseModel
@@ -34,6 +34,13 @@ class SubmitJobResponse(BaseModel):
 
 class Compute(ComputeBase):
     client: Optional["AsyncClient"]
+
+    @property
+    def to_dict(self) -> Dict:
+        output = self.dict(exclude={"client"})
+        output["status"] = output["status"].value
+        output["updated_at"] = output["updated_at"].strftime("%Y-%m-%dT%H:%M:%S")
+        return output
 
     async def submit_job(self, batch_submit_filepath: str) -> "Job":
         data = {"job": batch_submit_filepath, "isPath": True}
