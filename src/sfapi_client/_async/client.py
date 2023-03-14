@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Dict, Any, Optional
+from pathlib import Path
 
 from authlib.integrations.httpx_client.oauth2_client import AsyncOAuth2Client
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
@@ -19,9 +20,17 @@ SFAPI_BASE_URL = "https://api.nersc.gov/api/v1.2"
 
 
 class AsyncClient:
-    def __init__(self, client_id, secret):
-        self._client_id = client_id
-        self._secret = secret
+    def __init__(
+        self,
+        client_id: Optional[str] = None,
+        secret: Optional[str] = None,
+        key_name: Optional[str] = None,
+    ):
+        if any(arg is None for arg in (client_id, secret)):
+            self._get_client_secret_from_file(key_name)
+        else:
+            self._client_id = client_id
+            self._secret = secret
         self._oauth2_session = None
 
     async def __aenter__(self):
@@ -41,6 +50,31 @@ class AsyncClient:
     async def __aexit__(self, type, value, traceback):
         if self._oauth2_session is not None:
             await self._oauth2_session.aclose()
+
+    def _get_client_secret_from_file(self, name):
+        if name is not None and Path(name).exists():
+            # If the user gives a full path, then use it
+            key_path = Path(name)
+        else:
+            # If not let's search in ~/.superfacility for the name or any key
+            nickname = "" if name is None else name
+            keys = Path().home() / ".superfacility"
+            key_paths = list(keys.glob(f"{nickname}*"))
+            if len(key_paths) == 0:
+                raise SfApiError(
+                    f"No keys found in search of ~/.superfacility/{nickname}*"
+                )
+            key_path = Path(key_paths[0])
+
+        # Make key read only in case it's not
+        key_path.chmod(0o600)
+
+        # get the client_id from the name
+        self._client_id = key_path.stem.split("-")[-1]
+        # Read the secret from the file
+        with open(Path(key_path)) as secret:
+            self._secret = secret.read()
+        return True
 
     @tenacity.retry(
         retry=tenacity.retry_if_exception_type(httpx.TimeoutException)
