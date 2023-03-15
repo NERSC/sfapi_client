@@ -98,5 +98,5 @@ class Compute(ComputeBase):
 
         return await Job._fetch_jobs(self, user=user, partition=partition)
 
-    async def ls(self, path) -> List[RemotePath]:
-        return await RemotePath._ls(self, path)
+    async def ls(self, path, directory=False) -> List[RemotePath]:
+        return await RemotePath._ls(self, path, directory)

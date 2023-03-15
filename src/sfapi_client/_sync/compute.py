@@ -98,5 +98,5 @@ class Compute(ComputeBase):
 
         return Job._fetch_jobs(self, user=user, partition=partition)
 
-    def ls(self, path) -> List[RemotePath]:
-        return RemotePath._ls(self, path)
+    def ls(self, path, directory=False) -> List[RemotePath]:
+        return RemotePath._ls(self, path, directory)

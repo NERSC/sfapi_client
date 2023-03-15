@@ -110,7 +110,7 @@ class RemotePath(PathBase):
             return StringIO(file_data)
 
     @staticmethod
-    def _ls(compute: "Compute", path) -> List["RemotePath"]:
+    def _ls(compute: "Compute", path, directory=False) -> List["RemotePath"]:
         r = compute.client.get(f"utilities/ls/{compute.name}/{path}")
 
         json_response = r.json()
@@ -140,8 +140,14 @@ class RemotePath(PathBase):
             paths.append(_to_remote_path(path, entry))
         else:
             for entry in directory_listing_response.entries:
-                if entry.name in [".", ".."]:
+                if not directory and entry.name in [".", ".."]:
                     continue
+                # If we are just listing the directory look for .
+                # and just return it
+                elif directory and entry.name == ".":
+                    print(path)
+                    entry.name = PurePosixPath(path).name
+                    return [_to_remote_path(path, entry)]
 
                 paths.append(_to_remote_path(f"{path}/{entry.name}", entry))
 
