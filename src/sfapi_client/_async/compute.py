@@ -35,13 +35,13 @@ class SubmitJobResponse(BaseModel):
 class Compute(ComputeBase):
     client: Optional["AsyncClient"]
 
-    def dict(self, *args, **kwargs) -> Dict:
+    def dump(self, *args, **kwargs) -> Dict:
         if "exclude" not in kwargs:
             kwargs["exclude"] = {"client"}
-        output = super().dict(*args, **kwargs)
-        output["status"] = output["status"].value
-        output["updated_at"] = output["updated_at"].strftime("%Y-%m-%dT%H:%M:%S")
-        return output
+        return super().dict(*args, **kwargs)
+
+    def dumps(self):
+        return json.dumps(self.dump(), default=str)
 
     async def submit_job(self, batch_submit_filepath: str) -> "Job":
         data = {"job": batch_submit_filepath, "isPath": True}
