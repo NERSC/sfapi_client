@@ -36,7 +36,7 @@ async def test_fetch_jobs(client_id, client_secret, test_machine, test_username)
 
 
 @pytest.mark.asyncio
-async def test_list_dir(client_id, client_secret, test_machine, test_job_path):
+async def test_list_dir_contents(client_id, client_secret, test_machine, test_job_path):
     async with AsyncClient(client_id, client_secret) as client:
         machine = await client.compute(test_machine)
         test_job = Path(test_job_path)
@@ -52,6 +52,19 @@ async def test_list_dir(client_id, client_secret, test_machine, test_job_path):
                 break
 
         assert found
+
+
+@pytest.mark.asyncio
+async def test_list_dir(client_id, client_secret, test_machine, test_job_path):
+    async with AsyncClient(client_id, client_secret) as client:
+        machine = await client.compute(test_machine)
+        test_job = Path(test_job_path)
+        test_path = test_job.parent
+
+        paths = await machine.ls(test_path, directory=True)
+        assert len(paths) == 1
+        print(paths[0])
+        assert paths[0].name == test_path.name
 
 
 @pytest.mark.asyncio
