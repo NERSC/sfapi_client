@@ -35,9 +35,10 @@ class SubmitJobResponse(BaseModel):
 class Compute(ComputeBase):
     client: Optional["Client"]
 
-    @property
-    def to_dict(self) -> Dict:
-        output = self.dict(exclude={"client"})
+    def dict(self, *args, **kwargs) -> Dict:
+        if "exclude" not in kwargs:
+            kwargs["exclude"] = {"client"}
+        output = super().dict(*args, **kwargs)
         output["status"] = output["status"].value
         output["updated_at"] = output["updated_at"].strftime("%Y-%m-%dT%H:%M:%S")
         return output

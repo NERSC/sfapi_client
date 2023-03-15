@@ -161,9 +161,10 @@ class Job(BaseModel, ABC):
                 await self.update()
                 await _ASYNC_SLEEP(10)
 
-    @property
-    def to_dict(self) -> Dict:
-        output = self.dict(exclude={"compute"})
+    def dict(self, *args, **kwargs) -> Dict:
+        if "exclude" not in kwargs:
+            kwargs["exclude"] = {"compute"}
+        output = super().dict(*args, **kwargs)
         output["state"] = output["state"].value
         return output
 
