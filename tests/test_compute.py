@@ -58,7 +58,6 @@ def test_list_dir(client_id, client_secret, test_machine, test_job_path):
 
         paths = machine.ls(test_path, directory=True)
         assert len(paths) == 1
-        print(paths[0])
         assert paths[0].name == test_path.name
 
 
