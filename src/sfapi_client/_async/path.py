@@ -66,13 +66,10 @@ class RemotePath(PathBase):
     def parts(self):
         return self._path.parts
 
-    def dump(self, *args, **kwargs) -> Dict:
+    def dict(self, *args, **kwargs) -> Dict:
         if "exclude" not in kwargs:
             kwargs["exclude"] = {"compute"}
         return super().dict(*args, **kwargs)
-
-    def dumps(self):
-        return json.dumps(self.dump(), default=str)
 
     async def download(self, binary=False) -> Union[StringIO, BytesIO]:
         if self.perms[0] == "d":

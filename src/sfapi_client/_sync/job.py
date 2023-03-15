@@ -161,13 +161,10 @@ class Job(BaseModel, ABC):
                 self.update()
                 _SLEEP(10)
 
-    def dump(self, *args, **kwargs) -> Dict:
+    def dict(self, *args, **kwargs) -> Dict:
         if "exclude" not in kwargs:
             kwargs["exclude"] = {"compute"}
         return super().dict(*args, **kwargs)
-
-    def dumps(self):
-        return json.dumps(self.dump(), default=str)
 
     @abstractmethod
     def _fetch_state(self):
