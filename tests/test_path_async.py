@@ -1,5 +1,6 @@
 import pytest
 from pathlib import Path
+from io import BytesIO
 
 from sfapi_client import AsyncClient
 from sfapi_client._async.path import RemotePath
@@ -121,3 +122,45 @@ async def test_ls_excludes_dots(client_id, client_secret, test_machine, test_job
                 dots = True
 
         assert not dots
+
+
+@pytest.mark.asyncio
+async def test_upload_file_to_directory(
+    client_id, client_secret, test_machine, test_tmp_dir
+):
+    async with AsyncClient(client_id, client_secret) as client:
+        machine = await client.compute(test_machine)
+
+        paths = await machine.ls(test_tmp_dir, directory=True)
+        assert len(paths) == 1
+        tmp = paths[0]
+
+        file_contents = "hello world!"
+        file = BytesIO(file_contents.encode())
+        file.filename = "hello.txt"
+        remote_file = await tmp.upload(file)
+
+        assert (await remote_file.download()).read() == file_contents
+
+
+@pytest.mark.asyncio
+async def test_upload_file_to_file(
+    client_id, client_secret, test_machine, test_file_contents, test_tmp_dir
+):
+    async with AsyncClient(client_id, client_secret) as client:
+        machine = await client.compute(test_machine)
+
+        paths = await machine.ls(test_tmp_dir, directory=True)
+        assert len(paths) == 1
+        tmp = paths[0]
+
+        # Create empty file
+        file = BytesIO()
+        file.filename = "hello.txt"
+        remote_file = await tmp.upload(file)
+
+        # Now upload to the file
+        file_contents = "goodbye world!"
+        remote_file = await remote_file.upload(BytesIO(file_contents.encode()))
+
+        assert (await remote_file.download()).read() == file_contents
