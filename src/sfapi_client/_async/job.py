@@ -161,12 +161,13 @@ class Job(BaseModel, ABC):
                 await self.update()
                 await _ASYNC_SLEEP(10)
 
-    def dict(self, *args, **kwargs) -> Dict:
+    def dump(self, *args, **kwargs) -> Dict:
         if "exclude" not in kwargs:
             kwargs["exclude"] = {"compute"}
-        output = super().dict(*args, **kwargs)
-        output["state"] = output["state"].value
-        return output
+        return super().dict(*args, **kwargs)
+
+    def dumps(self):
+        return json.dumps(self.dump(), default=str)
 
     @abstractmethod
     async def _fetch_state(self):
