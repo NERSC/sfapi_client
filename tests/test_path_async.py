@@ -133,7 +133,7 @@ async def test_upload_file_to_directory(
 
         paths = await machine.ls(test_tmp_dir, directory=True)
         assert len(paths) == 1
-        tmp = paths[0]
+        [tmp] = paths
 
         file_contents = "hello world!"
         file = BytesIO(file_contents.encode())
@@ -145,14 +145,14 @@ async def test_upload_file_to_directory(
 
 @pytest.mark.asyncio
 async def test_upload_file_to_file(
-    client_id, client_secret, test_machine, test_file_contents, test_tmp_dir
+    client_id, client_secret, test_machine, test_tmp_dir
 ):
     async with AsyncClient(client_id, client_secret) as client:
         machine = await client.compute(test_machine)
 
         paths = await machine.ls(test_tmp_dir, directory=True)
         assert len(paths) == 1
-        tmp = paths[0]
+        [tmp] = paths
 
         # Create empty file
         file = BytesIO()
@@ -164,3 +164,108 @@ async def test_upload_file_to_file(
         remote_file = await remote_file.upload(BytesIO(file_contents.encode()))
 
         assert (await remote_file.download()).read() == file_contents
+
+
+@pytest.mark.asyncio
+async def test_file_open_invalid_mode(
+    client_id, client_secret, test_machine, test_job_path
+):
+    async with AsyncClient(client_id, client_secret) as client:
+        machine = await client.compute(test_machine)
+        [test_job_remote_path] = await machine.ls(test_job_path)
+
+        with pytest.raises(ValueError):
+            async with test_job_remote_path.open("dse") as fp:
+                pass
+
+        with pytest.raises(ValueError):
+            async with test_job_remote_path.open("rr") as fp:
+                pass
+
+        with pytest.raises(ValueError):
+            async with test_job_remote_path.open("ww") as fp:
+                pass
+
+        with pytest.raises(ValueError):
+            async with test_job_remote_path.open("wr") as fp:
+                pass
+
+
+@pytest.mark.asyncio
+async def test_file_open_read_text(
+    client_id, client_secret, test_machine, test_job_path
+):
+    async with AsyncClient(client_id, client_secret) as client:
+        machine = await client.compute(test_machine)
+        test_job_remote_path = await machine.ls(test_job_path)
+        assert len(test_job_remote_path) == 1
+        [path] = test_job_remote_path
+
+        async with path.open("r") as fp:
+            contents = fp.read()
+            assert "#SBATCH" in contents
+
+
+@pytest.mark.asyncio
+async def test_file_open_read_binary(
+    client_id, client_secret, test_machine, test_job_path
+):
+    async with AsyncClient(client_id, client_secret) as client:
+        machine = await client.compute(test_machine)
+        test_job_remote_path = await machine.ls(test_job_path)
+        assert len(test_job_remote_path) == 1
+        [path] = test_job_remote_path
+
+        async with path.open("br") as fp:
+            contents = fp.read().decode()
+            assert "#SBATCH" in contents
+
+
+@pytest.mark.asyncio
+async def test_file_open_write_text(
+    client_id, client_secret, test_machine, test_tmp_dir
+):
+    async with AsyncClient(client_id, client_secret) as client:
+        machine = await client.compute(test_machine)
+        remote_tmp_dir = await machine.ls(test_tmp_dir, directory=True)
+        assert len(remote_tmp_dir) == 1
+        [tmp_dir] = remote_tmp_dir
+
+        # Create empty file
+        file = BytesIO()
+        file.filename = "hello.txt"
+        remote_file = await tmp_dir.upload(file)
+
+        # Now write to the file
+        file_contents = "hi"
+        async with remote_file.open("w") as fp:
+            fp.write(file_contents)
+
+        # Now check that the content has changed
+        async with remote_file.open("r") as fp:
+            assert file_contents in fp.read()
+
+
+@pytest.mark.asyncio
+async def test_file_open_write_binary(
+    client_id, client_secret, test_machine, test_tmp_dir
+):
+    async with AsyncClient(client_id, client_secret) as client:
+        machine = await client.compute(test_machine)
+        remote_tmp_dir = await machine.ls(test_tmp_dir, directory=True)
+        assert len(remote_tmp_dir) == 1
+        [tmp_dir] = remote_tmp_dir
+
+        # Create empty file
+        file = BytesIO()
+        file.filename = "hello.txt"
+        remote_file = await tmp_dir.upload(file)
+
+        # Now write to the file
+        file_contents = "hi"
+        async with remote_file.open("wb") as fp:
+            fp.write(file_contents.encode())
+
+        # Now check that the content has changed
+        async with remote_file.open("r") as fp:
+            assert file_contents in fp.read()
