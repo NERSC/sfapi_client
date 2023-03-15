@@ -65,9 +65,11 @@ class RemotePath(PathBase):
     def parts(self):
         return self._path.parts
 
-    @property
-    def to_dict(self) -> Dict:
-        return self.dict(exclude={"compute"})
+    def dict(self, *args, **kwargs) -> Dict:
+        if "exclude" not in kwargs:
+            kwargs["exclude"] = {"compute"}
+        output = super().dict(*args, **kwargs)
+        return output
 
     async def download(self, binary=False) -> Union[StringIO, BytesIO]:
         if self.perms[0] == "d":
