@@ -89,8 +89,17 @@ class RemotePath(PathBase):
     def parts(self):
         return self._path.parts
 
-    async def download(self, binary=False) -> Union[StringIO, BytesIO]:
-        if self.perms[0] == "d":
+    async def is_dir(self):
+        if self.perms is None:
+            await self.update()
+
+        return self.perms[0] == "d"
+
+    async def is_file(self):
+        return not await self.is_dir()
+
+    async def download(self, binary=False) -> IO[AnyStr]:
+        if await self.is_dir():
             raise IsADirectoryError(self._path)
 
         r = await self.compute.client.get(
@@ -156,3 +165,18 @@ class RemotePath(PathBase):
 
     async def ls(self) -> List["RemotePath"]:
         return await self._ls(self.compute, str(self._path))
+
+    async def update(self):
+        file_state = await self.ls()
+        if len(file_state) != 1:
+            raise FileNotFoundError(self._path)
+
+        self._update(file_state[0])
+
+    def _update(self, new_file_state: "RemotePath") -> "RemotePath":
+        for k in new_file_state.__fields_set__:
+            v = getattr(new_file_state, k)
+            setattr(self, k, v)
+
+        return self
+
