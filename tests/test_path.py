@@ -1,5 +1,6 @@
 import pytest
 from pathlib import Path
+from io import BytesIO
 
 from sfapi_client import Client
 from sfapi_client._async.path import RemotePath
@@ -101,3 +102,41 @@ def test_ls_dir(client_id, client_secret, test_machine, test_job_path, test_user
                 break
 
         assert found
+
+
+def test_upload_file_to_directory(client_id, client_secret, test_machine, test_tmp_dir):
+    with Client(client_id, client_secret) as client:
+        machine = client.compute(test_machine)
+
+        paths = machine.ls(test_tmp_dir, directory=True)
+        assert len(paths) == 1
+        tmp = paths[0]
+
+        file_contents = "hello world!"
+        file = BytesIO(file_contents.encode())
+        file.filename = "hello.txt"
+        remote_file = tmp.upload(file)
+
+        assert remote_file.download().read() == file_contents
+
+
+def test_upload_file_to_file(
+    client_id, client_secret, test_machine, test_file_contents, test_tmp_dir
+):
+    with Client(client_id, client_secret) as client:
+        machine = client.compute(test_machine)
+
+        paths = machine.ls(test_tmp_dir, directory=True)
+        assert len(paths) == 1
+        tmp = paths[0]
+
+        # Create empty file
+        file = BytesIO()
+        file.filename = "hello.txt"
+        remote_file = tmp.upload(file)
+
+        # Now upload to the file
+        file_contents = "goodbye world!"
+        remote_file = remote_file.upload(BytesIO(file_contents.encode()))
+
+        assert remote_file.download().read() == file_contents

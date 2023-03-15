@@ -1,4 +1,4 @@
-from typing import Union, Optional, List
+from typing import Union, Optional, List, IO, AnyStr, BinaryIO
 from pathlib import PurePosixPath
 from pydantic import PrivateAttr
 from io import StringIO, BytesIO
@@ -10,6 +10,8 @@ from .._models import (
     AppRoutersUtilsModelsStatus as FileDownloadResponseStatus,
     DirectoryOutput as DirectoryListingResponse,
     AppRoutersUtilsModelsStatus as DirectoryListingResponseStatus,
+    UploadResult as UploadResponse,
+    AppRoutersUtilsModelsStatus as UploadResponseStatus,
 )
 from .common import SfApiError
 
@@ -180,3 +182,23 @@ class RemotePath(PathBase):
 
         return self
 
+    async def upload(self, file: BytesIO) -> "RemotePath":
+        if await self.is_dir():
+            upload_path = f"{str(self._path)}/{file.filename}"
+        else:
+            upload_path = str(self._path)
+
+        url = f"utilities/upload/{self.compute.name}/{upload_path}"
+        files = {"file": file}
+
+        r = await self.compute.client.put(url, files=files)
+
+        json_response = r.json()
+        upload_response = UploadResponse.parse_obj(json_response)
+        if upload_response.status == UploadResponseStatus.ERROR:
+            raise SfApiError(upload_response.error)
+
+        remote_path = RemotePath(upload_path)
+        remote_path.compute = self.compute
+
+        return remote_path

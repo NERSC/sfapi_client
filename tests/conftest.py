@@ -43,3 +43,8 @@ def test_username():
 @pytest.fixture
 def test_file_contents():
     return "hello world"
+
+
+@pytest.fixture
+def test_tmp_dir():
+    return os.environ["TEST_TMP_DIR"]

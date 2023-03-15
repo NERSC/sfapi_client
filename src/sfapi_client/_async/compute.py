@@ -10,6 +10,7 @@ from .job import JobSacct, JobSqueue, JobSqueue, JobCommand
 from .._models import (
     AppRoutersStatusModelsStatus as ComputeBase,
     Task,
+    PublicHost as Machines,
 )
 from .path import RemotePath
 
