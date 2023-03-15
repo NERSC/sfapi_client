@@ -35,13 +35,10 @@ class SubmitJobResponse(BaseModel):
 class Compute(ComputeBase):
     client: Optional["Client"]
 
-    def dump(self, *args, **kwargs) -> Dict:
+    def dict(self, *args, **kwargs) -> Dict:
         if "exclude" not in kwargs:
             kwargs["exclude"] = {"client"}
         return super().dict(*args, **kwargs)
-
-    def dumps(self):
-        return json.dumps(self.dump(), default=str)
 
     def submit_job(self, batch_submit_filepath: str) -> "Job":
         data = {"job": batch_submit_filepath, "isPath": True}
