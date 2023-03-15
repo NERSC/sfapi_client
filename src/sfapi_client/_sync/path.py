@@ -1,8 +1,10 @@
-from typing import Union, Optional, List, IO, AnyStr, BinaryIO
-from pathlib import PurePosixPath
+from typing import Optional, List, IO, AnyStr
+from pathlib import PurePosixPath, Path
 from pydantic import PrivateAttr
 from io import StringIO, BytesIO
 from base64 import b64decode
+from contextlib import contextmanager
+import tempfile
 
 from .._models import (
     DirectoryEntry as PathBase,
@@ -202,3 +204,43 @@ class RemotePath(PathBase):
         remote_path.compute = self.compute
 
         return remote_path
+
+    @contextmanager
+    def open(self, mode: str) -> IO[AnyStr]:
+        if self.is_dir():
+            raise IsADirectoryError()
+
+        valid_modes_chars = set('rwb')
+        mode_chars = set(mode)
+
+        # If we have duplicate raise exception
+        if len(mode_chars) != len(mode):
+            raise ValueError(f"invalid mode: '{mode}'")
+
+        # check mode chars
+        if not mode_chars.issubset(valid_modes_chars):
+            raise ValueError(f"invalid mode: '{mode}'")
+
+        # we don't support read/write
+        if "r" in mode_chars and "w" in mode_chars:
+            raise ValueError(f"invalid mode: '{mode}', 'rw' not supported.")
+
+        if "r" in mode_chars:
+            binary = "b" in mode_chars
+            yield self.download(binary)
+        else:
+            tmp = None
+            try:
+                tmp = tempfile.NamedTemporaryFile(mode, delete=False)
+                yield tmp
+                tmp.close()
+                # Now upload the changes, we have to reopen the file to
+                # ensure binary mode
+                with open(tmp.name, "rb") as fp:
+                    self.upload(fp)
+            finally:
+                if tmp is not None:
+                    tmp.close()
+                    Path(tmp.name).unlink()
+
+
