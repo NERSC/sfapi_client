@@ -1,1 +1,8 @@
 site_name: sfapi_client
+
+theme:
+  name: "material"
+
+plugins:
+- search
+- mkdocstrings
