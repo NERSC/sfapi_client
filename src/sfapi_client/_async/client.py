@@ -26,7 +26,7 @@ class AsyncClient:
         secret: Optional[str] = None,
         key_name: Optional[str] = None,
     ):
-        if any(arg is None for arg in (client_id, secret)):
+        if any(arg is None for arg in [client_id, secret]):
             self._get_client_secret_from_file(key_name)
         else:
             self._client_id = client_id
@@ -61,9 +61,7 @@ class AsyncClient:
             keys = Path().home() / ".superfacility"
             key_paths = list(keys.glob(f"{nickname}*"))
             if len(key_paths) == 0:
-                raise SfApiError(
-                    f"No keys found in search of ~/.superfacility/{nickname}*"
-                )
+                raise SfApiError(f"No keys found in {keys.as_posix()}")
             key_path = Path(key_paths[0])
 
         # Make key read only in case it's not
