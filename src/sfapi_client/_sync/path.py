@@ -93,6 +93,12 @@ class RemotePath(PathBase):
     def parts(self):
         return self._path.parts
 
+
+    def dict(self, *args, **kwargs) -> Dict:
+        if "exclude" not in kwargs:
+            kwargs["exclude"] = {"compute"}
+        return super().dict(*args, **kwargs)
+
     def is_dir(self):
         if self.perms is None:
             self.update()
