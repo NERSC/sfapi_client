@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Dict, Any, Optional
 from pathlib import Path
+import json
 
 from authlib.integrations.httpx_client.oauth2_client import AsyncOAuth2Client
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
@@ -70,8 +71,12 @@ class AsyncClient:
         # get the client_id from the name
         self._client_id = key_path.stem.split("-")[-1]
         # Read the secret from the file
-        with open(Path(key_path)) as secret:
-            self._secret = secret.read()
+        with Path(key_path).open() as secret:
+            if key_path.suffix == ".json":
+                self._secret = json.loads(secret.read())
+            else:
+                self._secret = secret.read()
+
         return True
 
     @tenacity.retry(
