@@ -10,7 +10,7 @@ from sfapi_client import Machines
 async def test_compute(client_id, client_secret, test_machine):
     async with AsyncClient(client_id, client_secret) as client:
         machine = await client.compute(test_machine)
-
+        assert machine.status in ["active", "unavailable", "degraded", "other"]
         assert machine.name == test_machine.value
 
 

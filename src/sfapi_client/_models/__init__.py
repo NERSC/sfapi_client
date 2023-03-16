@@ -85,13 +85,13 @@ class Outage(BaseModel):
     update_at: Optional[datetime] = Field(None, title="Update At")
 
 
-class PublicHost(Enum):
+class PublicHost(str, Enum):
     cori = "cori"
     dtn01 = "dtn01"
     perlmutter = "perlmutter"
 
 
-class StatusValue(Enum):
+class StatusValue(str, Enum):
     active = "active"
     unavailable = "unavailable"
     degraded = "degraded"
@@ -141,7 +141,7 @@ class ValidationError(BaseModel):
     type: str = Field(..., title="Error Type")
 
 
-class AppRoutersComputeModelsStatus(Enum):
+class AppRoutersComputeModelsStatus(str, Enum):
     OK = "OK"
     ERROR = "ERROR"
 
@@ -156,12 +156,12 @@ class AppRoutersStatusModelsStatus(BaseModel):
     updated_at: Optional[datetime] = Field(None, title="Updated At")
 
 
-class AppRoutersStorageModelsStatus(Enum):
+class AppRoutersStorageModelsStatus(str, Enum):
     OK = "OK"
     ERROR = "ERROR"
 
 
-class AppRoutersUtilsModelsStatus(Enum):
+class AppRoutersUtilsModelsStatus(str, Enum):
     OK = "OK"
     ERROR = "ERROR"
 
