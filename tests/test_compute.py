@@ -32,7 +32,7 @@ def test_fetch_jobs(client_id, client_secret, test_machine, test_username):
         machine.jobs(user=test_username)
 
 
-def test_list_dir(client_id, client_secret, test_machine, test_job_path):
+def test_list_dir_contents(client_id, client_secret, test_machine, test_job_path):
     with Client(client_id, client_secret) as client:
         machine = client.compute(test_machine)
         test_job = Path(test_job_path)
@@ -48,6 +48,17 @@ def test_list_dir(client_id, client_secret, test_machine, test_job_path):
                 break
 
         assert found
+
+
+def test_list_dir(client_id, client_secret, test_machine, test_job_path):
+    with Client(client_id, client_secret) as client:
+        machine = client.compute(test_machine)
+        test_job = Path(test_job_path)
+        test_path = test_job.parent
+
+        paths = machine.ls(test_path, directory=True)
+        assert len(paths) == 1
+        assert paths[0].name == test_path.name
 
 
 def test_list_file(client_id, client_secret, test_machine, test_job_path):
