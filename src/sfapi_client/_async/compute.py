@@ -26,6 +26,12 @@ class SubmitJobResponse(BaseModel):
     error: Optional[str]
 
 
+class CommandResult(BaseModel):
+    status: str
+    output: Optional[str]
+    error: Optional[str]
+
+
 class Compute(ComputeBase):
     client: Optional["AsyncClient"]
 
@@ -33,6 +39,22 @@ class Compute(ComputeBase):
         if "exclude" not in kwargs:
             kwargs["exclude"] = {"client"}
         return super().dict(*args, **kwargs)
+
+    async def _wait_for_task(self, task_id) -> str:
+        while True:
+            r = await self.client.get(f"tasks/{task_id}")
+
+            json_response = r.json()
+            task = Task.parse_obj(json_response)
+
+            if task.status.lower() in ["error", "failed"]:
+                raise SfApiError(task.result)
+
+            if task.result is None:
+                await _ASYNC_SLEEP(1)
+                continue
+
+            return task.result
 
     async def submit_job(self, batch_submit_filepath: str) -> "Job":
         data = {"job": batch_submit_filepath, "isPath": True}
@@ -48,33 +70,20 @@ class Compute(ComputeBase):
 
         task_id = job_response.task_id
 
-        # We now need to poll waiting for the task to complete!
-        while True:
-            r = await self.client.get(f"tasks/{task_id}")
-            r.raise_for_status()
+        # We now need waiting for the task to complete!
+        task_result = await self._wait_for_task(task_id)
+        result = json.loads(task_result)
+        if result.get("status") == "error":
+            raise SfApiError(result["error"])
 
-            json_response = r.json()
-            task = Task.parse_obj(json_response)
+        jobid = result.get("jobid")
+        if jobid is None:
+            raise SfApiError(f"Unable to extract jobid if for task: {task_id}")
 
-            if task.status.lower() in ["error", "failed"]:
-                raise SfApiError(task.result)
+        job = JobSqueue(jobid=jobid)
+        job.compute = self
 
-            if task.result is None:
-                await _ASYNC_SLEEP(1)
-                continue
-
-            result = json.loads(task.result)
-            if result.get("status") == "error":
-                raise SfApiError(result["error"])
-
-            jobid = result.get("jobid")
-            if jobid is None:
-                raise SfApiError(f"Unable to extract jobid if for task: {task_id}")
-
-            job = JobSqueue(jobid=jobid)
-            job.compute = self
-
-            return job
+        return job
 
     async def job(
         self, jobid: int, command: Optional[JobCommand] = JobCommand.sacct
