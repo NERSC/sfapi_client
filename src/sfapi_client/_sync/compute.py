@@ -3,22 +3,16 @@ from typing import Dict, List, Optional
 import json
 from enum import Enum
 from pydantic import BaseModel
-from pathlib import PurePosixPath
+
 
 from .common import SfApiError, _SLEEP
 from .job import JobSacct, JobSqueue, JobSqueue, JobCommand
 from .._models import (
     AppRoutersStatusModelsStatus as ComputeBase,
-    AppRoutersComputeModelsStatus as JobStatus,
-    PublicHost as Machines,
     Task,
-    DirectoryOutput as DirectoryListingResponse,
-    AppRoutersUtilsModelsStatus as DirectoryListingResponseStatus,
+    PublicHost as Machines,
 )
 from .path import RemotePath
-
-from .._models.job_status_response_sacct import JobStatusResponseSacct
-from .._models.job_status_response_squeue import JobStatusResponseSqueue
 
 
 class SubmitJobResponseStatus(Enum):
@@ -103,5 +97,5 @@ class Compute(ComputeBase):
 
         return Job._fetch_jobs(self, user=user, partition=partition)
 
-    def ls(self, path) -> List[RemotePath]:
-        return RemotePath._ls(self, path)
+    def ls(self, path, directory=False) -> List[RemotePath]:
+        return RemotePath._ls(self, path, directory)

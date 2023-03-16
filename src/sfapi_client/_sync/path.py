@@ -1,4 +1,4 @@
-from typing import Dict, Union, Optional, List
+from typing import Optional, List, IO, AnyStr
 from pathlib import PurePosixPath
 from pydantic import PrivateAttr
 from io import StringIO, BytesIO
@@ -11,6 +11,8 @@ from .._models import (
     AppRoutersUtilsModelsStatus as FileDownloadResponseStatus,
     DirectoryOutput as DirectoryListingResponse,
     AppRoutersUtilsModelsStatus as DirectoryListingResponseStatus,
+    UploadResult as UploadResponse,
+    AppRoutersUtilsModelsStatus as UploadResponseStatus,
 )
 from .common import SfApiError
 
@@ -34,21 +36,45 @@ class RemotePath(PathBase):
             self.name = self._path.name
 
     def __truediv__(self, key):
-        return RemotePath(str(self._path / key))
+        remote_path = RemotePath(str(self._path / key))
+        # We have to set the compute field separately otherwise
+        # we run into ForwardRef issue because of circular deps
+        remote_path.compute = self.compute
+
+        return remote_path
 
     def __rtruediv__(self, key):
-        return RemotePath(str(key / self._path))
+        remote_path = RemotePath(str(key / self._path))
+        # We have to set the compute field separately otherwise
+        # we run into ForwardRef issue because of circular deps
+        remote_path.compute = self.compute
+
+        return remote_path
 
     def __str__(self):
         return str(self._path)
 
     @property
     def parent(self):
-        return RemotePath(str(self._path.parent))
+        parent_path = RemotePath(str(self._path.parent))
+        # We have to set the compute field separately otherwise
+        # we run into ForwardRef issue because of circular deps
+        parent_path.compute = self.compute
+
+        return parent_path
 
     @property
     def parents(self):
-        return [RemotePath(str(p)) for p in self._path.parents]
+        parents = [RemotePath(str(p)) for p in self._path.parents]
+        # We have to set the compute field separately otherwise
+        # we run into ForwardRef issue because of circular deps
+        def _set_compute(p):
+            p.compute = self.compute
+            return p
+
+        parents = map(_set_compute, parents)
+
+        return parents
 
     @property
     def stem(self):
@@ -66,13 +92,23 @@ class RemotePath(PathBase):
     def parts(self):
         return self._path.parts
 
+
     def dict(self, *args, **kwargs) -> Dict:
         if "exclude" not in kwargs:
             kwargs["exclude"] = {"compute"}
         return super().dict(*args, **kwargs)
 
-    def download(self, binary=False) -> Union[StringIO, BytesIO]:
-        if self.perms[0] == "d":
+    def is_dir(self):
+        if self.perms is None:
+            self.update()
+
+        return self.perms[0] == "d"
+
+    def is_file(self):
+        return not self.is_dir()
+
+    def download(self, binary=False) -> IO[AnyStr]:
+        if self.is_dir():
             raise IsADirectoryError(self._path)
 
         r = self.compute.client.get(
@@ -92,7 +128,7 @@ class RemotePath(PathBase):
             return StringIO(file_data)
 
     @staticmethod
-    def _ls(compute: "Compute", path) -> List["RemotePath"]:
+    def _ls(compute: "Compute", path, directory=False) -> List["RemotePath"]:
         r = compute.client.get(f"utilities/ls/{compute.name}/{path}")
 
         json_response = r.json()
@@ -122,8 +158,15 @@ class RemotePath(PathBase):
             paths.append(_to_remote_path(path, entry))
         else:
             for entry in directory_listing_response.entries:
-                if entry.name in [".", ".."]:
+                if not directory and entry.name in [".", ".."]:
                     continue
+                # If we are just listing the directory look for .
+                # and just return it. In the future we should look
+                # at adding a directory option to the API to avoid
+                # the unnecessary listing.
+                elif directory and entry.name == ".":
+                    entry.name = PurePosixPath(path).name
+                    return [_to_remote_path(path, entry)]
 
                 paths.append(_to_remote_path(f"{path}/{entry.name}", entry))
 
@@ -131,3 +174,38 @@ class RemotePath(PathBase):
 
     def ls(self) -> List["RemotePath"]:
         return self._ls(self.compute, str(self._path))
+
+    def update(self):
+        file_state = self.ls()
+        if len(file_state) != 1:
+            raise FileNotFoundError(self._path)
+
+        self._update(file_state[0])
+
+    def _update(self, new_file_state: "RemotePath") -> "RemotePath":
+        for k in new_file_state.__fields_set__:
+            v = getattr(new_file_state, k)
+            setattr(self, k, v)
+
+        return self
+
+    def upload(self, file: BytesIO) -> "RemotePath":
+        if self.is_dir():
+            upload_path = f"{str(self._path)}/{file.filename}"
+        else:
+            upload_path = str(self._path)
+
+        url = f"utilities/upload/{self.compute.name}/{upload_path}"
+        files = {"file": file}
+
+        r = self.compute.client.put(url, files=files)
+
+        json_response = r.json()
+        upload_response = UploadResponse.parse_obj(json_response)
+        if upload_response.status == UploadResponseStatus.ERROR:
+            raise SfApiError(upload_response.error)
+
+        remote_path = RemotePath(upload_path)
+        remote_path.compute = self.compute
+
+        return remote_path
