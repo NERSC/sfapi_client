@@ -127,6 +127,31 @@ class AsyncClient:
         wait=tenacity.wait_exponential(max=10),
         stop=tenacity.stop_after_attempt(10),
     )
+    async def put(
+        self, url: str, data: Dict[str, Any] = None, files: Dict[str, Any] = None
+    ) -> httpx.Response:
+        await self._oauth2_session.ensure_active_token(self._oauth2_session.token)
+
+        r = await self._oauth2_session.put(
+            f"{SFAPI_BASE_URL}/{url}",
+            headers={
+                "Authorization": self._oauth2_session.token["access_token"],
+                "accept": "application/json",
+            },
+            data=data,
+            files=files,
+        )
+        r.raise_for_status()
+
+        return r
+
+    @tenacity.retry(
+        retry=tenacity.retry_if_exception_type(httpx.TimeoutException)
+        | tenacity.retry_if_exception_type(httpx.ConnectError)
+        | tenacity.retry_if_exception_type(httpx.HTTPStatusError),
+        wait=tenacity.wait_exponential(max=10),
+        stop=tenacity.stop_after_attempt(10),
+    )
     async def delete(self, url: str) -> httpx.Response:
         await self._oauth2_session.ensure_active_token(self._oauth2_session.token)
 
