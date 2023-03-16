@@ -3,6 +3,7 @@ from pathlib import PurePosixPath
 from pydantic import PrivateAttr
 from io import StringIO, BytesIO
 from base64 import b64decode
+import json
 
 from .._models import (
     DirectoryEntry as PathBase,
@@ -90,6 +91,11 @@ class RemotePath(PathBase):
     @property
     def parts(self):
         return self._path.parts
+
+    def dict(self, *args, **kwargs) -> Dict:
+        if "exclude" not in kwargs:
+            kwargs["exclude"] = {"compute"}
+        return super().dict(*args, **kwargs)
 
     async def is_dir(self):
         if self.perms is None:
