@@ -66,6 +66,7 @@ class RemotePath(PathBase):
     @property
     def parents(self):
         parents = [RemotePath(str(p)) for p in self._path.parents]
+
         # We have to set the compute field separately otherwise
         # we run into ForwardRef issue because of circular deps
         def _set_compute(p):

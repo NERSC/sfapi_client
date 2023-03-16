@@ -1,5 +1,5 @@
 import asyncio
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 import json
 from enum import Enum
 from pydantic import BaseModel
@@ -11,6 +11,9 @@ from .._models import (
     AppRoutersStatusModelsStatus as ComputeBase,
     Task,
     PublicHost as Machines,
+    BodyRunCommandUtilitiesCommandMachinePost as RunCommandBody,
+    AppRoutersComputeModelsCommandOutput as RunCommandResponse,
+    AppRoutersComputeModelsStatus as RunCommandResponseStatus,
 )
 from .path import RemotePath
 
@@ -108,3 +111,22 @@ class Compute(ComputeBase):
 
     def ls(self, path, directory=False) -> List[RemotePath]:
         return RemotePath._ls(self, path, directory)
+
+    def run(self, args: Union[str, RemotePath, List[str]]):
+        body: RunCommandBody = {
+            "executable": args if not isinstance(args, list) else " ".join(args)
+        }
+
+        r = self.client.post(f"utilities/command/{self.name}", data=body)
+        json_response = r.json()
+        run_response = RunCommandResponse.parse_obj(json_response)
+        if run_response.status == RunCommandResponseStatus.ERROR:
+            raise SfApiError(run_response.error)
+
+        task_id = run_response.task_id
+        task_result = self._wait_for_task(task_id)
+        command_result = CommandResult.parse_raw(task_result)
+        if command_result.status == "error":
+            raise SfApiError(command_result.error)
+
+        return command_result.output
