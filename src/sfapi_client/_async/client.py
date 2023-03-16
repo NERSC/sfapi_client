@@ -19,6 +19,14 @@ SFAPI_BASE_URL = "https://api.nersc.gov/api/v1.2"
 
 
 class AsyncClient:
+    """
+    Create a client instance
+
+    :param client_id: The client ID
+    :type client_id: str
+    :param secret: The client secret
+    :type secret: str
+    """
     def __init__(self, client_id, secret):
         self._client_id = client_id
         self._secret = secret
