@@ -65,8 +65,13 @@ class Client:
                 raise SfApiError(f"No keys found in {keys.as_posix()}")
             key_path = Path(key_paths[0])
 
-        # Make key read only in case it's not
-        key_path.chmod(0o600)
+        # Check that key read only in case it's not
+        # 33152 == chmod 0600 or chmod u+rw
+        print(oct(key_path.stat().st_mode))
+        if key_path.stat().st_mode != 0o100600:
+            raise SfApiError(
+                f"Incorrect permissions on the key, run chmod 600 {key_path}"
+            )
 
         # get the client_id from the name
         self._client_id = key_path.stem.split("-")[-1]
@@ -76,8 +81,6 @@ class Client:
                 self._secret = json.loads(secret.read())
             else:
                 self._secret = secret.read()
-
-        return True
 
     @tenacity.retry(
         retry=tenacity.retry_if_exception_type(httpx.TimeoutException)
