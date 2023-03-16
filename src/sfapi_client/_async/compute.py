@@ -1,5 +1,5 @@
 import asyncio
-from typing import List, Optional
+from typing import Dict, List, Optional
 import json
 from enum import Enum
 from pydantic import BaseModel
@@ -28,6 +28,11 @@ class SubmitJobResponse(BaseModel):
 
 class Compute(ComputeBase):
     client: Optional["AsyncClient"]
+
+    def dict(self, *args, **kwargs) -> Dict:
+        if "exclude" not in kwargs:
+            kwargs["exclude"] = {"client"}
+        return super().dict(*args, **kwargs)
 
     async def submit_job(self, batch_submit_filepath: str) -> "Job":
         data = {"job": batch_submit_filepath, "isPath": True}
