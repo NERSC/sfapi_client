@@ -30,3 +30,8 @@ exclude = '''
   src/sfapi_client/_async/_models.py
 )
 '''
+
+[project.optional-dependencies]
+docs = [
+  'mkdocs-material',
+]
