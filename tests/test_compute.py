@@ -75,3 +75,28 @@ def test_list_file(client_id, client_secret, test_machine, test_job_path):
                 break
 
         assert found
+
+
+def test_run_arg_list(client_id, client_secret, test_machine, test_job_path):
+    with Client(client_id, client_secret) as client:
+        machine = client.compute(test_machine)
+        output = machine.run(["ls", test_job_path])
+
+        assert test_job_path in output
+
+
+def test_run_arg_str(client_id, client_secret, test_machine, test_job_path):
+    with Client(client_id, client_secret) as client:
+        machine = client.compute(test_machine)
+        output = machine.run(f"ls {test_job_path}")
+
+        assert test_job_path in output
+
+
+def test_run_arg_path(client_id, client_secret, test_machine):
+    with Client(client_id, client_secret) as client:
+        machine = client.compute(test_machine)
+        [remote_path] = machine.ls("/usr/bin/hostname")
+        output = machine.run(remote_path)
+
+        assert output
