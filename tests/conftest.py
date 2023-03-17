@@ -48,3 +48,18 @@ def test_file_contents():
 @pytest.fixture
 def test_tmp_dir():
     return os.environ["TEST_TMP_DIR"]
+
+
+@pytest.fixture
+def test_group():
+    return os.environ["TEST_GROUP"]
+
+
+@pytest.fixture
+def test_project():
+    return os.environ["TEST_PROJECT"]
+
+
+@pytest.fixture
+def test_group_create():
+    return os.environ["TEST_GROUP_CREATE"]
