@@ -39,6 +39,7 @@ def test_machine():
 def test_username():
     return os.environ["TEST_USERNAME"]
 
+
 @pytest.fixture
 def test_another_username():
     return os.environ["TEST_ANOTHER_USERNAME"]
