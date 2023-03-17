@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, cast
 
 from authlib.integrations.httpx_client.oauth2_client import AsyncOAuth2Client
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
@@ -16,6 +16,20 @@ from .._models import (
 
 SFAPI_TOKEN_URL = "https://oidc.nersc.gov/c2id/token"
 SFAPI_BASE_URL = "https://api.nersc.gov/api/v1.2"
+
+
+# Retry on httpx.HTTPStatusError if status code is not 401 or 403
+class retry_if_http_status_error(tenacity.retry_if_exception):
+    def __init__(self):
+        super().__init__(self._retry)
+
+    def _retry(self, e: Exception):
+        dont_retry_codes = [httpx.codes.FORBIDDEN, httpx.codes.UNAUTHORIZED]
+        return (
+            isinstance(e, httpx.HTTPStatusError)
+            and cast(httpx.HTTPStatusError, e).response.status_code
+            not in dont_retry_codes
+        )
 
 
 class AsyncClient:
@@ -53,7 +67,7 @@ class AsyncClient:
     @tenacity.retry(
         retry=tenacity.retry_if_exception_type(httpx.TimeoutException)
         | tenacity.retry_if_exception_type(httpx.ConnectError)
-        | tenacity.retry_if_exception_type(httpx.HTTPStatusError),
+        | retry_if_http_status_error(),
         wait=tenacity.wait_exponential(max=10),
         stop=tenacity.stop_after_attempt(10),
     )
@@ -75,7 +89,7 @@ class AsyncClient:
     @tenacity.retry(
         retry=tenacity.retry_if_exception_type(httpx.TimeoutException)
         | tenacity.retry_if_exception_type(httpx.ConnectError)
-        | tenacity.retry_if_exception_type(httpx.HTTPStatusError),
+        | retry_if_http_status_error(),
         wait=tenacity.wait_exponential(max=10),
         stop=tenacity.stop_after_attempt(10),
     )
@@ -97,7 +111,7 @@ class AsyncClient:
     @tenacity.retry(
         retry=tenacity.retry_if_exception_type(httpx.TimeoutException)
         | tenacity.retry_if_exception_type(httpx.ConnectError)
-        | tenacity.retry_if_exception_type(httpx.HTTPStatusError),
+        | retry_if_http_status_error(),
         wait=tenacity.wait_exponential(max=10),
         stop=tenacity.stop_after_attempt(10),
     )
@@ -122,7 +136,7 @@ class AsyncClient:
     @tenacity.retry(
         retry=tenacity.retry_if_exception_type(httpx.TimeoutException)
         | tenacity.retry_if_exception_type(httpx.ConnectError)
-        | tenacity.retry_if_exception_type(httpx.HTTPStatusError),
+        | retry_if_http_status_error(),
         wait=tenacity.wait_exponential(max=10),
         stop=tenacity.stop_after_attempt(10),
     )
