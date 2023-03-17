@@ -3,6 +3,7 @@ import pytest
 from sfapi_client import AsyncClient
 from sfapi_client.common import SfApiError
 
+
 @pytest.mark.asyncio
 async def test_get_user(client_id, client_secret, test_username):
     async with AsyncClient(client_id, client_secret) as client:
@@ -14,12 +15,14 @@ async def test_get_user(client_id, client_secret, test_username):
         assert user is not None
         assert user.name == test_username
 
+
 @pytest.mark.asyncio
 async def test_get_another_user(client_id, client_secret, test_another_username):
     async with AsyncClient(client_id, client_secret) as client:
         user = await client.user(test_another_username)
         assert user is not None
         assert user.name == test_another_username
+
 
 @pytest.mark.asyncio
 async def test_get_user_groups(client_id, client_secret, test_username):
@@ -32,8 +35,11 @@ async def test_get_user_groups(client_id, client_secret, test_username):
 
         assert groups
 
+
 @pytest.mark.asyncio
-async def test_get_user_groups_different_user(client_id, client_secret, test_another_username):
+async def test_get_user_groups_different_user(
+    client_id, client_secret, test_another_username
+):
     async with AsyncClient(client_id, client_secret) as client:
         user = await client.user(test_another_username)
         assert user is not None
@@ -41,7 +47,6 @@ async def test_get_user_groups_different_user(client_id, client_secret, test_ano
 
         with pytest.raises(SfApiError):
             await user.groups()
-
 
 
 @pytest.mark.asyncio
@@ -55,8 +60,11 @@ async def test_get_user_projects(client_id, client_secret, test_username):
 
         assert projects
 
+
 @pytest.mark.asyncio
-async def test_get_user_projects_different_user(client_id, client_secret, test_another_username):
+async def test_get_user_projects_different_user(
+    client_id, client_secret, test_another_username
+):
     async with AsyncClient(client_id, client_secret) as client:
         user = await client.user(test_another_username)
         assert user is not None
