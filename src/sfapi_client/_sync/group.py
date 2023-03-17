@@ -1,7 +1,7 @@
 from typing import Optional, Union, List
 from pydantic import ValidationError
 from .._models import GroupStats as GroupBase, BatchGroupAction as GroupAction
-from .common import SfApiError
+from ..common import SfApiError
 
 
 class Group(GroupBase):
