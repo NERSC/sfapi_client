@@ -177,7 +177,7 @@ class AsyncClient:
     async def user(self, username: Optional[str] = None) -> User:
         url = "account/"
         if username is not None:
-            url = f"{url}?{username}"
+            url = f"{url}?username={username}"
 
         response = await self.get(url)
         json_response = response.json()
