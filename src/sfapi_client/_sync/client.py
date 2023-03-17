@@ -1,10 +1,13 @@
 from __future__ import annotations
 from typing import Dict, Any, Optional, cast
+from pathlib import Path
+import json
 
 from authlib.integrations.httpx_client.oauth2_client import OAuth2Client
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
 import httpx
 import tenacity
+from authlib.jose import JsonWebKey
 
 from .compute import Machines, Compute
 from .common import SfApiError
@@ -33,9 +36,26 @@ class retry_if_http_status_error(tenacity.retry_if_exception):
 
 
 class Client:
-    def __init__(self, client_id, secret):
-        self._client_id = client_id
-        self._secret = secret
+    """
+    Create a client instance
+
+    :param client_id: The client ID
+    :type client_id: str
+    :param secret: The client secret
+    :type secret: str
+    """
+
+    def __init__(
+        self,
+        client_id: Optional[str] = None,
+        secret: Optional[str] = None,
+        key_name: Optional[str] = None,
+    ):
+        if any(arg is None for arg in [client_id, secret]):
+            self._get_client_secret_from_file(key_name)
+        else:
+            self._client_id = client_id
+            self._secret = secret
         self._oauth2_session = None
 
     def __enter__(self):
@@ -55,6 +75,44 @@ class Client:
     def __exit__(self, type, value, traceback):
         if self._oauth2_session is not None:
             self._oauth2_session.close()
+
+    def _get_client_secret_from_file(self, name):
+        if name is not None and Path(name).exists():
+            # If the user gives a full path, then use it
+            key_path = Path(name)
+        else:
+            # If not let's search in ~/.superfacility for the name or any key
+            nickname = "" if name is None else name
+            keys = Path().home() / ".superfacility"
+            key_paths = list(keys.glob(f"{nickname}*"))
+            if len(key_paths) == 0:
+                raise SfApiError(f"No keys found in {keys.as_posix()}")
+            key_path = Path(key_paths[0])
+
+        # Check that key is read only in case it's not
+        # 0o100600 means chmod 600
+        if key_path.stat().st_mode != 0o100600:
+            raise SfApiError(
+                f"Incorrect permissions on the key. To fix run: chmod 600 {key_path}"
+            )
+
+        with Path(key_path).open() as secret:
+            if key_path.suffix == ".json":
+                # Json file in the format {"client_id": "", "secret": ""}
+                json_web_key = json.loads(secret.read())
+                self._secret = JsonWebKey.import_key(json_web_key["secret"])
+                self._client_id = json_web_key["client_id"]
+            else:
+                self._secret = secret.read()
+                # Read in client_id from first line of file
+                self._client_id = self._secret.split("\n")[0]
+
+        # Get just client_id in case of spaces
+        self._client_id = self._client_id.strip(" ")
+
+        # Validate we got a correct looking client_id
+        if len(self._client_id) != 13:
+            raise SfApiError(f"client_id not found in file {key_path}")
 
     @tenacity.retry(
         retry=tenacity.retry_if_exception_type(httpx.TimeoutException)
