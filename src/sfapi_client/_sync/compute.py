@@ -5,7 +5,7 @@ from enum import Enum
 from pydantic import BaseModel
 
 
-from .common import SfApiError, _SLEEP
+from ..common import SfApiError, _SLEEP
 from .job import JobSacct, JobSqueue, JobSqueue, JobCommand
 from .._models import (
     AppRoutersStatusModelsStatus as ComputeBase,

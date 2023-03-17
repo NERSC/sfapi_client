@@ -6,7 +6,7 @@ from .._models import (
 )
 from .group import Group
 from .project import Project
-from .common import SfApiError
+from ..common import SfApiError
 
 
 class User(UserBase):

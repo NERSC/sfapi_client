@@ -5,7 +5,7 @@ from .._models import (
     ProjectStats as ProjectBase,
 )
 from .group import Group
-from .common import SfApiError
+from ..common import SfApiError
 
 
 class Project(ProjectBase):

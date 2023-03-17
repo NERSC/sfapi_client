@@ -9,7 +9,7 @@ import httpx
 import tenacity
 
 from .compute import Machines, Compute
-from .common import SfApiError
+from ..common import SfApiError
 from .._models import (
     JobOutput as JobStatusResponse,
     AppRoutersComputeModelsStatus as JobStatus,
