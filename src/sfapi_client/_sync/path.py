@@ -94,7 +94,6 @@ class RemotePath(PathBase):
     def parts(self):
         return self._path.parts
 
-
     def dict(self, *args, **kwargs) -> Dict:
         if "exclude" not in kwargs:
             kwargs["exclude"] = {"compute"}
@@ -217,7 +216,7 @@ class RemotePath(PathBase):
         if self.is_dir():
             raise IsADirectoryError()
 
-        valid_modes_chars = set('rwb')
+        valid_modes_chars = set("rwb")
         mode_chars = set(mode)
 
         # If we have duplicate raise exception
@@ -249,5 +248,3 @@ class RemotePath(PathBase):
                 if tmp is not None:
                     tmp.close()
                     Path(tmp.name).unlink()
-
-
