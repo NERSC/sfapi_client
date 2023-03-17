@@ -1,5 +1,7 @@
 from __future__ import annotations
 from typing import Dict, Any, Optional, cast
+from pydantic import PrivateAttr
+
 
 from authlib.integrations.httpx_client.oauth2_client import AsyncOAuth2Client
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
@@ -10,9 +12,10 @@ from .compute import Machines, Compute
 from .common import SfApiError
 from .._models import (
     JobOutput as JobStatusResponse,
-    UserInfo as User,
     AppRoutersComputeModelsStatus as JobStatus,
 )
+from .group import Group
+from .user import User
 
 SFAPI_TOKEN_URL = "https://oidc.nersc.gov/c2id/token"
 SFAPI_BASE_URL = "https://api.nersc.gov/api/v1.2"
@@ -41,10 +44,12 @@ class AsyncClient:
     :param secret: The client secret
     :type secret: str
     """
+
     def __init__(self, client_id, secret):
         self._client_id = client_id
         self._secret = secret
         self._oauth2_session = None
+        self._client_user = None
 
     async def __aenter__(self):
         self._oauth2_session = AsyncOAuth2Client(
@@ -162,12 +167,31 @@ class AsyncClient:
 
         return compute
 
-    async def user(self, username: Optional[str] = None) -> User:
-        params = {}
-        if username is not None:
-            params["username"] = username
+    # Get the user associated with the credentials
+    async def _user(self):
+        if self._client_user is None:
+            self._client_user = await self.user()
 
-        response = await self.get("account/", params)
+        return self._client_user
+
+    async def user(self, username: Optional[str] = None) -> User:
+        url = "account/"
+        if username is not None:
+            url = f"{url}?{username}"
+
+        response = await self.get(url)
         json_response = response.json()
 
-        return User.parse_obj(json_response)
+        user = User.parse_obj(json_response)
+        user.client = self
+
+        return user
+
+    async def group(self, name: str) -> Group:
+        response = await self.get(f"account/groups/{name}")
+        json_response = response.json()
+
+        group = Group.parse_obj(json_response)
+        group.client = self
+
+        return group
