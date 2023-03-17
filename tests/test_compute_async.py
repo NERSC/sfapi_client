@@ -82,3 +82,31 @@ async def test_list_file(client_id, client_secret, test_machine, test_job_path):
                 break
 
         assert found
+
+
+@pytest.mark.asyncio
+async def test_run_arg_list(client_id, client_secret, test_machine, test_job_path):
+    async with AsyncClient(client_id, client_secret) as client:
+        machine = await client.compute(test_machine)
+        output = await machine.run(["ls", test_job_path])
+
+        assert test_job_path in output
+
+
+@pytest.mark.asyncio
+async def test_run_arg_str(client_id, client_secret, test_machine, test_job_path):
+    async with AsyncClient(client_id, client_secret) as client:
+        machine = await client.compute(test_machine)
+        output = await machine.run(f"ls {test_job_path}")
+
+        assert test_job_path in output
+
+
+@pytest.mark.asyncio
+async def test_run_arg_path(client_id, client_secret, test_machine):
+    async with AsyncClient(client_id, client_secret) as client:
+        machine = await client.compute(test_machine)
+        [remote_path] = await machine.ls("/usr/bin/hostname")
+        output = await machine.run(remote_path)
+
+        assert output

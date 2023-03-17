@@ -23,6 +23,9 @@ class JobStateResponse(BaseModel):
 
 
 class JobState(str, Enum):
+    """
+    JobStates
+    """
     BOOT_FAIL = "BOOT_FAIL"
     CANCELLED = "CANCELLED"
     COMPLETED = "COMPLETED"
@@ -109,6 +112,9 @@ async def _fetch_jobs(
 
 
 class Job(BaseModel, ABC):
+    """
+    Models a job submitted to run on a compute resource.
+    """
     compute: Optional["Compute"] = None
     state: Optional[JobState]
     jobid: Optional[str]
@@ -124,6 +130,9 @@ class Job(BaseModel, ABC):
         return v
 
     async def update(self):
+        """
+        Update the state of the job by fetching the state from the compute resource.
+        """
         job_state = await self._fetch_state()
         self._update(job_state)
 
@@ -145,9 +154,21 @@ class Job(BaseModel, ABC):
         return self._wait_until_complete().__await__()
 
     async def complete(self):
+        """
+        Wait for a job to move into a terminal state.
+        """
         return await self._wait_until_complete()
 
     async def cancel(self, wait=False):
+        """
+        Cancel a running job
+
+        :param wait: True, to wait for job be to cancel, otherwise returns when cancellation
+        has been submitted.
+        :type wait: bool
+
+
+        """
         # We have wait for a jobid before we can cancel
         while self.jobid is None:
             await _ASYNC_SLEEP()
