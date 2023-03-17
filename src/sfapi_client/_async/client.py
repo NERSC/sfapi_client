@@ -7,6 +7,7 @@ from authlib.integrations.httpx_client.oauth2_client import AsyncOAuth2Client
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
 import httpx
 import tenacity
+from authlib.jose import JsonWebKey
 
 from .compute import Machines, Compute
 from .common import SfApiError
@@ -72,14 +73,15 @@ class AsyncClient:
                 f"Incorrect permissions on the key. To fix run: chmod 600 {key_path}"
             )
 
-        # get the client_id from the name
-        self._client_id = key_path.stem.split("-")[-1]
-        # Read the secret from the file
         with Path(key_path).open() as secret:
             if key_path.suffix == ".json":
-                self._secret = json.loads(secret.read())
+                json_web_key = json.loads(secret.read())
+                self._secret = JsonWebKey.import_key(json_web_key["secret"])
+                self._client_id = json_web_key["client_id"]
             else:
                 self._secret = secret.read()
+                # Read in client_id from first line of file
+                self._client_id = self._secret.split("\n")[0]
 
     @tenacity.retry(
         retry=tenacity.retry_if_exception_type(httpx.TimeoutException)

@@ -7,6 +7,7 @@ from authlib.integrations.httpx_client.oauth2_client import OAuth2Client
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
 import httpx
 import tenacity
+from authlib.jose import JsonWebKey
 
 from .compute import Machines, Compute
 from .common import SfApiError
@@ -65,22 +66,22 @@ class Client:
                 raise SfApiError(f"No keys found in {keys.as_posix()}")
             key_path = Path(key_paths[0])
 
-        # Check that key read only in case it's not
-        # 33152 == chmod 0600 or chmod u+rw
-        print(oct(key_path.stat().st_mode))
+        # Check that key is read only in case it's not
+        # 0o100600 means chmod 600
         if key_path.stat().st_mode != 0o100600:
             raise SfApiError(
-                f"Incorrect permissions on the key, run chmod 600 {key_path}"
+                f"Incorrect permissions on the key. To fix run: chmod 600 {key_path}"
             )
 
-        # get the client_id from the name
-        self._client_id = key_path.stem.split("-")[-1]
-        # Read the secret from the file
         with Path(key_path).open() as secret:
             if key_path.suffix == ".json":
-                self._secret = json.loads(secret.read())
+                json_web_key = json.loads(secret.read())
+                self._secret = JsonWebKey.import_key(json_web_key["secret"])
+                self._client_id = json_web_key["client_id"]
             else:
                 self._secret = secret.read()
+                # Read in client_id from first line of file
+                self._client_id = self._secret.split("\n")[0]
 
     @tenacity.retry(
         retry=tenacity.retry_if_exception_type(httpx.TimeoutException)
