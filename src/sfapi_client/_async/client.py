@@ -98,6 +98,7 @@ class AsyncClient:
 
         with Path(key_path).open() as secret:
             if key_path.suffix == ".json":
+                # Json file in the format {"client_id": "", "secret": ""}
                 json_web_key = json.loads(secret.read())
                 self._secret = JsonWebKey.import_key(json_web_key["secret"])
                 self._client_id = json_web_key["client_id"]
@@ -105,6 +106,13 @@ class AsyncClient:
                 self._secret = secret.read()
                 # Read in client_id from first line of file
                 self._client_id = self._secret.split("\n")[0]
+
+        # Get just client_id in case of spaces
+        self._client_id = self._client_id.strip(" ")
+
+        # Validate we got a correct looking client_id
+        if len(self._client_id) != 13:
+            raise SfApiError(f"client_id not found in file {key_path}")
 
     @tenacity.retry(
         retry=tenacity.retry_if_exception_type(httpx.TimeoutException)
