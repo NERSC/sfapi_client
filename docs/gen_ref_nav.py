@@ -27,11 +27,11 @@ for path in sorted(Path("src").rglob("*.py")):
 
     nav_parts = list(parts)
     if "_async" in parts:
-        nav_parts[0] = "Asynchronous Client"
-        nav_parts[1] = "sfapi_client"
+        nav_parts = nav_parts[1:]
+        nav_parts[0] = "sfapi_client_async"
     elif "_sync" in parts:
-        nav_parts[0] = "Synchronous Client"
-        nav_parts[1] = "sfapi_client"
+        nav_parts = nav_parts[1:]
+        nav_parts[0] = "sfapi_client_sync"
 
 
     nav[tuple(nav_parts)] = doc_path.as_posix()
