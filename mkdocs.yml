@@ -8,6 +8,9 @@ nav:
 theme:
   name: "material"
 
+extra_javascript:
+  - javascript/apiselector.js
+
 plugins:
 - search
 - gen-files:
