@@ -143,12 +143,15 @@ class Job(BaseModel, ABC):
 
         return self
 
-    async def _wait_until_complete(self):
-        while self.state not in TERMINAL_STATES:
+    async def _wait_until(self, states: List[JobState]):
+        while self.state not in states:
             await self.update()
             await _ASYNC_SLEEP(10)
 
         return self.state
+
+    async def _wait_until_complete(self):
+        return await self._wait_until(TERMINAL_STATES)
 
     def __await__(self):
         return self._wait_until_complete().__await__()
@@ -158,6 +161,18 @@ class Job(BaseModel, ABC):
         Wait for a job to move into a terminal state.
         """
         return await self._wait_until_complete()
+
+    async def running(self):
+        """
+        Wait for a job to move into running state.
+        """
+        state = await self._wait_until([JobState.RUNNING] + TERMINAL_STATES)
+        if state != JobState.RUNNING:
+            raise SfApiError(
+                f"Job never entered the running state, end state was: {state}"
+            )
+
+        return state
 
     async def cancel(self, wait=False):
         """

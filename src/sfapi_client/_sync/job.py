@@ -134,18 +134,34 @@ class Job(BaseModel, ABC):
 
         return self
 
-    def _wait_until_complete(self):
-        while self.state not in TERMINAL_STATES:
+    def _wait_until(self, states: List[JobState]):
+        while self.state not in states:
             self.update()
             _SLEEP(10)
 
         return self.state
 
+    def _wait_until_complete(self):
+        return self._wait_until(TERMINAL_STATES)
+
     def __await__(self):
         return self._wait_until_complete().__await__()
 
     def complete(self):
+        """
+        Wait for a job to move into a terminal state.
+        """
         return self._wait_until_complete()
+
+    def running(self):
+        """
+        Wait for a job to move into running state.
+        """
+        state = self._wait_until([JobState.RUNNING]+TERMINAL_STATES)
+        if state != JobState.RUNNING:
+            raise SfApiError(f"Job never entered the running state, end state was: {state}")
+
+        return state
 
     def cancel(self, wait=False):
         # We have wait for a jobid before we can cancel
