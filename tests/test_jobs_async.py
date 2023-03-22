@@ -37,6 +37,7 @@ async def test_cancel_wait_for_it(
 
         assert job.state == JobState.CANCELLED
 
+
 @pytest.mark.asyncio
 async def test_running(client_id, client_secret, test_job_path, test_machine):
     async with AsyncClient(client_id, client_secret) as client:
