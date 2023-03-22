@@ -17,8 +17,10 @@ from .._models import (
 )
 from .common import SfApiError
 
+
 def _is_no_such(error: SfApiError):
     return "No such file or directory" in error.message
+
 
 class RemotePath(PathBase):
     """
