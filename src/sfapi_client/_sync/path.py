@@ -220,7 +220,7 @@ class RemotePath(PathBase):
             # Check if the parent is a directory ( as in we are creating a new file ),
             # if not re raise the original exception
             if not self.parent.is_dir():
-                raise ex
+                raise
             else:
                 upload_path = str(self._path)
 
@@ -255,7 +255,7 @@ class RemotePath(PathBase):
             # Check if the parent is a directory ( as in we are creating a new file ),
             # if not re raise the original exception
             if not self.parent.is_dir():
-                raise ex
+                raise
 
         valid_modes_chars = set("rwb")
         mode_chars = set(mode)
