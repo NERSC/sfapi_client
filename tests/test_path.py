@@ -1,6 +1,8 @@
 import pytest
 from pathlib import Path
 from io import BytesIO
+import random
+import string
 
 from sfapi_client import Client
 from sfapi_client._async.path import RemotePath
@@ -219,6 +221,29 @@ def test_file_open_write_binary(client_id, client_secret, test_machine, test_tmp
         file = BytesIO()
         file.filename = "hello.txt"
         remote_file = tmp_dir.upload(file)
+
+        # Now write to the file
+        file_contents = "hi"
+        with remote_file.open("wb") as fp:
+            fp.write(file_contents.encode())
+
+        # Now check that the content has changed
+        with remote_file.open("r") as fp:
+            assert file_contents in fp.read()
+
+
+def test_file_open_write_new(
+    client_id, client_secret, test_machine, test_tmp_dir
+):
+    with Client(client_id, client_secret) as client:
+        machine = client.compute(test_machine)
+        remote_tmp_dir = machine.ls(test_tmp_dir, directory=True)
+        assert len(remote_tmp_dir) == 1
+        [tmp_dir] = remote_tmp_dir
+
+        # Create empty file
+        random_name = "".join(random.choices(string.ascii_lowercase + string.digits, k=10))
+        remote_file = tmp_dir / f"{random_name}.txt"
 
         # Now write to the file
         file_contents = "hi"
