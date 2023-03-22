@@ -1,6 +1,7 @@
 from __future__ import annotations
 from enum import Enum
-import json
+import sys
+import math
 from abc import ABC, abstractmethod
 from typing import Any, Optional, Dict, List, ClassVar
 from .common import _SLEEP, SfApiError
@@ -23,6 +24,9 @@ class JobStateResponse(BaseModel):
 
 
 class JobState(str, Enum):
+    """
+    JobStates
+    """
     BOOT_FAIL = "BOOT_FAIL"
     CANCELLED = "CANCELLED"
     COMPLETED = "COMPLETED"
@@ -109,6 +113,9 @@ def _fetch_jobs(
 
 
 class Job(BaseModel, ABC):
+    """
+    Models a job submitted to run on a compute resource.
+    """
     compute: Optional["Compute"] = None
     state: Optional[JobState]
     jobid: Optional[str]
@@ -124,6 +131,9 @@ class Job(BaseModel, ABC):
         return v
 
     def update(self):
+        """
+        Update the state of the job by fetching the state from the compute resource.
+        """
         job_state = self._fetch_state()
         self._update(job_state)
 
@@ -134,36 +144,63 @@ class Job(BaseModel, ABC):
 
         return self
 
-    def _wait_until(self, states: List[JobState]):
+    def _wait_until(self, states: List[JobState], timeout: int=sys.maxsize):
+        max_iteration = math.ceil(timeout/10)
+        iteration = 0
+
         while self.state not in states:
             self.update()
             _SLEEP(10)
 
+            if iteration == max_iteration:
+                raise TimeoutError()
+
+            iteration += 1
+
         return self.state
 
-    def _wait_until_complete(self):
-        return self._wait_until(TERMINAL_STATES)
+    def _wait_until_complete(self, timeout: int=sys.maxsize):
+        return self._wait_until(TERMINAL_STATES, timeout)
 
     def __await__(self):
         return self._wait_until_complete().__await__()
 
-    def complete(self):
+    def complete(self, timeout: int=sys.maxsize):
         """
         Wait for a job to move into a terminal state.
-        """
-        return self._wait_until_complete()
 
-    def running(self):
+        :param timeout: The maximum time to wait in seconds, the actually wait time will be in
+        10 second increments.
+        :type timeout: int
+        """
+        return self._wait_until_complete(timeout)
+
+    def running(self, timeout: int=sys.maxsize):
         """
         Wait for a job to move into running state.
+
+        :param timeout: The maximum time to wait in seconds, the actually wait time will be in
+        10 second increments.
+        :type timeout: int
         """
-        state = self._wait_until([JobState.RUNNING]+TERMINAL_STATES)
+        state = self._wait_until([JobState.RUNNING] + TERMINAL_STATES, timeout)
         if state != JobState.RUNNING:
-            raise SfApiError(f"Job never entered the running state, end state was: {state}")
+            raise SfApiError(
+                f"Job never entered the running state, end state was: {state}"
+            )
 
         return state
 
     def cancel(self, wait=False):
+        """
+        Cancel a running job
+
+        :param wait: True, to wait for job be to cancel, otherwise returns when cancellation
+        has been submitted.
+        :type wait: bool
+
+
+        """
         # We have wait for a jobid before we can cancel
         while self.jobid is None:
             _SLEEP()
