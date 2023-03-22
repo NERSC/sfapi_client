@@ -272,6 +272,7 @@ async def test_file_open_write_binary(
         async with remote_file.open("r") as fp:
             assert file_contents in fp.read()
 
+
 @pytest.mark.asyncio
 async def test_file_open_write_new(
     client_id, client_secret, test_machine, test_tmp_dir
@@ -283,7 +284,9 @@ async def test_file_open_write_new(
         [tmp_dir] = remote_tmp_dir
 
         # Create empty file
-        random_name = "".join(random.choices(string.ascii_lowercase + string.digits, k=10))
+        random_name = "".join(
+            random.choices(string.ascii_lowercase + string.digits, k=10)
+        )
         remote_file = tmp_dir / f"{random_name}.txt"
 
         # Now write to the file
