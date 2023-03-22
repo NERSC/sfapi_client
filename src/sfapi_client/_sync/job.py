@@ -27,6 +27,7 @@ class JobState(str, Enum):
     """
     JobStates
     """
+
     BOOT_FAIL = "BOOT_FAIL"
     CANCELLED = "CANCELLED"
     COMPLETED = "COMPLETED"
@@ -116,6 +117,7 @@ class Job(BaseModel, ABC):
     """
     Models a job submitted to run on a compute resource.
     """
+
     compute: Optional["Compute"] = None
     state: Optional[JobState]
     jobid: Optional[str]
@@ -144,8 +146,8 @@ class Job(BaseModel, ABC):
 
         return self
 
-    def _wait_until(self, states: List[JobState], timeout: int=sys.maxsize):
-        max_iteration = math.ceil(timeout/10)
+    def _wait_until(self, states: List[JobState], timeout: int = sys.maxsize):
+        max_iteration = math.ceil(timeout / 10)
         iteration = 0
 
         while self.state not in states:
@@ -159,13 +161,13 @@ class Job(BaseModel, ABC):
 
         return self.state
 
-    def _wait_until_complete(self, timeout: int=sys.maxsize):
+    def _wait_until_complete(self, timeout: int = sys.maxsize):
         return self._wait_until(TERMINAL_STATES, timeout)
 
     def __await__(self):
         return self._wait_until_complete().__await__()
 
-    def complete(self, timeout: int=sys.maxsize):
+    def complete(self, timeout: int = sys.maxsize):
         """
         Wait for a job to move into a terminal state.
 
@@ -175,7 +177,7 @@ class Job(BaseModel, ABC):
         """
         return self._wait_until_complete(timeout)
 
-    def running(self, timeout: int=sys.maxsize):
+    def running(self, timeout: int = sys.maxsize):
         """
         Wait for a job to move into running state.
 
