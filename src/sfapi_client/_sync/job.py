@@ -26,7 +26,10 @@ class JobState(str, Enum):
     """
     JobStates
     """
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/main
     BOOT_FAIL = "BOOT_FAIL"
     CANCELLED = "CANCELLED"
     COMPLETED = "COMPLETED"
@@ -116,7 +119,10 @@ class Job(BaseModel, ABC):
     """
     Models a job submitted to run on a compute resource.
     """
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/main
     compute: Optional["Compute"] = None
     state: Optional[JobState]
     jobid: Optional[str]
