@@ -17,6 +17,8 @@ from .._models import (
 )
 from .common import SfApiError
 
+def _is_no_such(error: SfApiError):
+    return "No such file or directory" in error.message
 
 class RemotePath(PathBase):
     """
@@ -129,7 +131,9 @@ class RemotePath(PathBase):
             return StringIO(file_data)
 
     @staticmethod
-    def _ls(compute: "Compute", path, directory=False) -> List["RemotePath"]:
+    def _ls(
+        compute: "Compute", path, directory=False, filter_dots=True
+    ) -> List["RemotePath"]:
         r = compute.client.get(f"utilities/ls/{compute.name}/{path}")
 
         json_response = r.json()
@@ -159,7 +163,7 @@ class RemotePath(PathBase):
             paths.append(_to_remote_path(path, entry))
         else:
             for entry in directory_listing_response.entries:
-                if not directory and entry.name in [".", ".."]:
+                if filter_dots and not directory and entry.name in [".", ".."]:
                     continue
                 # If we are just listing the directory look for .
                 # and just return it. In the future we should look
@@ -177,11 +181,18 @@ class RemotePath(PathBase):
         return self._ls(self.compute, str(self._path))
 
     def update(self):
-        file_state = self.ls()
-        if len(file_state) != 1:
+        # Here we pass filter_dots=False so that we with get . if this is a
+        # directory
+        file_state = self._ls(self.compute, str(self._path), filter_dots=False)
+        if len(file_state) == 0:
             raise FileNotFoundError(self._path)
 
-        self._update(file_state[0])
+        # We update the name as it could be . from a directory listing and in that
+        # case we don't want to update the name
+        new_state = file_state[0]
+        new_state.name = self.name
+
+        self._update(new_state)
 
     def _update(self, new_file_state: "RemotePath") -> "RemotePath":
         for k in new_file_state.__fields_set__:
@@ -191,10 +202,25 @@ class RemotePath(PathBase):
         return self
 
     def upload(self, file: BytesIO) -> "RemotePath":
-        if self.is_dir():
-            upload_path = f"{str(self._path)}/{file.filename}"
-        else:
-            upload_path = str(self._path)
+        try:
+            if self.is_dir():
+                upload_path = f"{str(self._path)}/{file.filename}"
+            else:
+                upload_path = str(self._path)
+        except SfApiError as ex:
+            # Its a valid use case to add a upload a new file to an exiting directory.
+            # In this case the is_dir() will raise a SfApiError with "No such file or directory"
+            # So we check for that and then see if the parent directory exists, if
+            # it does we can just continue.
+            if not _is_no_such(ex):
+                raise
+
+            # Check if the parent is a directory ( as in we are creating a new file ),
+            # if not re raise the original exception
+            if not self.parent.is_dir():
+                raise ex
+            else:
+                upload_path = str(self._path)
 
         url = f"utilities/upload/{self.compute.name}/{upload_path}"
         files = {"file": file}
@@ -213,8 +239,21 @@ class RemotePath(PathBase):
 
     @contextmanager
     def open(self, mode: str) -> IO[AnyStr]:
-        if self.is_dir():
-            raise IsADirectoryError()
+        try:
+            if self.is_dir():
+                raise IsADirectoryError()
+        except SfApiError as ex:
+            # Its a valid use case to add a open a new file to an exiting directory.
+            # In this case the is_dir() will raise a SfApiError with "No such file or directory"
+            # So we check for that and then see if the parent directory exists, if
+            # it does we can just continue.
+            if not _is_no_such(ex):
+                raise
+
+            # Check if the parent is a directory ( as in we are creating a new file ),
+            # if not re raise the original exception
+            if not self.parent.is_dir():
+                raise ex
 
         valid_modes_chars = set("rwb")
         mode_chars = set(mode)
