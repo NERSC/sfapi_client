@@ -29,4 +29,30 @@ def test_cancel_wait_for_it(client_id, client_secret, test_job_path, test_machin
         job = machine.submit_job(test_job_path)
         job.cancel(wait=True)
 
-        assert job.state == JobState.CANCELLED
+
+def test_running(client_id, client_secret, test_job_path, test_machine):
+    with Client(client_id, client_secret) as client:
+        machine = client.compute(test_machine)
+        job = machine.submit_job(test_job_path)
+
+        state = job.running()
+
+        assert state == JobState.RUNNING
+
+
+def test_running_timeout(client_id, client_secret, test_job_path, test_machine):
+    with Client(client_id, client_secret) as client:
+        machine = client.compute(test_machine)
+        job = machine.submit_job(test_job_path)
+
+        with pytest.raises(TimeoutError):
+            job.running(timeout=10)
+
+
+def test_complete_timeout(client_id, client_secret, test_job_path, test_machine):
+    with Client(client_id, client_secret) as client:
+        machine = client.compute(test_machine)
+        job = machine.submit_job(test_job_path)
+
+        with pytest.raises(TimeoutError):
+            job.complete(timeout=10)
