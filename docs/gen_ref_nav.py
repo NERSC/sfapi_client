@@ -14,7 +14,7 @@ for path in sorted(Path("src").rglob("*.py")):
     parts = tuple(module_path.parts)
 
     # Skip over generated models for now and top level module
-    if '_models' in parts or parts[1] == "__init__":
+    if "_models" in parts or parts[1] == "__init__":
         continue
 
     if parts[-1] == "__init__":
@@ -24,7 +24,6 @@ for path in sorted(Path("src").rglob("*.py")):
     elif parts[-1] == "__main__":
         continue
 
-
     nav_parts = list(parts)
     if "_async" in parts:
         nav_parts = nav_parts[1:]
@@ -32,7 +31,6 @@ for path in sorted(Path("src").rglob("*.py")):
     elif "_sync" in parts:
         nav_parts = nav_parts[1:]
         nav_parts[0] = "sfapi_client_sync"
-
 
     nav[tuple(nav_parts)] = doc_path.as_posix()
 
