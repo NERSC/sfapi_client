@@ -81,6 +81,9 @@ class AsyncClient:
 
         return self.__oauth2_session
 
+    async def close(self):
+        await self.__aexit__(type=None, value=None, traceback=None)
+
     async def __aexit__(self, type, value, traceback):
         if self.__oauth2_session is not None:
             await self.__oauth2_session.aclose()
