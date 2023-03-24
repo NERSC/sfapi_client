@@ -22,7 +22,6 @@ class Settings(BaseSettings):
     TEST_PROJECT: str
     TEST_GROUP: str
 
-
     class Config:
         case_sensitive = True
         env_file = ".env"
@@ -77,15 +76,14 @@ def test_tmp_dir():
 def test_group():
     return settings.TEST_GROUP
 
+
 @pytest.fixture
 def test_random_group():
-    rand =  "".join(
-            random.choices(string.ascii_lowercase + string.digits, k=6)
-        )
+    rand = "".join(random.choices(string.ascii_lowercase + string.digits, k=6))
 
     return f"t-{rand}"
+
 
 @pytest.fixture
 def test_project():
     return settings.TEST_PROJECT
-
