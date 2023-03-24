@@ -224,23 +224,7 @@ class AsyncClient:
         return self._client_user
 
     async def user(self, username: Optional[str] = None) -> User:
-        url = "account/"
-        if username is not None:
-            url = f"{url}?username={username}"
-
-        response = await self.get(url)
-        json_response = response.json()
-
-        user = User.parse_obj(json_response)
-        user.client = self
-
-        return user
+        return await User._fetch_user(self, username)
 
     async def group(self, name: str) -> Group:
-        response = await self.get(f"account/groups/{name}")
-        json_response = response.json()
-
-        group = Group.parse_obj(json_response)
-        group.client = self
-
-        return group
+        return await Group._fetch_group(self, name)

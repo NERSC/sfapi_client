@@ -4,7 +4,6 @@ from .._models import (
     ProjectStats as Project,
     GroupList as GroupsResponse,
 )
-from .group import Group
 from .project import Project
 from ..common import SfApiError
 
@@ -12,7 +11,24 @@ from ..common import SfApiError
 class User(UserBase):
     client: Optional["Client"]
 
-    def groups(self) -> List[Group]:
+    @staticmethod
+    def _fetch_user(client: "Client", username: Optional[str] = None):
+        url = "account/"
+        if username is not None:
+            url = f"{url}?username={username}"
+
+        response = client.get(url)
+        json_response = response.json()
+
+        user = User.parse_obj(json_response)
+        user.client = client
+
+        return user
+
+    def groups(self) -> List["Group"]:
+        # Avoid circular import
+        from .group import Group
+
         if self.name != (self.client._user()).name:
             raise SfApiError(f"Can only fetch groups for authenticated user.")
 
