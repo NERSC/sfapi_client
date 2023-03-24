@@ -51,12 +51,14 @@ class AsyncClient:
         client_id: Optional[str] = None,
         secret: Optional[str] = None,
         key_name: Optional[str] = None,
+        api_base_url: Optional[str] = SFAPI_BASE_URL,
     ):
         if any(arg is None for arg in [client_id, secret]):
             self._get_client_secret_from_file(key_name)
         else:
             self._client_id = client_id
             self._secret = secret
+        self._api_base_url = api_base_url
         self._oauth2_session = None
         self._client_user = None
 
@@ -127,7 +129,7 @@ class AsyncClient:
         await self._oauth2_session.ensure_active_token(self._oauth2_session.token)
 
         r = await self._oauth2_session.get(
-            f"{SFAPI_BASE_URL}/{url}",
+            f"{self._api_base_url}/{url}",
             headers={
                 "Authorization": self._oauth2_session.token["access_token"],
                 "accept": "application/json",
@@ -149,7 +151,7 @@ class AsyncClient:
         await self._oauth2_session.ensure_active_token(self._oauth2_session.token)
 
         r = await self._oauth2_session.post(
-            f"{SFAPI_BASE_URL}/{url}",
+            f"{self._api_base_url}/{url}",
             headers={
                 "Authorization": self._oauth2_session.token["access_token"],
                 "accept": "application/json",
@@ -173,7 +175,7 @@ class AsyncClient:
         await self._oauth2_session.ensure_active_token(self._oauth2_session.token)
 
         r = await self._oauth2_session.put(
-            f"{SFAPI_BASE_URL}/{url}",
+            f"{self._api_base_url}/{url}",
             headers={
                 "Authorization": self._oauth2_session.token["access_token"],
                 "accept": "application/json",
@@ -196,7 +198,7 @@ class AsyncClient:
         await self._oauth2_session.ensure_active_token(self._oauth2_session.token)
 
         r = await self._oauth2_session.delete(
-            f"{SFAPI_BASE_URL}/{url}",
+            f"{self._api_base_url}/{url}",
             headers={
                 "Authorization": self._oauth2_session.token["access_token"],
                 "accept": "application/json",
