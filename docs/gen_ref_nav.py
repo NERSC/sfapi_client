@@ -13,6 +13,10 @@ for path in sorted(Path("src").rglob("*.py")):
 
     parts = tuple(module_path.parts)
 
+    # Skip over generated models for now and top level module
+    if "_models" in parts or parts[1] == "__init__":
+        continue
+
     if parts[-1] == "__init__":
         parts = parts[:-1]
         doc_path = doc_path.with_name("index.md")
@@ -20,7 +24,15 @@ for path in sorted(Path("src").rglob("*.py")):
     elif parts[-1] == "__main__":
         continue
 
-    nav[parts] = doc_path.as_posix()
+    nav_parts = list(parts)
+    if "_async" in parts:
+        nav_parts = nav_parts[1:]
+        nav_parts[0] = "sfapi_client_async"
+    elif "_sync" in parts:
+        nav_parts = nav_parts[1:]
+        nav_parts[0] = "sfapi_client_sync"
+
+    nav[tuple(nav_parts)] = doc_path.as_posix()
 
     with mkdocs_gen_files.open(full_doc_path, "w") as fd:
         ident = ".".join(parts)
