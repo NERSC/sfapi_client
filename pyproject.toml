@@ -33,9 +33,14 @@ exclude = '''
 
 [project.optional-dependencies]
 docs = [
-  'mkdocs-material',
-  'mkdocstrings[python]',
+  "mkdocs-material",
+  "mkdocstrings[python]",
   "mkdocs-gen-files",
   "mkdocs-literate-nav",
   "mkdocs-section-index",
+]
+
+test = [
+  "pytest",
+  "pydantic[dotenv]"
 ]
