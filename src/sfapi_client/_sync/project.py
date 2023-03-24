@@ -1,17 +1,19 @@
 from typing import Optional
-from pydantic import ValidationError
+from pydantic import ValidationError, Field
 
 from .._models import (
     ProjectStats as ProjectBase,
 )
-from .group import Group
 from ..common import SfApiError
 
 
 class Project(ProjectBase):
     client: Optional["Client"]
+    name: str = Field(alias="repo_name")
 
-    def create_group(self, name: str) -> Group:
+    def create_group(self, name: str) -> "Group":
+        from .group import Group
+
         params = {"name": name, "repo_name": self.repo_name}
 
         r = self.client.post("account/groups", data=params)
@@ -24,5 +26,7 @@ class Project(ProjectBase):
                 raise SfApiError(r.text())
             else:
                 raise RuntimeError(r.text())
+
+        group.client = self.client
 
         return group
