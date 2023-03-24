@@ -81,6 +81,9 @@ class Client:
 
         return self.__oauth2_session
 
+    def close(self):
+        self.__exit__(type=None, value=None, traceback=None)
+
     def __exit__(self, type, value, traceback):
         if self.__oauth2_session is not None:
             self.__oauth2_session.close()
