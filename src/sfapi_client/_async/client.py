@@ -52,31 +52,40 @@ class AsyncClient:
         key_name: Optional[str] = None,
     ):
         if any(arg is None for arg in [client_id, secret]):
-            self._get_client_secret_from_file(key_name)
+            self._read_client_secret_from_file(key_name)
         else:
             self._client_id = client_id
             self._secret = secret
-        self._oauth2_session = None
+        self.__oauth2_session = None
 
     async def __aenter__(self):
-        self._oauth2_session = AsyncOAuth2Client(
-            client_id=self._client_id,
-            client_secret=self._secret,
-            token_endpoint_auth_method=PrivateKeyJWT(SFAPI_TOKEN_URL),
-            grant_type="client_credentials",
-            token_endpoint=SFAPI_TOKEN_URL,
-            timeout=10.0,
-        )
-
-        await self._oauth2_session.fetch_token()
-
         return self
 
-    async def __aexit__(self, type, value, traceback):
-        if self._oauth2_session is not None:
-            await self._oauth2_session.aclose()
+    async def _oauth2_session(self):
+        if self.__oauth2_session is None:
+            # Create a new session if we haven't already
+            self.__oauth2_session = AsyncOAuth2Client(
+                client_id=self._client_id,
+                client_secret=self._secret,
+                token_endpoint_auth_method=PrivateKeyJWT(SFAPI_TOKEN_URL),
+                grant_type="client_credentials",
+                token_endpoint=SFAPI_TOKEN_URL,
+                timeout=10.0,
+            )
 
-    def _get_client_secret_from_file(self, name):
+            await self.__oauth2_session.fetch_token()
+        else:
+            # We have a session
+            # Make sure it's still active
+            await self.__oauth2_session.ensure_active_token(self.__oauth2_session.token)
+
+        return self.__oauth2_session
+
+    async def __aexit__(self, type, value, traceback):
+        if self.__oauth2_session is not None:
+            await self.__oauth2_session.aclose()
+
+    def _read_client_secret_from_file(self, name):
         if name is not None and Path(name).exists():
             # If the user gives a full path, then use it
             key_path = Path(name)
@@ -122,12 +131,12 @@ class AsyncClient:
         stop=tenacity.stop_after_attempt(10),
     )
     async def get(self, url: str, params: Dict[str, Any] = {}) -> httpx.Response:
-        await self._oauth2_session.ensure_active_token(self._oauth2_session.token)
+        oauth_session = await self._oauth2_session()
 
-        r = await self._oauth2_session.get(
+        r = await oauth_session.get(
             f"{SFAPI_BASE_URL}/{url}",
             headers={
-                "Authorization": self._oauth2_session.token["access_token"],
+                "Authorization": oauth_session.token["access_token"],
                 "accept": "application/json",
             },
             params=params,
@@ -144,12 +153,12 @@ class AsyncClient:
         stop=tenacity.stop_after_attempt(10),
     )
     async def post(self, url: str, data: Dict[str, Any]) -> httpx.Response:
-        await self._oauth2_session.ensure_active_token(self._oauth2_session.token)
+        oauth_session = await self._oauth2_session()
 
-        r = await self._oauth2_session.post(
+        r = await oauth_session.post(
             f"{SFAPI_BASE_URL}/{url}",
             headers={
-                "Authorization": self._oauth2_session.token["access_token"],
+                "Authorization": oauth_session.token["access_token"],
                 "accept": "application/json",
             },
             data=data,
@@ -168,12 +177,12 @@ class AsyncClient:
     async def put(
         self, url: str, data: Dict[str, Any] = None, files: Dict[str, Any] = None
     ) -> httpx.Response:
-        await self._oauth2_session.ensure_active_token(self._oauth2_session.token)
+        oauth_session = await self._oauth2_session()
 
-        r = await self._oauth2_session.put(
+        r = await oauth_session.put(
             f"{SFAPI_BASE_URL}/{url}",
             headers={
-                "Authorization": self._oauth2_session.token["access_token"],
+                "Authorization": oauth_session.token["access_token"],
                 "accept": "application/json",
             },
             data=data,
@@ -191,12 +200,12 @@ class AsyncClient:
         stop=tenacity.stop_after_attempt(10),
     )
     async def delete(self, url: str) -> httpx.Response:
-        await self._oauth2_session.ensure_active_token(self._oauth2_session.token)
+        oauth_session = await self._oauth2_session()
 
-        r = await self._oauth2_session.delete(
+        r = await oauth_session.delete(
             f"{SFAPI_BASE_URL}/{url}",
             headers={
-                "Authorization": self._oauth2_session.token["access_token"],
+                "Authorization": oauth_session.token["access_token"],
                 "accept": "application/json",
             },
         )
