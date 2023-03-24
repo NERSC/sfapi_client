@@ -46,11 +46,6 @@ class AsyncClient:
     :type secret: str
     """
 
-<<<<<<< HEAD
-    def __init__(self, client_id, secret):
-        self._client_id = client_id
-        self._secret = secret
-=======
     def __init__(
         self,
         client_id: Optional[str] = None,
@@ -62,7 +57,6 @@ class AsyncClient:
         else:
             self._client_id = client_id
             self._secret = secret
->>>>>>> origin/main
         self._oauth2_session = None
         self._client_user = None
 
