@@ -86,8 +86,7 @@ class Client:
             self.__oauth2_session.close()
 
     def __exit__(self, type, value, traceback):
-        if self.__oauth2_session is not None:
-            self.__oauth2_session.close()
+        self.close()
 
     def _read_client_secret_from_file(self, name):
         if name is not None and Path(name).exists():
