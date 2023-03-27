@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Dict, Any, Optional, cast
+from typing import Dict, Any, Optional, cast, List
 from pathlib import Path
 import json
 
@@ -15,6 +15,8 @@ from .._models import (
     JobOutput as JobStatusResponse,
     UserInfo as User,
     AppRoutersComputeModelsStatus as JobStatus,
+    Changelog as ChangelogItem,
+    Config as ConfItem,
 )
 
 SFAPI_TOKEN_URL = "https://oidc.nersc.gov/c2id/token"
@@ -35,6 +37,31 @@ class retry_if_http_status_error(tenacity.retry_if_exception):
         )
 
 
+class Api:
+    def __init__(self, client: "AsyncClient"):
+        self._client = client
+
+    async def changelog(self) -> List[ChangelogItem]:
+        r = await self._client.get("meta/changelog")
+
+        json_response = r.json()
+
+        return [ChangelogItem.parse_obj(i) for i in json_response]
+
+    async def config(self) -> Dict[str, str]:
+        r = await self._client.get("meta/config")
+
+        json_response = r.json()
+
+        config_items = [ConfItem.parse_obj(i) for i in json_response]
+
+        config = {}
+        for i in config_items:
+            config[i.key] = i.value
+
+        return config
+
+
 class AsyncClient:
     """
     Create a client instance
@@ -51,17 +78,22 @@ class AsyncClient:
         secret: Optional[str] = None,
         key_name: Optional[str] = None,
     ):
+        self._client_id = None
         if any(arg is None for arg in [client_id, secret]):
             self._read_client_secret_from_file(key_name)
         else:
             self._client_id = client_id
             self._secret = secret
         self.__oauth2_session = None
+        self._api = None
 
     async def __aenter__(self):
         return self
 
     async def _oauth2_session(self):
+        if self._client_id is None:
+            raise SfApiError(f"No credentials have been provides")
+
         if self.__oauth2_session is None:
             # Create a new session if we haven't already
             self.__oauth2_session = AsyncOAuth2Client(
@@ -97,9 +129,13 @@ class AsyncClient:
             nickname = "" if name is None else name
             keys = Path().home() / ".superfacility"
             key_paths = list(keys.glob(f"{nickname}*"))
-            if len(key_paths) == 0:
-                raise SfApiError(f"No keys found in {keys.as_posix()}")
-            key_path = Path(key_paths[0])
+            key_path = None
+            if len(key_paths) == 1:
+                key_path = Path(key_paths[0])
+
+        # We have no credentials
+        if key_path is None:
+            return
 
         # Check that key is read only in case it's not
         # 0o100600 means chmod 600
@@ -134,16 +170,29 @@ class AsyncClient:
         stop=tenacity.stop_after_attempt(10),
     )
     async def get(self, url: str, params: Dict[str, Any] = {}) -> httpx.Response:
-        oauth_session = await self._oauth2_session()
+        if self._client_id is not None:
+            oauth_session = await self._oauth2_session()
 
-        r = await oauth_session.get(
-            f"{SFAPI_BASE_URL}/{url}",
-            headers={
-                "Authorization": oauth_session.token["access_token"],
-                "accept": "application/json",
-            },
-            params=params,
-        )
+            r = await oauth_session.get(
+                f"{SFAPI_BASE_URL}/{url}",
+                headers={
+                    "Authorization": oauth_session.token["access_token"],
+                    "accept": "application/json",
+                },
+                params=params,
+            )
+        # Use regular client if we are hitting an endpoint that don't need
+        # auth.
+        else:
+            async with httpx.AsyncClient() as client:
+                r = await client.get(
+                    f"{SFAPI_BASE_URL}/{url}",
+                    headers={
+                        "accept": "application/json",
+                    },
+                    params=params,
+                )
+
         r.raise_for_status()
 
         return r
@@ -233,3 +282,10 @@ class AsyncClient:
         json_response = response.json()
 
         return User.parse_obj(json_response)
+
+    @property
+    def api(self):
+        if self._api is None:
+            self._api = Api(self)
+
+        return self._api
