@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Dict, Any, Optional, cast
+from typing import Dict, Any, Optional, cast, List
 from pathlib import Path
 import json
 
@@ -15,6 +15,8 @@ from .._models import (
     JobOutput as JobStatusResponse,
     UserInfo as User,
     AppRoutersComputeModelsStatus as JobStatus,
+    Changelog as ChangelogItem,
+    Config as ConfItem,
 )
 
 SFAPI_TOKEN_URL = "https://oidc.nersc.gov/c2id/token"
@@ -33,6 +35,31 @@ class retry_if_http_status_error(tenacity.retry_if_exception):
             and cast(httpx.HTTPStatusError, e).response.status_code
             not in dont_retry_codes
         )
+
+
+class Api:
+    def __init__(self, client: "Client"):
+        self._client = client
+
+    def changelog(self) -> List[ChangelogItem]:
+        r = self._client.get("meta/changelog")
+
+        json_response = r.json()
+
+        return [ChangelogItem.parse_obj(i) for i in json_response]
+
+    def config(self) -> Dict[str, str]:
+        r = self._client.get("meta/config")
+
+        json_response = r.json()
+
+        config_items = [ConfItem.parse_obj(i) for i in json_response]
+
+        config = {}
+        for i in config_items:
+            config[i.key] = i.value
+
+        return config
 
 
 class Client:
@@ -58,6 +85,7 @@ class Client:
             self._client_id = client_id
             self._secret = secret
         self.__oauth2_session = None
+        self._api = None
 
     def __enter__(self):
         return self
@@ -158,12 +186,12 @@ class Client:
         else:
             with httpx.Client() as client:
                 r = client.get(
-                f"{SFAPI_BASE_URL}/{url}",
-                headers={
-                    "accept": "application/json",
-                },
-                params=params,
-            )
+                    f"{SFAPI_BASE_URL}/{url}",
+                    headers={
+                        "accept": "application/json",
+                    },
+                    params=params,
+                )
 
         r.raise_for_status()
 
@@ -254,3 +282,10 @@ class Client:
         json_response = response.json()
 
         return User.parse_obj(json_response)
+
+    @property
+    def api(self):
+        if self._api is None:
+            self._api = Api(self)
+
+        return self._api
