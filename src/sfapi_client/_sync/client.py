@@ -51,6 +51,7 @@ class Client:
         secret: Optional[str] = None,
         key_name: Optional[str] = None,
     ):
+        self._client_id = None
         if any(arg is None for arg in [client_id, secret]):
             self._read_client_secret_from_file(key_name)
         else:
@@ -62,6 +63,9 @@ class Client:
         return self
 
     def _oauth2_session(self):
+        if self._client_id is None:
+            raise SfApiError(f"No credentials have been provides")
+
         if self.__oauth2_session is None:
             # Create a new session if we haven't already
             self.__oauth2_session = OAuth2Client(
@@ -97,9 +101,13 @@ class Client:
             nickname = "" if name is None else name
             keys = Path().home() / ".superfacility"
             key_paths = list(keys.glob(f"{nickname}*"))
-            if len(key_paths) == 0:
-                raise SfApiError(f"No keys found in {keys.as_posix()}")
-            key_path = Path(key_paths[0])
+            key_path = None
+            if len(key_paths) == 1:
+                key_path = Path(key_paths[0])
+
+        # We have no credentials
+        if key_path is None:
+            return
 
         # Check that key is read only in case it's not
         # 0o100600 means chmod 600
@@ -134,16 +142,29 @@ class Client:
         stop=tenacity.stop_after_attempt(10),
     )
     def get(self, url: str, params: Dict[str, Any] = {}) -> httpx.Response:
-        oauth_session = self._oauth2_session()
+        if self._client_id is not None:
+            oauth_session = self._oauth2_session()
 
-        r = oauth_session.get(
-            f"{SFAPI_BASE_URL}/{url}",
-            headers={
-                "Authorization": oauth_session.token["access_token"],
-                "accept": "application/json",
-            },
-            params=params,
-        )
+            r = oauth_session.get(
+                f"{SFAPI_BASE_URL}/{url}",
+                headers={
+                    "Authorization": oauth_session.token["access_token"],
+                    "accept": "application/json",
+                },
+                params=params,
+            )
+        # Use regular client if we are hitting an endpoint that don't need
+        # auth.
+        else:
+            with httpx.Client() as client:
+                r = client.get(
+                f"{SFAPI_BASE_URL}/{url}",
+                headers={
+                    "accept": "application/json",
+                },
+                params=params,
+            )
+
         r.raise_for_status()
 
         return r
