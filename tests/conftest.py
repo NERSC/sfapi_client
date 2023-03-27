@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     SFAPI_CLIENT_ID: str
     SFAPI_CLIENT_SECRET: str
     TEST_JOB_PATH: str
-    TEST_MACHINE: str = Machines.perlmutter
+    TEST_MACHINE: Machines = Machines.perlmutter
     TEST_USERNAME: str
     TEST_ANOTHER_USERNAME: str
     TEST_TMP_DIR: str
