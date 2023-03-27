@@ -86,8 +86,7 @@ class AsyncClient:
             await self.__oauth2_session.aclose()
 
     async def __aexit__(self, type, value, traceback):
-        if self.__oauth2_session is not None:
-            await self.__oauth2_session.aclose()
+        await self.close()
 
     def _read_client_secret_from_file(self, name):
         if name is not None and Path(name).exists():
