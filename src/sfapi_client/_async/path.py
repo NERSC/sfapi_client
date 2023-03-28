@@ -15,7 +15,7 @@ from .._models import (
     UploadResult as UploadResponse,
     AppRoutersUtilsModelsStatus as UploadResponseStatus,
 )
-from .common import SfApiError
+from ..common import SfApiError
 
 
 def _is_no_such(error: SfApiError):
