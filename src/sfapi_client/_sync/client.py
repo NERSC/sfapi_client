@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Dict, Any, Optional, cast
+from typing import Dict, Any, Optional, cast, List
 from pathlib import Path
 import json
 
@@ -14,6 +14,8 @@ from ..common import SfApiError
 from .._models import (
     JobOutput as JobStatusResponse,
     AppRoutersComputeModelsStatus as JobStatus,
+    Changelog as ChangelogItem,
+    Config as ConfItem,
 )
 from .group import Group
 from .user import User
@@ -36,6 +38,31 @@ class retry_if_http_status_error(tenacity.retry_if_exception):
         )
 
 
+class Api:
+    def __init__(self, client: "Client"):
+        self._client = client
+
+    def changelog(self) -> List[ChangelogItem]:
+        r = self._client.get("meta/changelog")
+
+        json_response = r.json()
+
+        return [ChangelogItem.parse_obj(i) for i in json_response]
+
+    def config(self) -> Dict[str, str]:
+        r = self._client.get("meta/config")
+
+        json_response = r.json()
+
+        config_items = [ConfItem.parse_obj(i) for i in json_response]
+
+        config = {}
+        for i in config_items:
+            config[i.key] = i.value
+
+        return config
+
+
 class Client:
     """
     Create a client instance
@@ -53,6 +80,7 @@ class Client:
         key_name: Optional[str] = None,
         api_base_url: Optional[str] = SFAPI_BASE_URL,
     ):
+        self._client_id = None
         if any(arg is None for arg in [client_id, secret]):
             self._read_client_secret_from_file(key_name)
         else:
@@ -61,11 +89,15 @@ class Client:
         self._api_base_url = api_base_url
         self._client_user = None
         self.__oauth2_session = None
+        self._api = None
 
     def __enter__(self):
         return self
 
     def _oauth2_session(self):
+        if self._client_id is None:
+            raise SfApiError(f"No credentials have been provides")
+
         if self.__oauth2_session is None:
             # Create a new session if we haven't already
             self.__oauth2_session = OAuth2Client(
@@ -101,9 +133,13 @@ class Client:
             nickname = "" if name is None else name
             keys = Path().home() / ".superfacility"
             key_paths = list(keys.glob(f"{nickname}*"))
-            if len(key_paths) == 0:
-                raise SfApiError(f"No keys found in {keys.as_posix()}")
-            key_path = Path(key_paths[0])
+            key_path = None
+            if len(key_paths) == 1:
+                key_path = Path(key_paths[0])
+
+        # We have no credentials
+        if key_path is None:
+            return
 
         # Check that key is read only in case it's not
         # 0o100600 means chmod 600
@@ -138,16 +174,29 @@ class Client:
         stop=tenacity.stop_after_attempt(10),
     )
     def get(self, url: str, params: Dict[str, Any] = {}) -> httpx.Response:
-        oauth_session = self._oauth2_session()
+        if self._client_id is not None:
+            oauth_session = self._oauth2_session()
 
-        r = oauth_session.get(
-            f"{self._api_base_url}/{url}",
-            headers={
-                "Authorization": oauth_session.token["access_token"],
-                "accept": "application/json",
-            },
-            params=params,
-        )
+            r = oauth_session.get(
+                f"{self._api_base_url}/{url}",
+                headers={
+                    "Authorization": oauth_session.token["access_token"],
+                    "accept": "application/json",
+                },
+                params=params,
+            )
+        # Use regular client if we are hitting an endpoint that don't need
+        # auth.
+        else:
+            with httpx.Client() as client:
+                r = client.get(
+                    f"{self._api_base_url}/{url}",
+                    headers={
+                        "accept": "application/json",
+                    },
+                    params=params,
+                )
+
         r.raise_for_status()
 
         return r
@@ -240,3 +289,10 @@ class Client:
 
     def group(self, name: str) -> Group:
         return Group._fetch_group(self, name)
+
+    @property
+    def api(self):
+        if self._api is None:
+            self._api = Api(self)
+
+        return self._api
