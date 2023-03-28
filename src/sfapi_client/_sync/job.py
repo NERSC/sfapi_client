@@ -4,7 +4,7 @@ import sys
 import math
 from abc import ABC, abstractmethod
 from typing import Any, Optional, Dict, List, ClassVar
-from .common import _SLEEP, SfApiError
+from ..common import _SLEEP, SfApiError
 from .._models.job_status_response_sacct import OutputItem as JobSacctBase
 from .._models.job_status_response_squeue import OutputItem as JobSqueueBase
 from .._models import AppRoutersComputeModelsStatus as JobResponseStatus

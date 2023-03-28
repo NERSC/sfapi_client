@@ -11,10 +11,9 @@ import tenacity
 from authlib.jose import JsonWebKey
 
 from .compute import Machines, Compute
-from .common import SfApiError
+from ..common import SfApiError
 from .._models import (
     JobOutput as JobStatusResponse,
-    UserInfo as User,
     AppRoutersComputeModelsStatus as JobStatus,
     Changelog as ChangelogItem,
     Config as ConfItem,
@@ -22,6 +21,8 @@ from .._models import (
     Note,
     AppRoutersStatusModelsStatus as Status,
 )
+from .group import Group
+from .user import User
 
 SFAPI_TOKEN_URL = "https://oidc.nersc.gov/c2id/token"
 SFAPI_BASE_URL = "https://api.nersc.gov/api/v1.2"
@@ -173,6 +174,7 @@ class Client:
         client_id: Optional[str] = None,
         secret: Optional[str] = None,
         key_name: Optional[str] = None,
+        api_base_url: Optional[str] = SFAPI_BASE_URL,
     ):
         self._client_id = None
         self._secret = None
@@ -181,6 +183,8 @@ class Client:
         else:
             self._client_id = client_id
             self._secret = secret
+        self._api_base_url = api_base_url
+        self._client_user = None
         self.__oauth2_session = None
         self._api = None
         self._resources = None
@@ -272,7 +276,7 @@ class Client:
             oauth_session = self._oauth2_session()
 
             r = oauth_session.get(
-                f"{SFAPI_BASE_URL}/{url}",
+                f"{self._api_base_url}/{url}",
                 headers={
                     "Authorization": oauth_session.token["access_token"],
                     "accept": "application/json",
@@ -284,7 +288,7 @@ class Client:
         else:
             with httpx.Client() as client:
                 r = client.get(
-                    f"{SFAPI_BASE_URL}/{url}",
+                    f"{self._api_base_url}/{url}",
                     headers={
                         "accept": "application/json",
                     },
@@ -306,7 +310,7 @@ class Client:
         oauth_session = self._oauth2_session()
 
         r = oauth_session.post(
-            f"{SFAPI_BASE_URL}/{url}",
+            f"{self._api_base_url}/{url}",
             headers={
                 "Authorization": oauth_session.token["access_token"],
                 "accept": "application/json",
@@ -330,7 +334,7 @@ class Client:
         oauth_session = self._oauth2_session()
 
         r = oauth_session.put(
-            f"{SFAPI_BASE_URL}/{url}",
+            f"{self._api_base_url}/{url}",
             headers={
                 "Authorization": oauth_session.token["access_token"],
                 "accept": "application/json",
@@ -353,7 +357,7 @@ class Client:
         oauth_session = self._oauth2_session()
 
         r = oauth_session.delete(
-            f"{SFAPI_BASE_URL}/{url}",
+            f"{self._api_base_url}/{url}",
             headers={
                 "Authorization": oauth_session.token["access_token"],
                 "accept": "application/json",
@@ -371,15 +375,18 @@ class Client:
 
         return compute
 
+    # Get the user associated with the credentials
+    def _user(self):
+        if self._client_user is None:
+            self._client_user = self.user()
+
+        return self._client_user
+
     def user(self, username: Optional[str] = None) -> User:
-        params = {}
-        if username is not None:
-            params["username"] = username
+        return User._fetch_user(self, username)
 
-        response = self.get("account/", params)
-        json_response = response.json()
-
-        return User.parse_obj(json_response)
+    def group(self, name: str) -> Group:
+        return Group._fetch_group(self, name)
 
     @property
     def api(self):
