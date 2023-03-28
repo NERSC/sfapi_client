@@ -1,7 +1,8 @@
 from __future__ import annotations
-from typing import Dict, Any, Optional, cast, List
+from typing import Dict, Any, Optional, cast, List, Union
 from pathlib import Path
 import json
+import itertools
 
 from authlib.integrations.httpx_client.oauth2_client import AsyncOAuth2Client
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
@@ -17,6 +18,9 @@ from .._models import (
     AppRoutersComputeModelsStatus as JobStatus,
     Changelog as ChangelogItem,
     Config as ConfItem,
+    Outage,
+    Note,
+    AppRoutersStatusModelsStatus as Status,
 )
 
 SFAPI_TOKEN_URL = "https://oidc.nersc.gov/c2id/token"
@@ -62,6 +66,98 @@ class Api:
         return config
 
 
+StatusInfo = Union[Outage, Note, Status]
+
+
+class Resources:
+    def __init__(self, client: "AsyncClient"):
+        self._client = client
+
+    @staticmethod
+    def _resource_name(resource_name: Optional[str]):
+        if resource_name is None:
+            resource_name = ""
+        else:
+            resource_name = f"/{resource_name}"
+
+        return resource_name
+
+    @staticmethod
+    def _list_to_resource_map(
+        info_list: List[List[StatusInfo]],
+    ) -> Dict[str, List[StatusInfo]]:
+        resource_map = {}
+
+        for resource_info_list in info_list:
+            for info in resource_info_list:
+                resource_info = resource_map.setdefault(info.name, [])
+                resource_info.append(info)
+
+        return resource_map
+
+    async def outages(
+        self, resource_name: Optional[str] = None
+    ) -> Union[Dict[str, List[Outage]], List[Outage]]:
+        resource_path = self._resource_name(resource_name)
+        response = await self._client.get(f"status/outages{resource_path}")
+        json_response = response.json()
+
+        if resource_name:
+            outages = [Outage.parse_obj(o) for o in json_response]
+        else:
+            outages = [[Outage.parse_obj(o) for o in r] for r in json_response]
+            outages = self._list_to_resource_map(outages)
+
+        return outages
+
+    async def planned_outages(
+        self, resource_name: Optional[str] = None
+    ) -> Union[Dict[str, List[Outage]], List[Outage]]:
+        resource_path = self._resource_name(resource_name)
+        response = await self._client.get(f"status/outages/planned{resource_path}")
+        json_response = response.json()
+
+        if resource_name:
+            outages = [Outage.parse_obj(o) for o in json_response]
+        else:
+            outages = [[Outage.parse_obj(o) for o in r] for r in json_response]
+            outages = self._list_to_resource_map(outages)
+
+        return outages
+
+    async def notes(
+        self, resource_name: Optional[str] = None
+    ) -> Union[Dict[str, List[Note]], List[Note]]:
+        resource_path = self._resource_name(resource_name)
+        response = await self._client.get(f"status/notes{resource_path}")
+        json_response = response.json()
+
+        if resource_name:
+            notes = [Note.parse_obj(n) for n in json_response]
+        else:
+            notes = [[Note.parse_obj(n) for n in r] for r in json_response]
+            notes = self._list_to_resource_map(notes)
+
+        return notes
+
+    async def status(
+        self, resource_name: Optional[str] = None
+    ) -> Union[Dict[str, Status], Status]:
+        resource_path = resource_name
+        if resource_path is None:
+            resource_path = ""
+        response = await self._client.get(f"status/{resource_path}")
+        json_response = response.json()
+
+        if resource_name:
+            status = Status.parse_obj(json_response)
+        else:
+            status = [Status.parse_obj(s) for s in json_response]
+            status = {s.name: s for s in status}
+
+        return status
+
+
 class AsyncClient:
     """
     Create a client instance
@@ -79,6 +175,7 @@ class AsyncClient:
         key_name: Optional[str] = None,
     ):
         self._client_id = None
+        self._secret = None
         if any(arg is None for arg in [client_id, secret]):
             self._read_client_secret_from_file(key_name)
         else:
@@ -86,6 +183,7 @@ class AsyncClient:
             self._secret = secret
         self.__oauth2_session = None
         self._api = None
+        self._resources = None
 
     async def __aenter__(self):
         return self
@@ -289,3 +387,10 @@ class AsyncClient:
             self._api = Api(self)
 
         return self._api
+
+    @property
+    def resources(self):
+        if self._resources is None:
+            self._resources = Resources(self)
+
+        return self._resources
