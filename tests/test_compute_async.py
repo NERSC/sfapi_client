@@ -110,3 +110,21 @@ async def test_run_arg_path(client_id, client_secret, test_machine):
         output = await machine.run(remote_path)
 
         assert output
+
+
+@pytest.mark.asyncio
+async def test_outages(client_id, client_secret, test_machine):
+    async with AsyncClient(client_id, client_secret) as client:
+        machine = await client.compute(test_machine)
+        outages = await machine.outages()
+
+        assert len(outages) > 0
+
+
+@pytest.mark.asyncio
+async def test_planned_outages(client_id, client_secret, test_machine):
+    async with AsyncClient(client_id, client_secret) as client:
+        machine = await client.compute(test_machine)
+        outages = await machine.planned_outages()
+
+        assert len(outages) > 0
