@@ -130,3 +130,9 @@ class Compute(ComputeBase):
             raise SfApiError(command_result.error)
 
         return command_result.output
+
+    def outages(self):
+        return self.client.resources.outages(self.name)
+
+    def planned_outages(self):
+        return self.client.resources.planned_outages(self.name)
