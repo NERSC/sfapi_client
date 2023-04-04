@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     TEST_TMP_DIR: str
     TEST_PROJECT: str
     TEST_GROUP: str
+    DEV_API_URL: str = "https://api-dev.nersc.gov/api/v1.2"
 
     class Config:
         case_sensitive = True
@@ -87,3 +88,8 @@ def test_random_group():
 @pytest.fixture
 def test_project():
     return settings.TEST_PROJECT
+
+
+@pytest.fixture
+def dev_api_url():
+    return settings.DEV_API_URL
