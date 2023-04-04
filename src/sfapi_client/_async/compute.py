@@ -2,7 +2,7 @@ import asyncio
 from typing import Dict, List, Optional, Union
 import json
 from enum import Enum
-from pydantic import BaseModel
+from pydantic import BaseModel, PrivateAttr
 
 
 from ..common import SfApiError, _ASYNC_SLEEP
@@ -16,6 +16,7 @@ from .._models import (
     AppRoutersComputeModelsStatus as RunCommandResponseStatus,
 )
 from .path import RemotePath
+from .._internal.monitor import AsyncJobMonitor
 
 
 class SubmitJobResponseStatus(Enum):
@@ -37,6 +38,11 @@ class CommandResult(BaseModel):
 
 class Compute(ComputeBase):
     client: Optional["AsyncClient"]
+    _monitor: AsyncJobMonitor = PrivateAttr()
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._monitor = AsyncJobMonitor(self)
 
     def dict(self, *args, **kwargs) -> Dict:
         if "exclude" not in kwargs:
@@ -93,7 +99,7 @@ class Compute(ComputeBase):
     ) -> "Union[JobSacct, JobSqueue]":
         # Get different job depending on query
         Job = JobSacct if (command == JobCommand.sacct) else JobSqueue
-        jobs = await Job._fetch_jobs(self, jobid=jobid)
+        jobs = await self._monitor.fetch_jobs(job_type=Job, jobids=[jobid])
         if len(jobs) == 0:
             raise SfApiError(f"Job not found: ${jobid}")
 
@@ -101,13 +107,20 @@ class Compute(ComputeBase):
 
     async def jobs(
         self,
+        jobids: Optional[int] = None,
         user: Optional[str] = None,
         partition: Optional[str] = None,
         command: Optional[JobCommand] = JobCommand.squeue,
     ) -> List["Job"]:
         Job = JobSacct if (command == JobCommand.sacct) else JobSqueue
 
-        return await Job._fetch_jobs(self, user=user, partition=partition)
+        # If we have been given just jobids, use the monitor
+        if jobids is not None and user is None and partition is None:
+            return await self._monitor.fetch_jobs(job_type=Job, jobids=jobids)
+        else:
+            return await Job._fetch_jobs(
+                self, jobids=jobids, user=user, partition=partition
+            )
 
     async def ls(self, path, directory=False) -> List[RemotePath]:
         return await RemotePath._ls(self, path, directory)
