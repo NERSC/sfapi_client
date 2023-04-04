@@ -175,6 +175,7 @@ class Client:
         secret: Optional[str] = None,
         key_name: Optional[str] = None,
         api_base_url: Optional[str] = SFAPI_BASE_URL,
+        wait_interval: int = 10,
     ):
         self._client_id = None
         self._secret = None
@@ -188,6 +189,7 @@ class Client:
         self.__oauth2_session = None
         self._api = None
         self._resources = None
+        self._wait_interval = wait_interval
 
     def __enter__(self):
         return self
