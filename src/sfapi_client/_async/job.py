@@ -147,12 +147,12 @@ class Job(BaseModel, ABC):
         return self
 
     async def _wait_until(self, states: List[JobState], timeout: int = sys.maxsize):
-        max_iteration = math.ceil(timeout / 10)
+        max_iteration = math.ceil(timeout / self.compute.client._wait_interval)
         iteration = 0
 
         while self.state not in states:
             await self.update()
-            await _ASYNC_SLEEP(10)
+            await _ASYNC_SLEEP(self.compute.client._wait_interval)
 
             if iteration == max_iteration:
                 raise TimeoutError()
@@ -216,7 +216,7 @@ class Job(BaseModel, ABC):
         if wait:
             while self.state != JobState.CANCELLED:
                 await self.update()
-                await _ASYNC_SLEEP(10)
+                await _ASYNC_SLEEP(self.compute.client._wait_interval)
 
     def dict(self, *args, **kwargs) -> Dict:
         if "exclude" not in kwargs:
