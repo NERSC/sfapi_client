@@ -171,3 +171,24 @@ async def test_job_monitor_job_types(
         assert kwargs["job_type"] == JobSacct
 
 
+# We currently run this in api-dev as its a new feature deployed there
+@pytest.mark.asyncio
+async def test_job_monitor_gather(
+    client_id, client_secret, test_job_path, test_machine, dev_api_url
+):
+    async with AsyncClient(
+        client_id, client_secret, api_base_url=dev_api_url
+    ) as client:
+        machine = await client.compute(test_machine)
+
+        submit_tasks = []
+        for _ in range(0, 5):
+            submit_tasks.append(asyncio.create_task(machine.submit_job(test_job_path)))
+
+        jobs = await asyncio.gather(*submit_tasks)
+
+        # Wait for all the jobs to be complete
+        await asyncio.gather(*[asyncio.create_task(j.complete()) for j in jobs])
+
+        for j in jobs:
+            assert j.state == JobState.COMPLETED
