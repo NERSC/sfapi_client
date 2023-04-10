@@ -45,12 +45,12 @@ def test_running(client_id, client_secret, test_job_path, test_machine):
 
 
 def test_running_timeout(client_id, client_secret, test_job_path, test_machine):
-    with Client(client_id, client_secret) as client:
+    with Client(client_id, client_secret, wait_interval=1) as client:
         machine = client.compute(test_machine)
         job = machine.submit_job(test_job_path)
 
         with pytest.raises(TimeoutError):
-            job.running(timeout=10)
+            job.running(timeout=1)
 
 
 def test_complete_timeout(client_id, client_secret, test_job_path, test_machine):
