@@ -1,7 +1,9 @@
 import asyncio
 from asyncio import Future
-from typing import Union, Optional, List, Set, Dict, Type
+from typing import Union, List, Set, Dict, Type
 from abc import ABC, abstractmethod
+from threading import Lock
+from functools import reduce
 
 from .._async.job import JobCommand
 from .._async.job import (
@@ -9,7 +11,7 @@ from .._async.job import (
     JobSacct as AsyncJobSacct,
     JobSqueue as AsyncJobSqueue,
 )
-from .._sync.job import _fetch_jobs, JobSacct, JobSqueue
+from .._sync.job import _fetch_jobs, JobSacct, JobSqueue, Job
 
 
 # Async monitor that batches request for job state into fewer request by
@@ -100,14 +102,76 @@ class AsyncJobMonitor:
         return jobs_by_id
 
 
-# Pass through implementation for sync client. In the future a threaded monitor could probably be
-# implemented, it would probably require the sync interfaces to return Futures, so would require
-# breaking changes.
+#
+# Utility class to hold the context of a job request. The jobs property
+# is set when the request is fulfilled.
+#
+class JobRequest:
+    def __init__(self, jobids):
+        self.jobids = jobids
+        self._jobs = None
+
+    @property
+    def jobs(self):
+        return self._jobs
+
+    @jobs.setter
+    def jobs(self, jobs: List[Union[JobSacct, JobSqueue]]):
+        self._jobs = jobs
+
+
+#
+# Simple sync monitor that restricts job status requests to one at
+# a time and aggregates the waiting requests.
+#
 class SyncJobMonitor:
     def __init__(self, compute: "Compute"):
         self._compute = compute
+        self._requests: Dict[Type, Set[JobRequest]] = {}
+        # Lock to protect access to self._requests
+        self._requests_lock = Lock()
+        # Lock to prevent multipe server requests concurrently
+        self._request_lock = Lock()
 
     def fetch_jobs(
         self, job_type: Union["JobSacct", "JobSqueue"], jobids: List[int]
     ) -> List[Union[JobSqueue, JobSacct]]:
-        return _fetch_jobs(job_type=job_type, compute=self._compute, jobids=jobids)
+        # First update the jobids and create a request context
+        request = None
+        with self._requests_lock:
+            request = JobRequest(jobids)
+            self._requests.setdefault(job_type, set()).add(request)
+
+        # Only allow a single request at a time
+        with self._request_lock:
+            try:
+                self._requests_lock.acquire()
+                requests = self._requests[job_type]
+                if requests:
+                    # Copy the requests and reset the set
+                    self._requests[job_type] = set()
+
+                    # We are done updating self._requests so release the lock
+                    self._requests_lock.release()
+
+                    # Extract out the job ids from the requests we have
+                    jobids_for_job_type = reduce(
+                        lambda a, b: a + b, [r.jobids for r in requests]
+                    )
+
+                    jobs = _fetch_jobs(
+                        job_type=job_type,
+                        compute=self._compute,
+                        jobids=jobids_for_job_type,
+                    )
+
+                    # Set the jobs on the job request objects
+                    for jr in requests:
+                        jr.jobs = jobs
+            finally:
+                if self._requests_lock.locked():
+                    self._requests_lock.release()
+
+        jobs = request.jobs
+
+        return [j for j in jobs if j.jobid in jobids]
