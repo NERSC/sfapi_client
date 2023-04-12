@@ -5,8 +5,9 @@ from enum import Enum
 from pydantic import BaseModel, PrivateAttr
 
 
-from ..common import SfApiError, _SLEEP
-from .job import JobSacct, JobSqueue, JobSqueue, JobCommand
+from ..exceptions import SfApiError
+from .._utils import _SLEEP
+from .jobs import JobSacct, JobSqueue, JobSqueue, JobCommand
 from .._models import (
     AppRoutersStatusModelsStatus as ComputeBase,
     Task,
@@ -15,26 +16,9 @@ from .._models import (
     AppRoutersComputeModelsCommandOutput as RunCommandResponse,
     AppRoutersComputeModelsStatus as RunCommandResponseStatus,
 )
-from .path import RemotePath
+from .paths import RemotePath
 from .._internal.monitor import SyncJobMonitor
-
-
-class SubmitJobResponseStatus(Enum):
-    OK = "OK"
-    ERROR = "ERROR"
-
-
-class SubmitJobResponse(BaseModel):
-    task_id: str
-    status: SubmitJobResponseStatus
-    error: Optional[str]
-
-
-class CommandResult(BaseModel):
-    status: str
-    output: Optional[str]
-    error: Optional[str]
-
+from .._compute import CommandResult, SubmitJobResponse, SubmitJobResponseStatus
 
 class Compute(ComputeBase):
     client: Optional["Client"]
@@ -96,7 +80,7 @@ class Compute(ComputeBase):
 
     def job(
         self, jobid: int, command: Optional[JobCommand] = JobCommand.sacct
-    ) -> "Union[JobSacct, JobSqueue]":
+    ) -> Union["JobSacct", "JobSqueue"]:
         # Get different job depending on query
         Job = JobSacct if (command == JobCommand.sacct) else JobSqueue
         jobs = self._monitor.fetch_jobs(job_type=Job, jobids=[jobid])
@@ -111,7 +95,7 @@ class Compute(ComputeBase):
         user: Optional[str] = None,
         partition: Optional[str] = None,
         command: Optional[JobCommand] = JobCommand.squeue,
-    ) -> List["Job"]:
+    ) -> List[Union[JobSacct, JobSqueue]]:
         Job = JobSacct if (command == JobCommand.sacct) else JobSqueue
 
         # If we have been given just jobids, use the monitor

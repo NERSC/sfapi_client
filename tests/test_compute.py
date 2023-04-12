@@ -2,8 +2,7 @@ import pytest
 from pathlib import Path
 
 from sfapi_client import Client
-from sfapi_client import JobState
-from sfapi_client import Machines
+from sfapi_client.jobs import JobState
 
 
 def test_compute(client_id, client_secret, test_machine):

@@ -1,6 +1,6 @@
 import pytest
 from sfapi_client import Client
-from sfapi_client.common import SfApiError
+from sfapi_client import SfApiError
 
 
 def test_get_user(client_id, client_secret, test_username):

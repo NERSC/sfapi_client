@@ -1,70 +1,23 @@
 from __future__ import annotations
-from enum import Enum
 import sys
 import math
 from abc import ABC, abstractmethod
 from typing import Any, Optional, Dict, List, ClassVar
-from ..common import _ASYNC_SLEEP, SfApiError
+from .._utils import _SLEEP
+from ..exceptions import SfApiError
 from .._models.job_status_response_sacct import OutputItem as JobSacctBase
 from .._models.job_status_response_squeue import OutputItem as JobSqueueBase
 from .._models import AppRoutersComputeModelsStatus as JobResponseStatus
 
 from pydantic import BaseModel, Field, validator
 
-
-class JobCommand(str, Enum):
-    sacct = "sacct"
-    squeue = "squeue"
-
-
-class JobStateResponse(BaseModel):
-    status: Optional[str] = None
-    output: Optional[List[Dict]] = None
-    error: Optional[Any] = None
+from .._job import JobCommand
+from .._job import JobStateResponse
+from .._job import JobState
+from .._job import TERMINAL_STATES
 
 
-class JobState(str, Enum):
-    """
-    JobStates
-    """
-
-    BOOT_FAIL = "BOOT_FAIL"
-    CANCELLED = "CANCELLED"
-    COMPLETED = "COMPLETED"
-    CONFIGURING = "CONFIGURING"
-    COMPLETING = "COMPLETING"
-    DEADLINE = "DEADLINE"
-    FAILED = "FAILED"
-    NODE_FAIL = "NODE_FAIL"
-    OUT_OF_MEMORY = "OUT_OF_MEMORY"
-    PENDING = "PENDING"
-    PREEMPTED = "PREEMPTED"
-    RUNNING = "RUNNING"
-    RESV_DEL_HOLD = "RESV_DEL_HOLD"
-    REQUEUE_FED = "REQUEUE_FED"
-    REQUEUE_HOLD = "REQUEUE_HOLD"
-    REQUEUED = "REQUEUED"
-    RESIZING = "RESIZING"
-    REVOKED = "REVOKED"
-    SIGNALING = "SIGNALING"
-    SPECIAL_EXIT = "SPECIAL_EXIT"
-    STAGE_OUT = "STAGE_OUT"
-    STOPPED = "STOPPED"
-    SUSPENDED = "SUSPENDED"
-    TIMEOUT = "TIMEOUT"
-
-
-TERMINAL_STATES = [
-    JobState.CANCELLED,
-    JobState.COMPLETED,
-    JobState.PREEMPTED,
-    JobState.OUT_OF_MEMORY,
-    JobState.FAILED,
-    JobState.TIMEOUT,
-]
-
-
-async def _fetch_raw_state(
+def _fetch_raw_state(
     compute: "Compute",
     jobids: Optional[List[int]] = None,
     user: Optional[str] = None,
@@ -88,7 +41,7 @@ async def _fetch_raw_state(
         kwargs = params.setdefault("kwargs", [])
         kwargs.append(f"partition={partition}")
 
-    r = await compute.client.get(job_url, params)
+    r = compute.client.get(job_url, params)
 
     json_response = r.json()
     job_state_response = JobStateResponse.parse_obj(json_response)
@@ -100,14 +53,14 @@ async def _fetch_raw_state(
     return job_state_response.output
 
 
-async def _fetch_jobs(
+def _fetch_jobs(
     job_type: Union["JobSacct", "JobSqueue"],
     compute: "Compute",
     jobids: Optional[List[int]] = None,
     user: Optional[str] = None,
     partition: Optional[str] = None,
 ):
-    job_states = await _fetch_raw_state(
+    job_states = _fetch_raw_state(
         compute, jobids, user, partition, job_type._command == JobCommand.sacct
     )
 
@@ -138,11 +91,11 @@ class Job(BaseModel, ABC):
 
         return v
 
-    async def update(self):
+    def update(self):
         """
         Update the state of the job by fetching the state from the compute resource.
         """
-        job_state = await self._fetch_state()
+        job_state = self._fetch_state()
         self._update(job_state)
 
     def _update(self, new_job_state: Any) -> Job:
@@ -152,13 +105,13 @@ class Job(BaseModel, ABC):
 
         return self
 
-    async def _wait_until(self, states: List[JobState], timeout: int = sys.maxsize):
+    def _wait_until(self, states: List[JobState], timeout: int = sys.maxsize):
         max_iteration = math.ceil(timeout / self.compute.client._wait_interval)
         iteration = 0
 
         while self.state not in states:
-            await self.update()
-            await _ASYNC_SLEEP(self.compute.client._wait_interval)
+            self.update()
+            _SLEEP(self.compute.client._wait_interval)
 
             if iteration == max_iteration:
                 raise TimeoutError()
@@ -167,13 +120,13 @@ class Job(BaseModel, ABC):
 
         return self.state
 
-    async def _wait_until_complete(self, timeout: int = sys.maxsize):
-        return await self._wait_until(TERMINAL_STATES, timeout)
+    def _wait_until_complete(self, timeout: int = sys.maxsize):
+        return self._wait_until(TERMINAL_STATES, timeout)
 
     def __await__(self):
         return self._wait_until_complete().__await__()
 
-    async def complete(self, timeout: int = sys.maxsize):
+    def complete(self, timeout: int = sys.maxsize):
         """
         Wait for a job to move into a terminal state.
 
@@ -182,9 +135,9 @@ class Job(BaseModel, ABC):
         :type timeout: int
         :raises: TimeoutError
         """
-        return await self._wait_until_complete(timeout)
+        return self._wait_until_complete(timeout)
 
-    async def running(self, timeout: int = sys.maxsize):
+    def running(self, timeout: int = sys.maxsize):
         """
         Wait for a job to move into running state.
 
@@ -193,7 +146,7 @@ class Job(BaseModel, ABC):
         :type timeout: int
         :raises: TimeoutError
         """
-        state = await self._wait_until([JobState.RUNNING] + TERMINAL_STATES, timeout)
+        state = self._wait_until([JobState.RUNNING] + TERMINAL_STATES, timeout)
         if state != JobState.RUNNING:
             raise SfApiError(
                 f"Job never entered the running state, end state was: {state}"
@@ -201,7 +154,7 @@ class Job(BaseModel, ABC):
 
         return state
 
-    async def cancel(self, wait=False):
+    def cancel(self, wait=False):
         """
         Cancel a running job
 
@@ -213,16 +166,16 @@ class Job(BaseModel, ABC):
         """
         # We have wait for a jobid before we can cancel
         while self.jobid is None:
-            await _ASYNC_SLEEP()
+            _SLEEP()
 
-        await self.compute.client.delete(
+        self.compute.client.delete(
             f"compute/jobs/{self.compute.name}/{self.jobid}"
         )
 
         if wait:
             while self.state != JobState.CANCELLED:
-                await self.update()
-                await _ASYNC_SLEEP(self.compute.client._wait_interval)
+                self.update()
+                _SLEEP(self.compute.client._wait_interval)
 
     def dict(self, *args, **kwargs) -> Dict:
         if "exclude" not in kwargs:
@@ -230,15 +183,15 @@ class Job(BaseModel, ABC):
         return super().dict(*args, **kwargs)
 
     @abstractmethod
-    async def _fetch_state(self):
+    def _fetch_state(self):
         pass
 
 
 class JobSacct(Job, JobSacctBase):
     _command: ClassVar[JobCommand] = JobCommand.sacct
 
-    async def _fetch_state(self):
-        jobs = await self.compute._monitor.fetch_jobs(
+    def _fetch_state(self):
+        jobs = self.compute._monitor.fetch_jobs(
             job_type=self.__class__, jobids=[self.jobid]
         )
         if len(jobs) != 1:
@@ -247,27 +200,27 @@ class JobSacct(Job, JobSacctBase):
         return jobs[0]
 
     @classmethod
-    async def _fetch_jobs(
+    def _fetch_jobs(
         cls,
         compute: "Compute",
         jobids: Optional[List[int]] = None,
         user: Optional[str] = None,
         partition: Optional[str] = None,
     ):
-        return await _fetch_jobs(cls, compute, jobids, user, partition)
+        return _fetch_jobs(cls, compute, jobids, user, partition)
 
 
 class JobSqueue(Job, JobSqueueBase):
     _command: ClassVar[JobCommand] = JobCommand.squeue
 
-    async def _fetch_state(self):
-        jobs = await self.compute._monitor.fetch_jobs(
+    def _fetch_state(self):
+        jobs = self.compute._monitor.fetch_jobs(
             job_type=self.__class__, jobids=[self.jobid]
         )
         # If the job state comes back empty the job is probably no longer in
         # the queue, so we use sacct to get the final state.
         if len(jobs) == 0:
-            jobs = await self.compute._monitor.fetch_jobs(
+            jobs = self.compute._monitor.fetch_jobs(
                 job_type=JobSacct, jobids=[self.jobid]
             )
             if len(jobs) != 1:
@@ -284,11 +237,11 @@ class JobSqueue(Job, JobSqueueBase):
         return jobs[0]
 
     @classmethod
-    async def _fetch_jobs(
+    def _fetch_jobs(
         cls,
         compute: "Compute",
         jobids: Optional[List[int]] = None,
         user: Optional[str] = None,
         partition: Optional[str] = None,
     ):
-        return await _fetch_jobs(cls, compute, jobids, user, partition)
+        return _fetch_jobs(cls, compute, jobids, user, partition)

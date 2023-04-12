@@ -3,10 +3,9 @@ from concurrent.futures import ThreadPoolExecutor
 import time
 
 from sfapi_client import Client
-from sfapi_client import JobState
-from sfapi_client import Machines
-from sfapi_client._sync.compute import Compute
-from sfapi_client._sync.job import JobSqueue
+from sfapi_client.jobs import JobState
+from sfapi_client.compute import Compute
+from sfapi_client.jobs import JobSqueue
 
 
 def test_submit(client_id, client_secret, test_job_path, test_machine):

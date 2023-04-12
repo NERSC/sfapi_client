@@ -1,23 +1,22 @@
 from typing import List, Optional
 from .._models import (
     UserInfo as UserBase,
-    ProjectStats as Project,
     GroupList as GroupsResponse,
 )
-from .project import Project
-from ..common import SfApiError
+from .projects import Project
+from ..exceptions import SfApiError
 
 
 class User(UserBase):
     client: Optional["Client"]
 
     @staticmethod
-    async def _fetch_user(client: "Client", username: Optional[str] = None):
+    def _fetch_user(client: "Client", username: Optional[str] = None):
         url = "account/"
         if username is not None:
             url = f"{url}?username={username}"
 
-        response = await client.get(url)
+        response = client.get(url)
         json_response = response.json()
 
         user = User.parse_obj(json_response)
@@ -25,14 +24,14 @@ class User(UserBase):
 
         return user
 
-    async def groups(self) -> List["Group"]:
+    def groups(self) -> List["Group"]:
         # Avoid circular import
-        from .group import Group
+        from .groups import Group
 
-        if self.name != (await self.client._user()).name:
+        if self.name != (self.client._user()).name:
             raise SfApiError(f"Can only fetch groups for authenticated user.")
 
-        r = await self.client.get("account/groups")
+        r = self.client.get("account/groups")
 
         json_response = r.json()
         groups_reponse = GroupsResponse.parse_obj(json_response)
@@ -47,11 +46,11 @@ class User(UserBase):
 
         return list(groups)
 
-    async def projects(self) -> List[Project]:
-        if self.name != (await self.client._user()).name:
+    def projects(self) -> List[Project]:
+        if self.name != (self.client._user()).name:
             raise SfApiError(f"Can only fetch projects for authenticated user.")
 
-        r = await self.client.get("account/roles")
+        r = self.client.get("account/roles")
 
         json_response = r.json()
 
