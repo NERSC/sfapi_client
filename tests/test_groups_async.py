@@ -2,13 +2,11 @@ import pytest
 
 from sfapi_client import AsyncClient
 
-DEV_API_URL = "https://api-dev.nersc.gov/api/v1.2"
-
 
 @pytest.mark.asyncio
-async def test_group(client_id, client_secret, test_group):
+async def test_group(client_id, client_secret, test_group, dev_api_url):
     async with AsyncClient(
-        client_id, client_secret, api_base_url=DEV_API_URL
+        client_id, client_secret, api_base_url=dev_api_url
     ) as client:
         group = await client.group(test_group)
         assert group is not None
@@ -17,10 +15,15 @@ async def test_group(client_id, client_secret, test_group):
 
 @pytest.mark.asyncio
 async def test_create_group(
-    client_id, client_secret, test_project, test_random_group, test_username
+    client_id,
+    client_secret,
+    test_project,
+    test_random_group,
+    test_username,
+    dev_api_url,
 ):
     async with AsyncClient(
-        client_id, client_secret, api_base_url=DEV_API_URL
+        client_id, client_secret, api_base_url=dev_api_url
     ) as client:
         user = await client.user(test_username)
         projects = await user.projects()
@@ -43,10 +46,15 @@ async def test_create_group(
 
 @pytest.mark.asyncio
 async def test_add_user(
-    client_id, client_secret, test_project, test_random_group, test_username
+    client_id,
+    client_secret,
+    test_project,
+    test_random_group,
+    test_username,
+    dev_api_url,
 ):
     async with AsyncClient(
-        client_id, client_secret, api_base_url=DEV_API_URL
+        client_id, client_secret, api_base_url=dev_api_url
     ) as client:
         user = await client.user(test_username)
         projects = await user.projects()
@@ -83,10 +91,15 @@ async def test_add_user(
 
 @pytest.mark.asyncio
 async def test_remove_user(
-    client_id, client_secret, test_project, test_random_group, test_username
+    client_id,
+    client_secret,
+    test_project,
+    test_random_group,
+    test_username,
+    dev_api_url,
 ):
     async with AsyncClient(
-        client_id, client_secret, api_base_url=DEV_API_URL
+        client_id, client_secret, api_base_url=dev_api_url
     ) as client:
         user = await client.user(test_username)
         projects = await user.projects()
@@ -128,10 +141,15 @@ async def test_remove_user(
 
 @pytest.mark.asyncio
 async def test_groupmember_to_user(
-    client_id, client_secret, test_project, test_random_group, test_username
+    client_id,
+    client_secret,
+    test_project,
+    test_random_group,
+    test_username,
+    dev_api_url,
 ):
     async with AsyncClient(
-        client_id, client_secret, api_base_url=DEV_API_URL
+        client_id, client_secret, api_base_url=dev_api_url
     ) as client:
         user = await client.user(test_username)
         projects = await user.projects()

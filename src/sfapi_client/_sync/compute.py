@@ -2,7 +2,7 @@ import asyncio
 from typing import Dict, List, Optional, Union
 import json
 from enum import Enum
-from pydantic import BaseModel
+from pydantic import BaseModel, PrivateAttr
 
 
 from ..common import SfApiError, _SLEEP
@@ -16,6 +16,7 @@ from .._models import (
     AppRoutersComputeModelsStatus as RunCommandResponseStatus,
 )
 from .path import RemotePath
+from .._internal.monitor import SyncJobMonitor
 
 
 class SubmitJobResponseStatus(Enum):
@@ -37,6 +38,11 @@ class CommandResult(BaseModel):
 
 class Compute(ComputeBase):
     client: Optional["Client"]
+    _monitor: SyncJobMonitor = PrivateAttr()
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._monitor = SyncJobMonitor(self)
 
     def dict(self, *args, **kwargs) -> Dict:
         if "exclude" not in kwargs:
@@ -93,7 +99,7 @@ class Compute(ComputeBase):
     ) -> "Union[JobSacct, JobSqueue]":
         # Get different job depending on query
         Job = JobSacct if (command == JobCommand.sacct) else JobSqueue
-        jobs = Job._fetch_jobs(self, jobid=jobid)
+        jobs = self._monitor.fetch_jobs(job_type=Job, jobids=[jobid])
         if len(jobs) == 0:
             raise SfApiError(f"Job not found: ${jobid}")
 
@@ -101,13 +107,20 @@ class Compute(ComputeBase):
 
     def jobs(
         self,
+        jobids: Optional[int] = None,
         user: Optional[str] = None,
         partition: Optional[str] = None,
         command: Optional[JobCommand] = JobCommand.squeue,
     ) -> List["Job"]:
         Job = JobSacct if (command == JobCommand.sacct) else JobSqueue
 
-        return Job._fetch_jobs(self, user=user, partition=partition)
+        # If we have been given just jobids, use the monitor
+        if jobids is not None and user is None and partition is None:
+            return self._monitor.fetch_jobs(job_type=Job, jobids=jobids)
+        else:
+            return Job._fetch_jobs(
+                self, jobids=jobids, user=user, partition=partition
+            )
 
     def ls(self, path, directory=False) -> List[RemotePath]:
         return RemotePath._ls(self, path, directory)

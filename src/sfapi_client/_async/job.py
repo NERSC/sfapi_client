@@ -66,7 +66,7 @@ TERMINAL_STATES = [
 
 async def _fetch_raw_state(
     compute: "Compute",
-    jobid: Optional[int] = None,
+    jobids: Optional[List[int]] = None,
     user: Optional[str] = None,
     partition: Optional[str] = None,
     sacct: Optional[bool] = False,
@@ -75,12 +75,18 @@ async def _fetch_raw_state(
 
     job_url = f"compute/jobs/{compute.name}"
 
-    if jobid is not None:
-        job_url = f"{job_url}/{jobid}"
-    elif user is not None:
-        params["kwargs"] = f"user={user}"
-    elif partition is not None:
-        params["kwargs"] = f"partition={partition}"
+    if jobids is not None:
+        kwargs = params.setdefault("kwargs", [])
+        jobid_value = ",".join([str(j) for j in jobids])
+        kwargs.append(f"jobid={jobid_value}")
+
+    if user is not None:
+        kwargs = params.setdefault("kwargs", [])
+        kwargs.append(f"user={user}")
+
+    if partition is not None:
+        kwargs = params.setdefault("kwargs", [])
+        kwargs.append(f"partition={partition}")
 
     r = await compute.client.get(job_url, params)
 
@@ -97,12 +103,12 @@ async def _fetch_raw_state(
 async def _fetch_jobs(
     job_type: Union["JobSacct", "JobSqueue"],
     compute: "Compute",
-    jobid: Optional[int] = None,
+    jobids: Optional[List[int]] = None,
     user: Optional[str] = None,
     partition: Optional[str] = None,
 ):
     job_states = await _fetch_raw_state(
-        compute, jobid, user, partition, job_type._command == JobCommand.sacct
+        compute, jobids, user, partition, job_type._command == JobCommand.sacct
     )
 
     jobs = [job_type.parse_obj(state) for state in job_states]
@@ -147,12 +153,12 @@ class Job(BaseModel, ABC):
         return self
 
     async def _wait_until(self, states: List[JobState], timeout: int = sys.maxsize):
-        max_iteration = math.ceil(timeout / 10)
+        max_iteration = math.ceil(timeout / self.compute.client._wait_interval)
         iteration = 0
 
         while self.state not in states:
             await self.update()
-            await _ASYNC_SLEEP(10)
+            await _ASYNC_SLEEP(self.compute.client._wait_interval)
 
             if iteration == max_iteration:
                 raise TimeoutError()
@@ -216,7 +222,7 @@ class Job(BaseModel, ABC):
         if wait:
             while self.state != JobState.CANCELLED:
                 await self.update()
-                await _ASYNC_SLEEP(10)
+                await _ASYNC_SLEEP(self.compute.client._wait_interval)
 
     def dict(self, *args, **kwargs) -> Dict:
         if "exclude" not in kwargs:
@@ -232,7 +238,9 @@ class JobSacct(Job, JobSacctBase):
     _command: ClassVar[JobCommand] = JobCommand.sacct
 
     async def _fetch_state(self):
-        jobs = await self._fetch_jobs(jobid=self.jobid)
+        jobs = await self.compute._monitor.fetch_jobs(
+            job_type=self.__class__, jobids=[self.jobid]
+        )
         if len(jobs) != 1:
             raise SfApiError(f"Job not found: ${self.jobid}")
 
@@ -242,24 +250,28 @@ class JobSacct(Job, JobSacctBase):
     async def _fetch_jobs(
         cls,
         compute: "Compute",
-        jobid: Optional[int] = None,
+        jobids: Optional[List[int]] = None,
         user: Optional[str] = None,
         partition: Optional[str] = None,
     ):
-        return await _fetch_jobs(cls, compute, jobid, user, partition)
+        return await _fetch_jobs(cls, compute, jobids, user, partition)
 
 
 class JobSqueue(Job, JobSqueueBase):
     _command: ClassVar[JobCommand] = JobCommand.squeue
 
     async def _fetch_state(self):
-        jobs = await self._fetch_jobs(self.compute, jobid=self.jobid)
+        jobs = await self.compute._monitor.fetch_jobs(
+            job_type=self.__class__, jobids=[self.jobid]
+        )
         # If the job state comes back empty the job is probably no longer in
         # the queue, so we use sacct to get the final state.
         if len(jobs) == 0:
-            jobs = await JobSacct._fetch_jobs(self.compute, jobid=self.jobid)
+            jobs = await self.compute._monitor.fetch_jobs(
+                job_type=JobSacct, jobids=[self.jobid]
+            )
             if len(jobs) != 1:
-                raise SfApiError(f"Job not found: ${self.jobid}")
+                raise SfApiError(f"Job not found: {self.jobid}")
 
             # We create a new squeue job instance and set the state on it,
             # the update method will then use this to update just the job
@@ -275,8 +287,8 @@ class JobSqueue(Job, JobSqueueBase):
     async def _fetch_jobs(
         cls,
         compute: "Compute",
-        jobid: Optional[int] = None,
+        jobids: Optional[List[int]] = None,
         user: Optional[str] = None,
         partition: Optional[str] = None,
     ):
-        return await _fetch_jobs(cls, compute, jobid, user, partition)
+        return await _fetch_jobs(cls, compute, jobids, user, partition)

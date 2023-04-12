@@ -1,19 +1,22 @@
 from sfapi_client import Client
 
-DEV_API_URL = "https://api-dev.nersc.gov/api/v1.2"
 
-
-def test_group(client_id, client_secret, test_group):
-    with Client(client_id, client_secret, api_base_url=DEV_API_URL) as client:
+def test_group(client_id, client_secret, test_group, dev_api_url):
+    with Client(client_id, client_secret, api_base_url=dev_api_url) as client:
         group = client.group(test_group)
         assert group is not None
         assert group.name == test_group
 
 
 def test_create_group(
-    client_id, client_secret, test_project, test_random_group, test_username
+    client_id,
+    client_secret,
+    test_project,
+    test_random_group,
+    test_username,
+    dev_api_url,
 ):
-    with Client(client_id, client_secret, api_base_url=DEV_API_URL) as client:
+    with Client(client_id, client_secret, api_base_url=dev_api_url) as client:
         user = client.user(test_username)
         projects = user.projects()
 
@@ -34,9 +37,14 @@ def test_create_group(
 
 
 def test_add_user(
-    client_id, client_secret, test_project, test_random_group, test_username
+    client_id,
+    client_secret,
+    test_project,
+    test_random_group,
+    test_username,
+    dev_api_url,
 ):
-    with Client(client_id, client_secret, api_base_url=DEV_API_URL) as client:
+    with Client(client_id, client_secret, api_base_url=dev_api_url) as client:
         user = client.user(test_username)
         projects = user.projects()
 
@@ -71,9 +79,14 @@ def test_add_user(
 
 
 def test_remove_user(
-    client_id, client_secret, test_project, test_random_group, test_username
+    client_id,
+    client_secret,
+    test_project,
+    test_random_group,
+    test_username,
+    dev_api_url,
 ):
-    with Client(client_id, client_secret, api_base_url=DEV_API_URL) as client:
+    with Client(client_id, client_secret, api_base_url=dev_api_url) as client:
         user = client.user(test_username)
         projects = user.projects()
 
@@ -113,9 +126,14 @@ def test_remove_user(
 
 
 def test_groupmember_to_user(
-    client_id, client_secret, test_project, test_random_group, test_username
+    client_id,
+    client_secret,
+    test_project,
+    test_random_group,
+    test_username,
+    dev_api_url,
 ):
-    with Client(client_id, client_secret, api_base_url=DEV_API_URL) as client:
+    with Client(client_id, client_secret, api_base_url=dev_api_url) as client:
         user = client.user(test_username)
         projects = user.projects()
 
