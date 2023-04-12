@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import Dict, Any, Optional, cast, List, Union
 from pathlib import Path
 import json
-import itertools
 
 from authlib.integrations.httpx_client.oauth2_client import OAuth2Client
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
@@ -11,7 +10,7 @@ import tenacity
 from authlib.jose import JsonWebKey
 
 from .compute import Machines, Compute
-from ..common import SfApiError
+from ..exceptions import SfApiError
 from .._models import (
     JobOutput as JobStatusResponse,
     AppRoutersComputeModelsStatus as JobStatus,
@@ -21,8 +20,8 @@ from .._models import (
     Note,
     AppRoutersStatusModelsStatus as Status,
 )
-from .group import Group
-from .user import User
+from .groups import Group
+from .users import User
 
 SFAPI_TOKEN_URL = "https://oidc.nersc.gov/c2id/token"
 SFAPI_BASE_URL = "https://api.nersc.gov/api/v1.2"

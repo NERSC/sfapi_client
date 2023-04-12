@@ -1,26 +1,28 @@
 from typing import Optional, Union, List, Any
 from pydantic import ValidationError, Field, BaseModel, validator
 from .._models import BatchGroupAction as GroupAction, UserStats as GroupMemberBase
-from ..common import SfApiError
-from .user import User
+from ..exceptions import SfApiError
+from .users import AsyncUser
 
 
-class GroupMember(GroupMemberBase):
+class AsyncGroupMember(GroupMemberBase):
     client: Optional["AsyncClient"]
 
-    async def user(self) -> "User":
-        return await User._fetch_user(self.client, self.name)
+    async def user(self) -> "AsyncUser":
+        return await AsyncUser._fetch_user(self.client, self.name)
 
 
 # Note: We can't use our generated model as we want user => members ( to avoid confusion with User model )
-class Group(BaseModel):
+class AsyncGroup(BaseModel):
     client: Optional["AsyncClient"]
     gid: Optional[int]
     name: Optional[str]
     users_: Optional[List[GroupMemberBase]] = Field(..., alias="users")
 
     async def _group_action(
-        self, users: Union[str, "User", List[str], List["User"]], action: GroupAction
+        self,
+        users: Union[str, "AsyncUser", List[str], List["AsyncUser"]],
+        action: GroupAction,
     ):
         # coerse to list
         if not isinstance(users, list):
@@ -38,7 +40,7 @@ class Group(BaseModel):
 
         # if successful will return group object
         try:
-            new_group = Group.parse_obj(json_response)
+            new_group = AsyncGroup.parse_obj(json_response)
             self._update(new_group)
         except ValidationError:
             # See if we have validation error raise it
@@ -47,15 +49,15 @@ class Group(BaseModel):
             else:
                 raise RuntimeError(r.text)
 
-    async def add(self, users: Union[List[str], List["User"]]):
+    async def add(self, users: Union[List[str], List["AsyncUser"]]):
         await self._group_action(users, GroupAction.batch_add)
 
-    async def remove(self, users: Union[List[str], List["User"]]):
+    async def remove(self, users: Union[List[str], List["AsyncUser"]]):
         await self._group_action(users, GroupAction.batch_remove)
 
     @property
     def members(self):
-        members = [GroupMember.parse_obj(user_info) for user_info in self.users_]
+        members = [AsyncGroupMember.parse_obj(user_info) for user_info in self.users_]
 
         def _set_client(m):
             m.client = self.client
@@ -67,11 +69,11 @@ class Group(BaseModel):
         return list(members)
 
     @staticmethod
-    async def _fetch_group(client: "Client", name):
+    async def _fetch_group(client: "AsyncClient", name):
         response = await client.get(f"account/groups/{name}")
         json_response = response.json()
 
-        group = Group.parse_obj(json_response)
+        group = AsyncGroup.parse_obj(json_response)
         group.client = client
 
         return group
@@ -83,7 +85,7 @@ class Group(BaseModel):
         group_state = await self._fetch_group(self.client, self.name)
         self._update(group_state)
 
-    def _update(self, new_group_state: Any) -> "Group":
+    def _update(self, new_group_state: Any) -> "AsyncGroup":
         for k in new_group_state.__fields_set__:
             v = getattr(new_group_state, k)
             setattr(self, k, v)

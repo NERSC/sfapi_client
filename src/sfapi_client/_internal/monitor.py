@@ -1,25 +1,23 @@
 import asyncio
 from asyncio import Future
 from typing import Union, List, Set, Dict, Type
-from abc import ABC, abstractmethod
 from threading import Lock
 from functools import reduce
 
-from .._async.job import JobCommand
-from .._async.job import (
+from .._async.jobs import (
     _fetch_jobs as _fetch_jobs_async,
-    JobSacct as AsyncJobSacct,
-    JobSqueue as AsyncJobSqueue,
+    AsyncJobSacct,
+    AsyncJobSqueue,
 )
-from .._sync.job import _fetch_jobs, JobSacct, JobSqueue, Job
+from .._sync.jobs import _fetch_jobs, JobSacct, JobSqueue
 
 
 # Async monitor that batches request for job state into fewer request by
 # requesting that state of multiple jobs in a single request to the server.
 class AsyncJobMonitor:
-    def __init__(self, compute: "Compute"):
+    def __init__(self, compute: "AsyncCompute"):
         self._jobids: Dict[Type, Set[int]] = {}
-        self._compute: "Compute" = compute
+        self._compute: "AsyncCompute" = compute
         self._monitor_task: asyncio.Task = None
         self._futures: Dict[Type, Future] = {}
         self._last_job_type_fetched: Type = None
@@ -64,8 +62,8 @@ class AsyncJobMonitor:
         return job_type
 
     async def fetch_jobs(
-        self, job_type: Union["JobSacct", "JobSqueue"], jobids: List[int]
-    ) -> List[Union["AsyncJobSacct", "AsyncJobSqueue"]]:
+        self, job_type: Union[AsyncJobSacct, AsyncJobSqueue], jobids: List[int]
+    ) -> List[Union[AsyncJobSacct, AsyncJobSqueue]]:
         jobids_for_type = self._jobids.setdefault(job_type, set())
         jobids_for_type.update(jobids)
 

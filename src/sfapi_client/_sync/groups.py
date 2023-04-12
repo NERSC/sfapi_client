@@ -1,8 +1,8 @@
 from typing import Optional, Union, List, Any
 from pydantic import ValidationError, Field, BaseModel, validator
 from .._models import BatchGroupAction as GroupAction, UserStats as GroupMemberBase
-from ..common import SfApiError
-from .user import User
+from ..exceptions import SfApiError
+from .users import User
 
 
 class GroupMember(GroupMemberBase):

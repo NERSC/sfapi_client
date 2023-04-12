@@ -4,22 +4,22 @@ from pydantic import ValidationError, Field
 from .._models import (
     ProjectStats as ProjectBase,
 )
-from ..common import SfApiError
+from ..exceptions import SfApiError
 
 
-class Project(ProjectBase):
-    client: Optional["Client"]
+class AsyncProject(ProjectBase):
+    client: Optional["AsyncClient"]
     name: str = Field(alias="repo_name")
 
-    def create_group(self, name: str) -> "Group":
-        from .group import Group
+    async def create_group(self, name: str) -> "AsyncGroup":
+        from .groups import AsyncGroup
 
         params = {"name": name, "repo_name": self.repo_name}
 
-        r = self.client.post("account/groups", data=params)
+        r = await self.client.post("account/groups", data=params)
         json_response = r.json()
         try:
-            group = Group.parse_obj(json_response)
+            group = AsyncGroup.parse_obj(json_response)
         except ValidationError:
             # See if we have validation error raise it
             if "details" in json_response:
