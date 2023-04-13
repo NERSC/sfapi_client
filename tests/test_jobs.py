@@ -34,7 +34,7 @@ def test_cancel_wait_for_it(client_id, client_secret, test_job_path, test_machin
 
 
 def test_running(client_id, client_secret, test_job_path, test_machine):
-    with Client(client_id, client_secret) as client:
+    with Client(client_id, client_secret, wait_interval=1) as client:
         machine = client.compute(test_machine)
         job = machine.submit_job(test_job_path)
 
