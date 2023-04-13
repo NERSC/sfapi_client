@@ -17,8 +17,9 @@ from .._models import (
     AppRoutersComputeModelsStatus as RunCommandResponseStatus,
 )
 from .paths import RemotePath
-from .._internal.monitor import SyncJobMonitor
+from .._monitor import SyncJobMonitor
 from .._compute import CommandResult, SubmitJobResponse, SubmitJobResponseStatus
+
 
 class Compute(ComputeBase):
     client: Optional["Client"]

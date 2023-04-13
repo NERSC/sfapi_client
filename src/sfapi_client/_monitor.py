@@ -4,12 +4,12 @@ from typing import Union, List, Set, Dict, Type
 from threading import Lock
 from functools import reduce
 
-from .._async.jobs import (
+from ._async.jobs import (
     _fetch_jobs as _fetch_jobs_async,
     AsyncJobSacct,
     AsyncJobSqueue,
 )
-from .._sync.jobs import _fetch_jobs, JobSacct, JobSqueue
+from ._sync.jobs import _fetch_jobs, JobSacct, JobSqueue
 
 
 # Async monitor that batches request for job state into fewer request by

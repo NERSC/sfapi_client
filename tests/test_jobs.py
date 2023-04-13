@@ -71,7 +71,7 @@ def test_job_monitor_check_request(
 ):
     with Client(client_id, client_secret, api_base_url=dev_api_url) as client:
         num_jobs = 10
-        _fetch_jobs = mocker.patch("sfapi_client._internal.monitor._fetch_jobs")
+        _fetch_jobs = mocker.patch("sfapi_client._monitor._fetch_jobs")
 
         machine = client.compute(test_machine)
 

@@ -17,7 +17,7 @@ from .._models import (
     AppRoutersComputeModelsStatus as RunCommandResponseStatus,
 )
 from .paths import AsyncRemotePath
-from .._internal.monitor import AsyncJobMonitor
+from .._monitor import AsyncJobMonitor
 from .._compute import CommandResult, SubmitJobResponse, SubmitJobResponseStatus
 
 

@@ -20,7 +20,9 @@ class Group(BaseModel):
     users_: Optional[List[GroupMemberBase]] = Field(..., alias="users")
 
     def _group_action(
-        self, users: Union[str, "User", List[str], List["User"]], action: GroupAction
+        self,
+        users: Union[str, "User", List[str], List["User"]],
+        action: GroupAction,
     ):
         # coerse to list
         if not isinstance(users, list):

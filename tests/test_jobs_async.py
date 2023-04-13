@@ -77,7 +77,7 @@ async def test_job_monitor_check_request(
 ):
     async with AsyncClient(client_id, client_secret) as client:
         _fetch_jobs_async = mocker.patch(
-            "sfapi_client._internal.monitor._fetch_jobs_async"
+            "sfapi_client._monitor._fetch_jobs_async"
         )
         machine = await client.compute(test_machine)
 
@@ -121,7 +121,7 @@ async def test_job_monitor_job_types(
 ):
     async with AsyncClient(client_id, client_secret) as client:
         _fetch_jobs_async = mocker.patch(
-            "sfapi_client._internal.monitor._fetch_jobs_async"
+            "sfapi_client._monitor._fetch_jobs_async"
         )
         machine = await client.compute(test_machine)
 
