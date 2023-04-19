@@ -1,10 +1,10 @@
 const ASYNCHRONOUS = "Asynchronous";
 const SYNCHRONOUS = "Synchronous";
-const ASYNC_PREFIX = "_async";
-const SYNC_PREFIX = "_sync";
+const ASYNC_PREFIX = "/async";
+const SYNC_PREFIX = "/sync";
 const SFAPI_CLIENT = "sfapi_client";
-const SFAPI_CLIENT_SYNC = "sfapi_client_sync";
-const SFAPI_CLIENT_ASYNC = "sfapi_client_async";
+const SFAPI_CLIENT_SYNC = "Sync";
+const SFAPI_CLIENT_ASYNC = "Async";
 const MD_NAV_LINK = "md-nav__link";
 const MD_HEADER_TOPIC = "md-header__topic";
 // Note: We are reuse styling from the version selector.
@@ -18,11 +18,9 @@ const MD_APISELECTOR_LIST = "md-version__list";
 const findNavAnchor = (textContent) => {
   for (const e of Array.from(
     document.getElementsByClassName(MD_NAV_LINK)
-  ).filter((e) => e.tagName.toLowerCase() === "div")) {
-    const elements = e.getElementsByTagName("a");
-
-    if (elements.length > 0 && elements[0].textContent === textContent) {
-      return elements[0];
+  ).filter((e) => e.tagName.toLowerCase() === "label")) {
+    if (e.textContent.trim() === textContent) {
+      return e;
     }
   }
 
@@ -81,7 +79,7 @@ const enableElement = (id) => {
 
 const updateURL = (prefix) => {
   if (location.pathname === "/") {
-    location.pathname = `/reference/${prefix}`;
+    location.pathname = `/reference${prefix}/client`;
   } else if (prefix === SYNC_PREFIX && !location.pathname.includes(prefix)) {
     location.pathname = location.pathname.replace(ASYNC_PREFIX, prefix);
   } else if (!location.pathname.includes(prefix)) {
@@ -106,7 +104,7 @@ const initNavMenu = () => {
     a.textContent = SFAPI_CLIENT;
 
     // Tag the li associated with the anchor so we can find it
-    const li = a.parentElement.parentElement;
+    const li = a.parentElement;
     li.setAttribute("id", textContent);
   });
 
