@@ -3,10 +3,9 @@ from concurrent.futures import ThreadPoolExecutor
 import time
 
 from sfapi_client import Client
-from sfapi_client import JobState
-from sfapi_client import Machines
-from sfapi_client._sync.compute import Compute
-from sfapi_client._sync.job import JobSqueue
+from sfapi_client.jobs import JobState
+from sfapi_client.compute import Compute
+from sfapi_client.jobs import JobSqueue
 
 
 def test_submit(client_id, client_secret, test_job_path, test_machine):
@@ -35,7 +34,7 @@ def test_cancel_wait_for_it(client_id, client_secret, test_job_path, test_machin
 
 
 def test_running(client_id, client_secret, test_job_path, test_machine):
-    with Client(client_id, client_secret) as client:
+    with Client(client_id, client_secret, wait_interval=1) as client:
         machine = client.compute(test_machine)
         job = machine.submit_job(test_job_path)
 
@@ -72,7 +71,7 @@ def test_job_monitor_check_request(
 ):
     with Client(client_id, client_secret, api_base_url=dev_api_url) as client:
         num_jobs = 10
-        _fetch_jobs = mocker.patch("sfapi_client._internal.monitor._fetch_jobs")
+        _fetch_jobs = mocker.patch("sfapi_client._monitor._fetch_jobs")
 
         machine = client.compute(test_machine)
 

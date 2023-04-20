@@ -5,7 +5,7 @@ import random
 import string
 
 from sfapi_client import AsyncClient
-from sfapi_client._async.path import RemotePath
+from sfapi_client.paths import AsyncRemotePath
 
 
 @pytest.mark.asyncio

@@ -2,8 +2,7 @@ import pytest
 from pathlib import Path
 
 from sfapi_client import AsyncClient
-from sfapi_client import JobState
-from sfapi_client import Machines
+from sfapi_client.jobs import JobState
 
 
 @pytest.mark.asyncio

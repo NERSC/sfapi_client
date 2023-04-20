@@ -5,8 +5,9 @@ from enum import Enum
 from pydantic import BaseModel, PrivateAttr
 
 
-from ..common import SfApiError, _ASYNC_SLEEP
-from .job import JobSacct, JobSqueue, JobSqueue, JobCommand
+from ..exceptions import SfApiError
+from .._utils import _ASYNC_SLEEP
+from .jobs import AsyncJobSacct, AsyncJobSqueue, AsyncJobSqueue, JobCommand
 from .._models import (
     AppRoutersStatusModelsStatus as ComputeBase,
     Task,
@@ -15,28 +16,12 @@ from .._models import (
     AppRoutersComputeModelsCommandOutput as RunCommandResponse,
     AppRoutersComputeModelsStatus as RunCommandResponseStatus,
 )
-from .path import RemotePath
-from .._internal.monitor import AsyncJobMonitor
+from .paths import AsyncRemotePath
+from .._monitor import AsyncJobMonitor
+from .._compute import CommandResult, SubmitJobResponse, SubmitJobResponseStatus
 
 
-class SubmitJobResponseStatus(Enum):
-    OK = "OK"
-    ERROR = "ERROR"
-
-
-class SubmitJobResponse(BaseModel):
-    task_id: str
-    status: SubmitJobResponseStatus
-    error: Optional[str]
-
-
-class CommandResult(BaseModel):
-    status: str
-    output: Optional[str]
-    error: Optional[str]
-
-
-class Compute(ComputeBase):
+class AsyncCompute(ComputeBase):
     client: Optional["AsyncClient"]
     _monitor: AsyncJobMonitor = PrivateAttr()
 
@@ -89,16 +74,16 @@ class Compute(ComputeBase):
         if jobid is None:
             raise SfApiError(f"Unable to extract jobid if for task: {task_id}")
 
-        job = JobSqueue(jobid=jobid)
+        job = AsyncJobSqueue(jobid=jobid)
         job.compute = self
 
         return job
 
     async def job(
         self, jobid: int, command: Optional[JobCommand] = JobCommand.sacct
-    ) -> "Union[JobSacct, JobSqueue]":
+    ) -> Union["AsyncJobSacct", "AsyncJobSqueue"]:
         # Get different job depending on query
-        Job = JobSacct if (command == JobCommand.sacct) else JobSqueue
+        Job = AsyncJobSacct if (command == JobCommand.sacct) else AsyncJobSqueue
         jobs = await self._monitor.fetch_jobs(job_type=Job, jobids=[jobid])
         if len(jobs) == 0:
             raise SfApiError(f"Job not found: ${jobid}")
@@ -111,8 +96,8 @@ class Compute(ComputeBase):
         user: Optional[str] = None,
         partition: Optional[str] = None,
         command: Optional[JobCommand] = JobCommand.squeue,
-    ) -> List["Job"]:
-        Job = JobSacct if (command == JobCommand.sacct) else JobSqueue
+    ) -> List[Union[AsyncJobSacct, AsyncJobSqueue]]:
+        Job = AsyncJobSacct if (command == JobCommand.sacct) else AsyncJobSqueue
 
         # If we have been given just jobids, use the monitor
         if jobids is not None and user is None and partition is None:
@@ -122,10 +107,10 @@ class Compute(ComputeBase):
                 self, jobids=jobids, user=user, partition=partition
             )
 
-    async def ls(self, path, directory=False) -> List[RemotePath]:
-        return await RemotePath._ls(self, path, directory)
+    async def ls(self, path, directory=False) -> List[AsyncRemotePath]:
+        return await AsyncRemotePath._ls(self, path, directory)
 
-    async def run(self, args: Union[str, RemotePath, List[str]]):
+    async def run(self, args: Union[str, AsyncRemotePath, List[str]]):
         body: RunCommandBody = {
             "executable": args if not isinstance(args, list) else " ".join(args)
         }

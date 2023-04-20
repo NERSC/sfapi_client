@@ -22,6 +22,17 @@ cli = typer.Typer()
 def run_unasync():
     additional_replacements = {
         "AsyncClient": "Client",
+        "AsyncApi": "Api",
+        "AsyncResources": "Resources",
+        "AsyncCompute": "Compute",
+        "AsyncGroup": "Group",
+        "AsyncGroupMember": "GroupMember",
+        "AsyncRemotePath": "RemotePath",
+        "AsyncProject": "Project",
+        "AsyncUser": "User",
+        "AsyncJob": "Job",
+        "AsyncJobSacct": "JobSacct",
+        "AsyncJobSqueue": "JobSqueue",
         "AsyncOAuth2Client": "OAuth2Client",
         "aclose": "close",
         "_ASYNC_SLEEP": "_SLEEP",

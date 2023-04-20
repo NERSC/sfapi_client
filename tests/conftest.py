@@ -6,7 +6,7 @@ import string
 import pytest
 from authlib.jose import JsonWebKey
 
-from sfapi_client import Machines
+from sfapi_client.compute import Machines
 
 from pydantic import BaseSettings
 

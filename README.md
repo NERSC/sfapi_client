@@ -10,7 +10,7 @@ This a first pass at a basic async and generated sync client for the SF API. It 
 
 ```python
     from sfapi_client import AsyncClient
-    from sfapi_client import Machines
+    from sfapi_client.compute import Machines
 
     async with AsyncClient(client_id, client_secret) as client:
         cori = await client.compute(Machines.cori)
@@ -21,7 +21,7 @@ This a first pass at a basic async and generated sync client for the SF API. It 
 
 ```python
     from sfapi_client import Client
-    from sfapi_client import Machines
+    from sfapi_client.compute import Machines
 
     with Client(client_id, client_secret) as client:
         cori = client.compute(Machines.cori)
@@ -34,7 +34,7 @@ This a first pass at a basic async and generated sync client for the SF API. It 
 
 ```python
     from sfapi_client import AsyncClient
-    from sfapi_client import Machines
+    from sfapi_client.compute import Machines
 
     async with AsyncClient(client_id, client_secret) as client:
         cori = await client.compute(Machines.cori)
@@ -48,7 +48,7 @@ This a first pass at a basic async and generated sync client for the SF API. It 
 
 ```python
     from sfapi_client import Client
-    from sfapi_client import Machines
+    from sfapi_client.compute import Machines
 
     with Client(client_id, client_secret) as client:
         cori = client.compute(Machines.cori)
@@ -64,7 +64,7 @@ This a first pass at a basic async and generated sync client for the SF API. It 
 
 ```python
     from sfapi_client import AsyncClient
-    from sfapi_client import Machines
+    from sfapi_client.compute import Machines
 
     async with AsyncClient(client_id, client_secret) as client:
         cori = await client.compute(Machines.cori)
@@ -77,7 +77,7 @@ This a first pass at a basic async and generated sync client for the SF API. It 
 
 ```python
     from sfapi_client import Client
-    from sfapi_client import Machines
+    from sfapi_client.compute import Machines
 
     with Client(client_id, client_secret) as client:
         cori = client.compute(Machines.cori)
@@ -101,7 +101,7 @@ python scripts/run.py unasync
 ## pydantic model generation
 
 The client uses pydantic models generated from the OpenAPI specification and optionally a sample job response. These
-models are generated into `_models.py`. To refresh them run the following command:
+models are generated into `_models/`. To refresh them run the following command:
 
 ```bash
 python scripts/run.py codegen --job-json job.json
