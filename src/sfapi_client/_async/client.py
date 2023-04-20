@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import Dict, Any, Optional, cast, List, Union
 from pathlib import Path
 import json
-import itertools
 
 from authlib.integrations.httpx_client.oauth2_client import AsyncOAuth2Client
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
@@ -10,8 +9,8 @@ import httpx
 import tenacity
 from authlib.jose import JsonWebKey
 
-from .compute import Machines, Compute
-from ..common import SfApiError
+from .compute import Machines, AsyncCompute
+from ..exceptions import SfApiError
 from .._models import (
     JobOutput as JobStatusResponse,
     AppRoutersComputeModelsStatus as JobStatus,
@@ -21,8 +20,8 @@ from .._models import (
     Note,
     AppRoutersStatusModelsStatus as Status,
 )
-from .group import Group
-from .user import User
+from .groups import AsyncGroup
+from .users import AsyncUser
 
 SFAPI_TOKEN_URL = "https://oidc.nersc.gov/c2id/token"
 SFAPI_BASE_URL = "https://api.nersc.gov/api/v1.2"
@@ -42,7 +41,7 @@ class retry_if_http_status_error(tenacity.retry_if_exception):
         )
 
 
-class Api:
+class AsyncApi:
     def __init__(self, client: "AsyncClient"):
         self._client = client
 
@@ -70,7 +69,7 @@ class Api:
 StatusInfo = Union[Outage, Note, Status]
 
 
-class Resources:
+class AsyncResources:
     def __init__(self, client: "AsyncClient"):
         self._client = client
 
@@ -372,7 +371,7 @@ class AsyncClient:
     async def compute(self, machine: Machines) -> Compute:
         response = await self.get(f"status/{machine.value}")
 
-        compute = Compute.parse_obj(response.json())
+        compute = AsyncCompute.parse_obj(response.json())
         compute.client = self
 
         return compute
@@ -384,22 +383,22 @@ class AsyncClient:
 
         return self._client_user
 
-    async def user(self, username: Optional[str] = None) -> User:
-        return await User._fetch_user(self, username)
+    async def user(self, username: Optional[str] = None) -> AsyncUser:
+        return await AsyncUser._fetch_user(self, username)
 
-    async def group(self, name: str) -> Group:
-        return await Group._fetch_group(self, name)
+    async def group(self, name: str) -> AsyncGroup:
+        return await AsyncGroup._fetch_group(self, name)
 
     @property
     def api(self):
         if self._api is None:
-            self._api = Api(self)
+            self._api = AsyncApi(self)
 
         return self._api
 
     @property
     def resources(self):
         if self._resources is None:
-            self._resources = Resources(self)
+            self._resources = AsyncResources(self)
 
         return self._resources

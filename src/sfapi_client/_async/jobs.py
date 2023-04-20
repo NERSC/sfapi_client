@@ -1,71 +1,24 @@
 from __future__ import annotations
-from enum import Enum
 import sys
 import math
 from abc import ABC, abstractmethod
 from typing import Any, Optional, Dict, List, ClassVar
-from ..common import _ASYNC_SLEEP, SfApiError
+from .._utils import _ASYNC_SLEEP
+from ..exceptions import SfApiError
 from .._models.job_status_response_sacct import OutputItem as JobSacctBase
 from .._models.job_status_response_squeue import OutputItem as JobSqueueBase
 from .._models import AppRoutersComputeModelsStatus as JobResponseStatus
 
 from pydantic import BaseModel, Field, validator
 
-
-class JobCommand(str, Enum):
-    sacct = "sacct"
-    squeue = "squeue"
-
-
-class JobStateResponse(BaseModel):
-    status: Optional[str] = None
-    output: Optional[List[Dict]] = None
-    error: Optional[Any] = None
-
-
-class JobState(str, Enum):
-    """
-    JobStates
-    """
-
-    BOOT_FAIL = "BOOT_FAIL"
-    CANCELLED = "CANCELLED"
-    COMPLETED = "COMPLETED"
-    CONFIGURING = "CONFIGURING"
-    COMPLETING = "COMPLETING"
-    DEADLINE = "DEADLINE"
-    FAILED = "FAILED"
-    NODE_FAIL = "NODE_FAIL"
-    OUT_OF_MEMORY = "OUT_OF_MEMORY"
-    PENDING = "PENDING"
-    PREEMPTED = "PREEMPTED"
-    RUNNING = "RUNNING"
-    RESV_DEL_HOLD = "RESV_DEL_HOLD"
-    REQUEUE_FED = "REQUEUE_FED"
-    REQUEUE_HOLD = "REQUEUE_HOLD"
-    REQUEUED = "REQUEUED"
-    RESIZING = "RESIZING"
-    REVOKED = "REVOKED"
-    SIGNALING = "SIGNALING"
-    SPECIAL_EXIT = "SPECIAL_EXIT"
-    STAGE_OUT = "STAGE_OUT"
-    STOPPED = "STOPPED"
-    SUSPENDED = "SUSPENDED"
-    TIMEOUT = "TIMEOUT"
-
-
-TERMINAL_STATES = [
-    JobState.CANCELLED,
-    JobState.COMPLETED,
-    JobState.PREEMPTED,
-    JobState.OUT_OF_MEMORY,
-    JobState.FAILED,
-    JobState.TIMEOUT,
-]
+from .._jobs import JobCommand
+from .._jobs import JobStateResponse
+from .._jobs import JobState
+from .._jobs import TERMINAL_STATES
 
 
 async def _fetch_raw_state(
-    compute: "Compute",
+    compute: "AsyncCompute",
     jobids: Optional[List[int]] = None,
     user: Optional[str] = None,
     partition: Optional[str] = None,
@@ -101,8 +54,8 @@ async def _fetch_raw_state(
 
 
 async def _fetch_jobs(
-    job_type: Union["JobSacct", "JobSqueue"],
-    compute: "Compute",
+    job_type: Union["AsyncJobSacct", "AsyncJobSqueue"],
+    compute: "AsyncCompute",
     jobids: Optional[List[int]] = None,
     user: Optional[str] = None,
     partition: Optional[str] = None,
@@ -119,12 +72,12 @@ async def _fetch_jobs(
     return jobs
 
 
-class Job(BaseModel, ABC):
+class AsyncJob(BaseModel, ABC):
     """
     Models a job submitted to run on a compute resource.
     """
 
-    compute: Optional["Compute"] = None
+    compute: Optional["AsyncCompute"] = None
     state: Optional[JobState]
     jobid: Optional[str]
 
@@ -234,7 +187,7 @@ class Job(BaseModel, ABC):
         pass
 
 
-class JobSacct(Job, JobSacctBase):
+class AsyncJobSacct(AsyncJob, JobSacctBase):
     _command: ClassVar[JobCommand] = JobCommand.sacct
 
     async def _fetch_state(self):
@@ -249,7 +202,7 @@ class JobSacct(Job, JobSacctBase):
     @classmethod
     async def _fetch_jobs(
         cls,
-        compute: "Compute",
+        compute: "AsyncCompute",
         jobids: Optional[List[int]] = None,
         user: Optional[str] = None,
         partition: Optional[str] = None,
@@ -257,7 +210,7 @@ class JobSacct(Job, JobSacctBase):
         return await _fetch_jobs(cls, compute, jobids, user, partition)
 
 
-class JobSqueue(Job, JobSqueueBase):
+class AsyncJobSqueue(AsyncJob, JobSqueueBase):
     _command: ClassVar[JobCommand] = JobCommand.squeue
 
     async def _fetch_state(self):
@@ -268,7 +221,7 @@ class JobSqueue(Job, JobSqueueBase):
         # the queue, so we use sacct to get the final state.
         if len(jobs) == 0:
             jobs = await self.compute._monitor.fetch_jobs(
-                job_type=JobSacct, jobids=[self.jobid]
+                job_type=AsyncJobSacct, jobids=[self.jobid]
             )
             if len(jobs) != 1:
                 raise SfApiError(f"Job not found: {self.jobid}")
@@ -276,7 +229,7 @@ class JobSqueue(Job, JobSqueueBase):
             # We create a new squeue job instance and set the state on it,
             # the update method will then use this to update just the job
             # state field.
-            job = JobSqueue()
+            job = AsyncJobSqueue()
             job.state = jobs[0].state
 
             return job
@@ -286,7 +239,7 @@ class JobSqueue(Job, JobSqueueBase):
     @classmethod
     async def _fetch_jobs(
         cls,
-        compute: "Compute",
+        compute: "AsyncCompute",
         jobids: Optional[List[int]] = None,
         user: Optional[str] = None,
         partition: Optional[str] = None,

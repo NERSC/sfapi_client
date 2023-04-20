@@ -1,7 +1,7 @@
 import pytest
 
 from sfapi_client import AsyncClient
-from sfapi_client.common import SfApiError
+from sfapi_client import SfApiError
 
 
 @pytest.mark.asyncio

@@ -3,7 +3,7 @@ from pathlib import PurePosixPath, Path
 from pydantic import PrivateAttr
 from io import StringIO, BytesIO
 from base64 import b64decode
-from contextlib import contextmanager
+from contextlib import asynccontextmanager
 import tempfile
 
 from .._models import (
@@ -15,20 +15,20 @@ from .._models import (
     UploadResult as UploadResponse,
     AppRoutersUtilsModelsStatus as UploadResponseStatus,
 )
-from ..common import SfApiError
+from ..exceptions import SfApiError
 
 
 def _is_no_such(error: SfApiError):
     return "No such file or directory" in error.message
 
 
-class RemotePath(PathBase):
+class AsyncRemotePath(PathBase):
     """
     RemotePath is used to model a remote path, it takes inspiration from
     pathlib and shares some of its interface.
     """
 
-    compute: Optional["Compute"]
+    compute: Optional["AsyncCompute"]
     # It would be nice to be able subclass PurePosixPath, however, this
     # require using private interfaces. So we derive by composition.
     _path: PurePosixPath = PrivateAttr()
@@ -41,7 +41,7 @@ class RemotePath(PathBase):
             self.name = self._path.name
 
     def __truediv__(self, key):
-        remote_path = RemotePath(str(self._path / key))
+        remote_path = AsyncRemotePath(str(self._path / key))
         # We have to set the compute field separately otherwise
         # we run into ForwardRef issue because of circular deps
         remote_path.compute = self.compute
@@ -49,7 +49,7 @@ class RemotePath(PathBase):
         return remote_path
 
     def __rtruediv__(self, key):
-        remote_path = RemotePath(str(key / self._path))
+        remote_path = AsyncRemotePath(str(key / self._path))
         # We have to set the compute field separately otherwise
         # we run into ForwardRef issue because of circular deps
         remote_path.compute = self.compute
@@ -61,7 +61,7 @@ class RemotePath(PathBase):
 
     @property
     def parent(self):
-        parent_path = RemotePath(str(self._path.parent))
+        parent_path = AsyncRemotePath(str(self._path.parent))
         # We have to set the compute field separately otherwise
         # we run into ForwardRef issue because of circular deps
         parent_path.compute = self.compute
@@ -70,7 +70,7 @@ class RemotePath(PathBase):
 
     @property
     def parents(self):
-        parents = [RemotePath(str(p)) for p in self._path.parents]
+        parents = [AsyncRemotePath(str(p)) for p in self._path.parents]
 
         # We have to set the compute field separately otherwise
         # we run into ForwardRef issue because of circular deps
@@ -103,20 +103,20 @@ class RemotePath(PathBase):
             kwargs["exclude"] = {"compute"}
         return super().dict(*args, **kwargs)
 
-    def is_dir(self):
+    async def is_dir(self):
         if self.perms is None:
-            self.update()
+            await self.update()
 
         return self.perms[0] == "d"
 
-    def is_file(self):
-        return not self.is_dir()
+    async def is_file(self):
+        return not await self.is_dir()
 
-    def download(self, binary=False) -> IO[AnyStr]:
-        if self.is_dir():
+    async def download(self, binary=False) -> IO[AnyStr]:
+        if await self.is_dir():
             raise IsADirectoryError(self._path)
 
-        r = self.compute.client.get(
+        r = await self.compute.client.get(
             f"utilities/download/{self.compute.name}/{self._path}?binary={binary}"
         )
         json_response = r.json()
@@ -133,10 +133,10 @@ class RemotePath(PathBase):
             return StringIO(file_data)
 
     @staticmethod
-    def _ls(
+    async def _ls(
         compute: "Compute", path, directory=False, filter_dots=True
     ) -> List["RemotePath"]:
-        r = compute.client.get(f"utilities/ls/{compute.name}/{path}")
+        r = await compute.client.get(f"utilities/ls/{compute.name}/{path}")
 
         json_response = r.json()
         directory_listing_response = DirectoryListingResponse.parse_obj(json_response)
@@ -148,7 +148,7 @@ class RemotePath(PathBase):
         def _to_remote_path(path, entry):
             kwargs = entry.dict()
             kwargs.update(path=path)
-            p = RemotePath(**kwargs)
+            p = AsyncRemotePath(**kwargs)
             p.compute = compute
 
             return p
@@ -179,13 +179,13 @@ class RemotePath(PathBase):
 
         return paths
 
-    def ls(self) -> List["RemotePath"]:
-        return self._ls(self.compute, str(self._path))
+    async def ls(self) -> List["AsyncRemotePath"]:
+        return await self._ls(self.compute, str(self._path))
 
-    def update(self):
+    async def update(self):
         # Here we pass filter_dots=False so that we with get . if this is a
         # directory
-        file_state = self._ls(self.compute, str(self._path), filter_dots=False)
+        file_state = await self._ls(self.compute, str(self._path), filter_dots=False)
         if len(file_state) == 0:
             raise FileNotFoundError(self._path)
 
@@ -196,16 +196,16 @@ class RemotePath(PathBase):
 
         self._update(new_state)
 
-    def _update(self, new_file_state: "RemotePath") -> "RemotePath":
+    def _update(self, new_file_state: "AsyncRemotePath") -> "AsyncRemotePath":
         for k in new_file_state.__fields_set__:
             v = getattr(new_file_state, k)
             setattr(self, k, v)
 
         return self
 
-    def upload(self, file: BytesIO) -> "RemotePath":
+    async def upload(self, file: BytesIO) -> "AsyncRemotePath":
         try:
-            if self.is_dir():
+            if await self.is_dir():
                 upload_path = f"{str(self._path)}/{file.filename}"
             else:
                 upload_path = str(self._path)
@@ -219,7 +219,7 @@ class RemotePath(PathBase):
 
             # Check if the parent is a directory ( as in we are creating a new file ),
             # if not re raise the original exception
-            if not self.parent.is_dir():
+            if not await self.parent.is_dir():
                 raise
             else:
                 upload_path = str(self._path)
@@ -227,22 +227,22 @@ class RemotePath(PathBase):
         url = f"utilities/upload/{self.compute.name}/{upload_path}"
         files = {"file": file}
 
-        r = self.compute.client.put(url, files=files)
+        r = await self.compute.client.put(url, files=files)
 
         json_response = r.json()
         upload_response = UploadResponse.parse_obj(json_response)
         if upload_response.status == UploadResponseStatus.ERROR:
             raise SfApiError(upload_response.error)
 
-        remote_path = RemotePath(upload_path)
+        remote_path = AsyncRemotePath(upload_path)
         remote_path.compute = self.compute
 
         return remote_path
 
-    @contextmanager
-    def open(self, mode: str) -> IO[AnyStr]:
+    @asynccontextmanager
+    async def open(self, mode: str) -> IO[AnyStr]:
         try:
-            if self.is_dir():
+            if await self.is_dir():
                 raise IsADirectoryError()
         except SfApiError as ex:
             # Its a valid use case to add a open a new file to an exiting directory.
@@ -254,7 +254,7 @@ class RemotePath(PathBase):
 
             # Check if the parent is a directory ( as in we are creating a new file ),
             # if not re raise the original exception
-            if not self.parent.is_dir():
+            if not await self.parent.is_dir():
                 raise
 
         valid_modes_chars = set("rwb")
@@ -274,7 +274,7 @@ class RemotePath(PathBase):
 
         if "r" in mode_chars:
             binary = "b" in mode_chars
-            yield self.download(binary)
+            yield await self.download(binary)
         else:
             tmp = None
             try:
@@ -284,7 +284,7 @@ class RemotePath(PathBase):
                 # Now upload the changes, we have to reopen the file to
                 # ensure binary mode
                 with open(tmp.name, "rb") as fp:
-                    self.upload(fp)
+                    await self.upload(fp)
             finally:
                 if tmp is not None:
                     tmp.close()

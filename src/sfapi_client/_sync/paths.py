@@ -3,7 +3,7 @@ from pathlib import PurePosixPath, Path
 from pydantic import PrivateAttr
 from io import StringIO, BytesIO
 from base64 import b64decode
-from contextlib import asynccontextmanager
+from contextlib import contextmanager
 import tempfile
 
 from .._models import (
@@ -15,7 +15,7 @@ from .._models import (
     UploadResult as UploadResponse,
     AppRoutersUtilsModelsStatus as UploadResponseStatus,
 )
-from ..common import SfApiError
+from ..exceptions import SfApiError
 
 
 def _is_no_such(error: SfApiError):
@@ -103,20 +103,20 @@ class RemotePath(PathBase):
             kwargs["exclude"] = {"compute"}
         return super().dict(*args, **kwargs)
 
-    async def is_dir(self):
+    def is_dir(self):
         if self.perms is None:
-            await self.update()
+            self.update()
 
         return self.perms[0] == "d"
 
-    async def is_file(self):
-        return not await self.is_dir()
+    def is_file(self):
+        return not self.is_dir()
 
-    async def download(self, binary=False) -> IO[AnyStr]:
-        if await self.is_dir():
+    def download(self, binary=False) -> IO[AnyStr]:
+        if self.is_dir():
             raise IsADirectoryError(self._path)
 
-        r = await self.compute.client.get(
+        r = self.compute.client.get(
             f"utilities/download/{self.compute.name}/{self._path}?binary={binary}"
         )
         json_response = r.json()
@@ -133,10 +133,10 @@ class RemotePath(PathBase):
             return StringIO(file_data)
 
     @staticmethod
-    async def _ls(
+    def _ls(
         compute: "Compute", path, directory=False, filter_dots=True
     ) -> List["RemotePath"]:
-        r = await compute.client.get(f"utilities/ls/{compute.name}/{path}")
+        r = compute.client.get(f"utilities/ls/{compute.name}/{path}")
 
         json_response = r.json()
         directory_listing_response = DirectoryListingResponse.parse_obj(json_response)
@@ -179,13 +179,13 @@ class RemotePath(PathBase):
 
         return paths
 
-    async def ls(self) -> List["RemotePath"]:
-        return await self._ls(self.compute, str(self._path))
+    def ls(self) -> List["RemotePath"]:
+        return self._ls(self.compute, str(self._path))
 
-    async def update(self):
+    def update(self):
         # Here we pass filter_dots=False so that we with get . if this is a
         # directory
-        file_state = await self._ls(self.compute, str(self._path), filter_dots=False)
+        file_state = self._ls(self.compute, str(self._path), filter_dots=False)
         if len(file_state) == 0:
             raise FileNotFoundError(self._path)
 
@@ -203,9 +203,9 @@ class RemotePath(PathBase):
 
         return self
 
-    async def upload(self, file: BytesIO) -> "RemotePath":
+    def upload(self, file: BytesIO) -> "RemotePath":
         try:
-            if await self.is_dir():
+            if self.is_dir():
                 upload_path = f"{str(self._path)}/{file.filename}"
             else:
                 upload_path = str(self._path)
@@ -219,7 +219,7 @@ class RemotePath(PathBase):
 
             # Check if the parent is a directory ( as in we are creating a new file ),
             # if not re raise the original exception
-            if not await self.parent.is_dir():
+            if not self.parent.is_dir():
                 raise
             else:
                 upload_path = str(self._path)
@@ -227,7 +227,7 @@ class RemotePath(PathBase):
         url = f"utilities/upload/{self.compute.name}/{upload_path}"
         files = {"file": file}
 
-        r = await self.compute.client.put(url, files=files)
+        r = self.compute.client.put(url, files=files)
 
         json_response = r.json()
         upload_response = UploadResponse.parse_obj(json_response)
@@ -239,10 +239,10 @@ class RemotePath(PathBase):
 
         return remote_path
 
-    @asynccontextmanager
-    async def open(self, mode: str) -> IO[AnyStr]:
+    @contextmanager
+    def open(self, mode: str) -> IO[AnyStr]:
         try:
-            if await self.is_dir():
+            if self.is_dir():
                 raise IsADirectoryError()
         except SfApiError as ex:
             # Its a valid use case to add a open a new file to an exiting directory.
@@ -254,7 +254,7 @@ class RemotePath(PathBase):
 
             # Check if the parent is a directory ( as in we are creating a new file ),
             # if not re raise the original exception
-            if not await self.parent.is_dir():
+            if not self.parent.is_dir():
                 raise
 
         valid_modes_chars = set("rwb")
@@ -274,7 +274,7 @@ class RemotePath(PathBase):
 
         if "r" in mode_chars:
             binary = "b" in mode_chars
-            yield await self.download(binary)
+            yield self.download(binary)
         else:
             tmp = None
             try:
@@ -284,7 +284,7 @@ class RemotePath(PathBase):
                 # Now upload the changes, we have to reopen the file to
                 # ensure binary mode
                 with open(tmp.name, "rb") as fp:
-                    await self.upload(fp)
+                    self.upload(fp)
             finally:
                 if tmp is not None:
                     tmp.close()

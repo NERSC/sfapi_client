@@ -1,67 +1,20 @@
 from __future__ import annotations
-from enum import Enum
 import sys
 import math
 from abc import ABC, abstractmethod
 from typing import Any, Optional, Dict, List, ClassVar
-from ..common import _SLEEP, SfApiError
+from .._utils import _SLEEP
+from ..exceptions import SfApiError
 from .._models.job_status_response_sacct import OutputItem as JobSacctBase
 from .._models.job_status_response_squeue import OutputItem as JobSqueueBase
 from .._models import AppRoutersComputeModelsStatus as JobResponseStatus
 
 from pydantic import BaseModel, Field, validator
 
-
-class JobCommand(str, Enum):
-    sacct = "sacct"
-    squeue = "squeue"
-
-
-class JobStateResponse(BaseModel):
-    status: Optional[str] = None
-    output: Optional[List[Dict]] = None
-    error: Optional[Any] = None
-
-
-class JobState(str, Enum):
-    """
-    JobStates
-    """
-
-    BOOT_FAIL = "BOOT_FAIL"
-    CANCELLED = "CANCELLED"
-    COMPLETED = "COMPLETED"
-    CONFIGURING = "CONFIGURING"
-    COMPLETING = "COMPLETING"
-    DEADLINE = "DEADLINE"
-    FAILED = "FAILED"
-    NODE_FAIL = "NODE_FAIL"
-    OUT_OF_MEMORY = "OUT_OF_MEMORY"
-    PENDING = "PENDING"
-    PREEMPTED = "PREEMPTED"
-    RUNNING = "RUNNING"
-    RESV_DEL_HOLD = "RESV_DEL_HOLD"
-    REQUEUE_FED = "REQUEUE_FED"
-    REQUEUE_HOLD = "REQUEUE_HOLD"
-    REQUEUED = "REQUEUED"
-    RESIZING = "RESIZING"
-    REVOKED = "REVOKED"
-    SIGNALING = "SIGNALING"
-    SPECIAL_EXIT = "SPECIAL_EXIT"
-    STAGE_OUT = "STAGE_OUT"
-    STOPPED = "STOPPED"
-    SUSPENDED = "SUSPENDED"
-    TIMEOUT = "TIMEOUT"
-
-
-TERMINAL_STATES = [
-    JobState.CANCELLED,
-    JobState.COMPLETED,
-    JobState.PREEMPTED,
-    JobState.OUT_OF_MEMORY,
-    JobState.FAILED,
-    JobState.TIMEOUT,
-]
+from .._jobs import JobCommand
+from .._jobs import JobStateResponse
+from .._jobs import JobState
+from .._jobs import TERMINAL_STATES
 
 
 def _fetch_raw_state(

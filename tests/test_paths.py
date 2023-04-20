@@ -5,7 +5,7 @@ import random
 import string
 
 from sfapi_client import Client
-from sfapi_client._async.path import RemotePath
+from sfapi_client.paths import RemotePath
 
 
 def test_concat():
