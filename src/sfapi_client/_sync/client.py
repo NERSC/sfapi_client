@@ -216,6 +216,17 @@ class Client:
 
         return self.__oauth2_session
 
+    @property
+    def token(self):
+        """Get token
+
+        Returns:
+            string: Returns the sting of a bearer token which can be helpful for debugging on api.nersc.gov
+        """
+        if self._client_id is not None:
+            oauth_session = self._oauth2_session()
+            return oauth_session.token["access_token"]
+
     def close(self):
         if self.__oauth2_session is not None:
             self.__oauth2_session.close()
@@ -369,6 +380,16 @@ class Client:
         return r
 
     def compute(self, machine: Machines) -> Compute:
+        """Create a compute site to submit jobs or view jobs in the queue
+
+        Args:
+            machine (Machines): Name of the compute machince to use
+
+        Returns:
+            Compute: Object that can be used to start jobs, view the queue on the system or list files and directories.
+        """
+        # Allows for creating a compute from a name string
+        machine = Machines(machine)
         response = self.get(f"status/{machine.value}")
 
         compute = Compute.parse_obj(response.json())
