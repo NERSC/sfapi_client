@@ -50,8 +50,27 @@ class AsyncCompute(ComputeBase):
 
             return task.result
 
-    async def submit_job(self, batch_submit_filepath: str) -> "Job":
-        data = {"job": batch_submit_filepath, "isPath": True}
+    async def submit_job(self, script: str, is_path: bool = True) -> "Job":
+        """Submit a job to the compute resource
+
+        Args:
+            script (str): Path to file on the compute system, or full script to run begining with #!.
+            is_path (bool, optional): Whether the script is a full file path or a script. Defaults to True.
+
+        Raises:
+            SfApiError: _description_
+
+        Returns:
+            Job: Object containing information about the job, its job id, and status on the system.
+        """
+        if is_path:
+            # If we're given a path make sure it exists
+            script_path = await self.ls(script)
+            if len(script_path) != 1 or not script_path[0].is_file():
+                raise SfApiError(
+                    f"Script path not present or is not a file, {script}")
+
+        data = {"job": script, "isPath": is_path}
 
         r = await self.client.post(f"compute/jobs/{self.name}", data)
         r.raise_for_status()
