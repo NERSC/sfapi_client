@@ -2,3 +2,4 @@ __pycache__
 .env
 docs/reference/sync
 site/
+*.ipynb_checkpoints
