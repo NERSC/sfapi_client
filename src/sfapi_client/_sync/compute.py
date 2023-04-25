@@ -50,20 +50,24 @@ class Compute(ComputeBase):
 
             return task.result
 
-    def submit_job(self, script: str, is_path: bool = True) -> "Job":
+    def submit_job(self, script: str) -> "Job":
         """Submit a job to the compute resource
 
-        Args:
-            script (str): Path to file on the compute system, or full script to run begining with #!.
-            is_path (bool, optional): Whether the script is a full file path or a script. Defaults to True.
-
-        Raises:
-            SfApiError: _description_
-
-        Returns:
-            Job: Object containing information about the job, its job id, and status on the system.
+        :param script: Path to file on the compute system, or full script to run begining with `#!`.
+        :type script: str 
+        :raises SfApiError: _description_
+        :raises SfApiError: _description_
+        :raises SfApiError: _description_
+        :raises SfApiError: _description_
+        :return: Object containing information about the job, its job id, and status on the system.
+        :rtype: Job
         """
-        if is_path:
+
+        is_path: bool = True
+
+        if script.startswith("#!") or "\n" in script:
+            is_path = False
+        else:
             # If we're given a path make sure it exists
             script_path = self.ls(script)
             if len(script_path) != 1 or not script_path[0].is_file():
