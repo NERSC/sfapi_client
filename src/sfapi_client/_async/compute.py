@@ -50,17 +50,11 @@ class AsyncCompute(ComputeBase):
 
             return task.result
 
-    async def submit_job(self, script: str) -> "Job":
+    async def submit_job(self, script: Union[str, AsyncRemotePath]) -> AsyncJobSqueue:
         """Submit a job to the compute resource
 
-        :param script: Path to file on the compute system, or full script to run begining with `#!`.
-        :type script: str 
-        :raises SfApiError: _description_
-        :raises SfApiError: _description_
-        :raises SfApiError: _description_
-        :raises SfApiError: _description_
+        :param script: Path to file on the compute system, or script to run begining with `#!`.
         :return: Object containing information about the job, its job id, and status on the system.
-        :rtype: Job
         """
 
         is_path: bool = True

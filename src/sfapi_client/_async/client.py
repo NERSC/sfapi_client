@@ -217,12 +217,12 @@ class AsyncClient:
         return self.__oauth2_session
 
     @property
-    async def token(self):
-        """Get token
+    async def token(self) -> str:
+        """bearer token
 
-        Returns:
-            string: Returns the sting of a bearer token which can be helpful for debugging on api.nersc.gov
+        :return: bearer token string which can be helpful for debugging through swagger ui
         """
+
         if self._client_id is not None:
             oauth_session = await self._oauth2_session()
             return oauth_session.token["access_token"]
@@ -379,13 +379,12 @@ class AsyncClient:
 
         return r
 
-    async def compute(self, machine: Machines) -> Compute:
+    async def compute(self, machine: Union[Machines, str]) -> AsyncCompute:
         """Create a compute site to submit jobs or view jobs in the queue
 
-        :param machine: Name of the compute machince to use
-        :type machine: Machines
-        :return: Object that can be used to start jobs, view the queue on the system or list files and directories.
-        :rtype: Compute
+        :param machine: Name of the compute machine to use
+        :return: Compute object that can be used to start jobs, 
+        view the queue on the system, or list files and directories.
         """
         # Allows for creating a compute from a name string
         machine = Machines(machine)
