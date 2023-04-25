@@ -65,7 +65,12 @@ class Compute(ComputeBase):
 
         is_path: bool = True
 
-        if script.startswith("#!") or "\n" in script:
+        # If it's a remote path we've already checked so just continue
+        if isinstance(script, RemotePath):
+            pass
+        # If the string input looks like a script we'll set is_path to false
+        elif script.startswith("#!") and "\n" in script:
+            # If it starts with shebang and has multiple lines
             is_path = False
         else:
             # If we're given a path make sure it exists
