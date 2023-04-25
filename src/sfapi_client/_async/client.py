@@ -269,9 +269,8 @@ class AsyncClient:
 
     @property
     async def token(self) -> str:
-        """bearer token
-
-        :return: bearer token string which can be helpful for debugging through swagger ui
+        """
+        Bearer token string which can be helpful for debugging through swagger UI.
         """
 
         if self._client_id is not None:
@@ -480,9 +479,6 @@ class AsyncClient:
     def api(self) -> AsyncApi:
         """
         API related information.
-
-        :return: The API information
-        :rtype: AsyncApi
         """
         if self._api is None:
             self._api = AsyncApi(self)
@@ -493,9 +489,6 @@ class AsyncClient:
     def resources(self) -> AsyncResources:
         """
         Resource related information.
-
-        :return: The resource information
-        :rtype: AsyncResources
         """
         if self._resources is None:
             self._resources = AsyncResources(self)
