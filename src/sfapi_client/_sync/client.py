@@ -382,11 +382,10 @@ class Client:
     def compute(self, machine: Machines) -> Compute:
         """Create a compute site to submit jobs or view jobs in the queue
 
-        Args:
-            machine (Machines): Name of the compute machince to use
-
-        Returns:
-            Compute: Object that can be used to start jobs, view the queue on the system or list files and directories.
+        :param machine: Name of the compute machince to use
+        :type machine: Machines
+        :return: Object that can be used to start jobs, view the queue on the system or list files and directories.
+        :rtype: Compute
         """
         # Allows for creating a compute from a name string
         machine = Machines(machine)
