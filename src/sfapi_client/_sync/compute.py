@@ -50,8 +50,30 @@ class Compute(ComputeBase):
 
             return task.result
 
-    def submit_job(self, batch_submit_filepath: str) -> "Job":
-        data = {"job": batch_submit_filepath, "isPath": True}
+    def submit_job(self, script: Union[str, RemotePath]) -> JobSqueue:
+        """Submit a job to the compute resource
+
+        :param script: Path to file on the compute system, or script to run begining with `#!`.
+        :return: Object containing information about the job, its job id, and status on the system.
+        """
+
+        is_path: bool = True
+
+        # If it's a remote path we've already checked so just continue
+        if isinstance(script, RemotePath):
+            pass
+        # If the string input looks like a script we'll set is_path to false
+        elif script.startswith("#!") and "\n" in script:
+            # If it starts with shebang and has multiple lines
+            is_path = False
+        else:
+            # If we're given a path make sure it exists
+            script_path = self.ls(script)
+            if len(script_path) != 1 or not script_path[0].is_file():
+                raise SfApiError(
+                    f"Script path not present or is not a file, {script}")
+
+        data = {"job": script, "isPath": is_path}
 
         r = self.client.post(f"compute/jobs/{self.name}", data)
         r.raise_for_status()
