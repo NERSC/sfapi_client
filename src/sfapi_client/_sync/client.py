@@ -213,6 +213,14 @@ class Client:
         """
         Create a client instance.
 
+        Usage:
+
+        ```python
+        >>> from sfapi_client import AsyncClient
+        >>> async with AsyncClient(client_id, client_secret) as client:
+        >>>    # Use client
+        ```
+
         :param client_id: The client ID
         :param secret: The client secret
 
