@@ -84,18 +84,31 @@ class AsyncRemotePath(PathBase):
 
     @property
     def stem(self):
+        """
+        The final path component, without its suffix.
+        """
         return self._path.stem
 
     @property
     def suffix(self):
+        """
+        The path extension.
+        """
+
         return self._path.suffix
 
     @property
     def suffixes(self):
+        """
+        A list of the path extensions.
+        """
         return self._path.suffixes
 
     @property
     def parts(self):
+        """
+        The paths components as a tuple.
+        """
         return self._path.parts
 
     def dict(self, *args, **kwargs) -> Dict:
@@ -104,15 +117,28 @@ class AsyncRemotePath(PathBase):
         return super().dict(*args, **kwargs)
 
     async def is_dir(self):
+        """
+        :return: Returns True if path is a directory, False othewise .
+        """
         if self.perms is None:
             await self.update()
 
         return self.perms[0] == "d"
 
     async def is_file(self):
+        """
+        :return: Returns True if path is a file, False othewise .
+        """
         return not await self.is_dir()
 
     async def download(self, binary=False) -> IO[AnyStr]:
+        """
+        Download the file contents.
+
+        :param binary: indicate if the file should be treated as binary, defaults to False
+        :raises IsADirectoryError: if path points to a directory.
+        :raises SfApiError:
+        """
         if await self.is_dir():
             raise IsADirectoryError(self._path)
 
@@ -180,9 +206,15 @@ class AsyncRemotePath(PathBase):
         return paths
 
     async def ls(self) -> List["AsyncRemotePath"]:
+        """
+        List the current path
+        """
         return await self._ls(self.compute, str(self._path))
 
     async def update(self):
+        """
+        Update the path in the latest information from the resource.
+        """
         # Here we pass filter_dots=False so that we with get . if this is a
         # directory
         file_state = await self._ls(self.compute, str(self._path), filter_dots=False)
@@ -241,6 +273,14 @@ class AsyncRemotePath(PathBase):
 
     @asynccontextmanager
     async def open(self, mode: str) -> IO[AnyStr]:
+        """
+        Open the file at this path.
+
+        :param mode: The mode to open the file. Valid options are 'rwb'.
+
+        raises: IsDirectoryError: If the path is not a file.
+        """
+
         try:
             if await self.is_dir():
                 raise IsADirectoryError()
