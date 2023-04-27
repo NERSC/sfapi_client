@@ -132,8 +132,7 @@ class Job(BaseModel, ABC):
 
         :param timeout: The maximum time to wait in seconds, the actually wait time will be in
         10 second increments.
-        :type timeout: int
-        :raises: TimeoutError
+        :raises TimeoutError: if timeout is reached
         """
         return self._wait_until_complete(timeout)
 
@@ -143,8 +142,7 @@ class Job(BaseModel, ABC):
 
         :param timeout: The maximum time to wait in seconds, the actually wait time will be in
         10 second increments.
-        :type timeout: int
-        :raises: TimeoutError
+        :raises TimeoutError: if timeout if reached
         """
         state = self._wait_until([JobState.RUNNING] + TERMINAL_STATES, timeout)
         if state != JobState.RUNNING:

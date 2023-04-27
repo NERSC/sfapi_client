@@ -1,4 +1,4 @@
-from typing import Optional, List, IO, AnyStr, Dict
+from typing import Optional, List, IO, AnyStr, Dict, Tuple
 from pathlib import PurePosixPath, Path
 from pydantic import PrivateAttr
 from io import StringIO, BytesIO
@@ -60,7 +60,13 @@ class RemotePath(PathBase):
         return str(self._path)
 
     @property
-    def parent(self):
+    def parent(self) -> "RemotePath":
+        """
+        The parent of the path.
+
+        :return: the parent
+
+        """
         parent_path = RemotePath(str(self._path.parent))
         # We have to set the compute field separately otherwise
         # we run into ForwardRef issue because of circular deps
@@ -69,7 +75,12 @@ class RemotePath(PathBase):
         return parent_path
 
     @property
-    def parents(self):
+    def parents(self) -> List["RemotePath"]:
+        """
+        The parents of the path.
+
+        :return: the parents
+        """
         parents = [RemotePath(str(p)) for p in self._path.parents]
 
         # We have to set the compute field separately otherwise
@@ -83,19 +94,39 @@ class RemotePath(PathBase):
         return parents
 
     @property
-    def stem(self):
+    def stem(self) -> str:
+        """
+        The final path component, without its suffix.
+
+        :return: the path stem
+        """
         return self._path.stem
 
     @property
-    def suffix(self):
+    def suffix(self) -> str:
+        """
+        The path extension.
+
+        :return: the path extension
+        """
         return self._path.suffix
 
     @property
-    def suffixes(self):
+    def suffixes(self) -> List[str]:
+        """
+        A list of the path extensions.
+
+        :return: the path extensions
+        """
         return self._path.suffixes
 
     @property
-    def parts(self):
+    def parts(self) -> Tuple[str]:
+        """
+        The paths components as a tuple.
+
+        :return: the path components
+        """
         return self._path.parts
 
     def dict(self, *args, **kwargs) -> Dict:
@@ -103,16 +134,29 @@ class RemotePath(PathBase):
             kwargs["exclude"] = {"compute"}
         return super().dict(*args, **kwargs)
 
-    def is_dir(self):
+    def is_dir(self) -> bool:
+        """
+        :return: Returns True if path is a directory, False othewise .
+        """
         if self.perms is None:
             self.update()
 
         return self.perms[0] == "d"
 
-    def is_file(self):
+    def is_file(self) -> bool:
+        """
+        :return: Returns True if path is a file, False othewise .
+        """
         return not self.is_dir()
 
     def download(self, binary=False) -> IO[AnyStr]:
+        """
+        Download the file contents.
+
+        :param binary: indicate if the file should be treated as binary, defaults to False
+        :raises IsADirectoryError: if path points to a directory.
+        :raises SfApiError:
+        """
         if self.is_dir():
             raise IsADirectoryError(self._path)
 
@@ -180,9 +224,17 @@ class RemotePath(PathBase):
         return paths
 
     def ls(self) -> List["RemotePath"]:
+        """
+        List the current path
+
+        :return: the list of child paths
+        """
         return self._ls(self.compute, str(self._path))
 
     def update(self):
+        """
+        Update the path in the latest information from the resource.
+        """
         # Here we pass filter_dots=False so that we with get . if this is a
         # directory
         file_state = self._ls(self.compute, str(self._path), filter_dots=False)
@@ -241,6 +293,13 @@ class RemotePath(PathBase):
 
     @contextmanager
     def open(self, mode: str) -> IO[AnyStr]:
+        """
+        Open the file at this path.
+
+        :param mode: The mode to open the file. Valid options are 'rwb'.
+
+        raises: IsDirectoryError: If the path is not a file.
+        """
         try:
             if self.is_dir():
                 raise IsADirectoryError()
