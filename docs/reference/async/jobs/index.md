@@ -22,6 +22,6 @@
 ::: sfapi_client.jobs.AsyncJobSacct
     :docstring:
 
-## `AsyncJobQsqueue`
+## `AsyncJobSqueue`
 ::: sfapi_client.jobs.AsyncJobSqueue
     :docstring:
