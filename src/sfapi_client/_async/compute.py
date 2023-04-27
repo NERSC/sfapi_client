@@ -29,7 +29,7 @@ class AsyncCompute(ComputeBase):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         if self.status in [StatusValue.unavailable, StatusValue.other]:
-            raise SfApiError(f"Compute machine {self.name} is {self.status.name}, {self.notes}")
+            raise SfApiError(f"Compute resource {self.name} is {self.status.name}, {self.notes}")
         self._monitor = AsyncJobMonitor(self)
 
     def dict(self, *args, **kwargs) -> Dict:
