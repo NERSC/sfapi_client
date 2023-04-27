@@ -1,0 +1,4 @@
+Possible compute resources.
+    :cvar cori:
+    :cvar dtn01:
+    :cvar perlmutter:
