@@ -1,5 +1,6 @@
 __pycache__
 .env
 docs/reference/sync
+docs/examples/*.md
 site/
 *.ipynb_checkpoints
