@@ -216,8 +216,8 @@ class Client:
         Usage:
 
         ```python
-        >>> from sfapi_client import AsyncClient
-        >>> async with AsyncClient(client_id, client_secret) as client:
+        >>> from sfapi_client import Client
+        >>> with Client(client_id, client_secret) as client:
         >>>    # Use client
         ```
 
@@ -225,7 +225,7 @@ class Client:
         :param secret: The client secret
 
         :return: The client instance
-        :rtype: AsyncClient
+        :rtype: Client
         """
         self._client_id = None
         self._secret = None
@@ -471,7 +471,7 @@ class Client:
 
         :param name: The group name
         :return: The group
-        :rtype: AsyncGroup
+        :rtype: Group
         """
         return Group._fetch_group(self, name)
 

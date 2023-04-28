@@ -1,4 +1,5 @@
 import os
+import re
 from pathlib import Path
 
 import typer
@@ -55,6 +56,33 @@ def run_unasync():
             filepaths.append(str(p))
 
     unasync.unasync_files(filepaths, rules)
+
+    # unasync doesn't handle docstrings, so do them using regex replace
+    subs = [
+        ("Async", ""),
+        ("await ", ""),
+        ("async ", ""),
+    ]
+
+    for path in (Path(__file__).parent.parent / "src" / "sfapi_client" / "_sync").glob(
+        "**/*.py"
+    ):
+        if path.name not in exclude:
+            with path.open() as fp:
+                code = fp.read()
+
+            for target, replacement in subs:
+                pattern = re.compile(rf"(.*\"\"\".*){target}(.*\"\"\".*)", re.DOTALL)
+
+                # While we have matches replace them
+                modified = False
+                while pattern.match(code):
+                    code = re.sub(pattern, rf"\1{replacement}\2", code)
+                    modified = True
+
+                if modified:
+                    with path.open("w") as fp:
+                        fp.write(code)
 
 
 def _from_open_api() -> str:
