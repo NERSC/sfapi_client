@@ -34,8 +34,5 @@ with index_path.open("w") as index:
     index.write("# Examples \n\n")
 
     for notebook in Path('examples').glob('*.ipynb'):
-        # Hope to replace this with the python library
-        os.system(f'jupyter nbconvert --to markdown {notebook} --output-dir="docs/examples"')
-
         notebook_name = " ".join(notebook.stem.title().split("_"))
-        index.write(f"* [{notebook_name}]({notebook.stem})\n")
+        index.write(f"* [{notebook_name}]({notebook.name})\n")
