@@ -42,10 +42,19 @@ class retry_if_http_status_error(tenacity.retry_if_exception):
 
 
 class AsyncApi:
+    """
+    API information.
+    """
     def __init__(self, client: "AsyncClient"):
         self._client = client
 
     async def changelog(self) -> List[ChangelogItem]:
+        """
+        Get the API changelog.
+
+        :return: The API changelog
+        :rtype: List[ChangelogItem]
+        """
         r = await self._client.get("meta/changelog")
 
         json_response = r.json()
@@ -53,6 +62,12 @@ class AsyncApi:
         return [ChangelogItem.parse_obj(i) for i in json_response]
 
     async def config(self) -> Dict[str, str]:
+        """
+        Get the configuration information for the API.
+
+        :return: The API configuration
+        :rtype: Dict[str, str]
+        """
         r = await self._client.get("meta/config")
 
         json_response = r.json()
@@ -98,6 +113,13 @@ class AsyncResources:
     async def outages(
         self, resource_name: Optional[str] = None
     ) -> Union[Dict[str, List[Outage]], List[Outage]]:
+        """
+        Get outage information for a resource.
+
+        :param resource_name: The resource name
+        :return: The outages
+        :rtype: Union[Dict[str, List[Outage]], List[Outage]]
+        """
         resource_path = self._resource_name(resource_name)
         response = await self._client.get(f"status/outages{resource_path}")
         json_response = response.json()
@@ -113,6 +135,13 @@ class AsyncResources:
     async def planned_outages(
         self, resource_name: Optional[str] = None
     ) -> Union[Dict[str, List[Outage]], List[Outage]]:
+        """
+        Get planned outage information for a resource.
+
+        :param resource_name: The resource name
+        :return: The planned outages
+        :rtype: Union[Dict[str, List[Outage]], List[Outage]]
+        """
         resource_path = self._resource_name(resource_name)
         response = await self._client.get(f"status/outages/planned{resource_path}")
         json_response = response.json()
@@ -128,6 +157,13 @@ class AsyncResources:
     async def notes(
         self, resource_name: Optional[str] = None
     ) -> Union[Dict[str, List[Note]], List[Note]]:
+        """
+        Get notes associated with a resource.
+
+        :param resource_name: The resource name
+        :return: The resource notes
+        :rtype: Union[Dict[str, List[Note]], List[Note]]
+        """
         resource_path = self._resource_name(resource_name)
         response = await self._client.get(f"status/notes{resource_path}")
         json_response = response.json()
@@ -143,6 +179,13 @@ class AsyncResources:
     async def status(
         self, resource_name: Optional[str] = None
     ) -> Union[Dict[str, Status], Status]:
+        """
+        Get the status of a resource.
+
+        :param resource_name: The resource name
+        :return: The resource status
+        :rtype: Union[Dict[str, Status], Status]
+        """
         resource_path = resource_name
         if resource_path is None:
             resource_path = ""
@@ -159,15 +202,6 @@ class AsyncResources:
 
 
 class AsyncClient:
-    """
-    Create a client instance
-
-    :param client_id: The client ID
-    :type client_id: str
-    :param secret: The client secret
-    :type secret: str
-    """
-
     def __init__(
         self,
         client_id: Optional[str] = None,
@@ -176,6 +210,23 @@ class AsyncClient:
         api_base_url: Optional[str] = SFAPI_BASE_URL,
         wait_interval: int = 10,
     ):
+        """
+        Create a client instance.
+
+        Usage:
+
+        ```python
+        >>> from sfapi_client import AsyncClient
+        >>> async with AsyncClient(client_id, client_secret) as client:
+        >>>    # Use client
+        ```
+
+        :param client_id: The client ID
+        :param secret: The client secret
+
+        :return: The client instance
+        :rtype: AsyncClient
+        """
         self._client_id = None
         self._secret = None
         if any(arg is None for arg in [client_id, secret]):
@@ -218,9 +269,8 @@ class AsyncClient:
 
     @property
     async def token(self) -> str:
-        """bearer token
-
-        :return: bearer token string which can be helpful for debugging through swagger ui
+        """
+        Bearer token string which can be helpful for debugging through swagger UI.
         """
 
         if self._client_id is not None:
@@ -228,6 +278,9 @@ class AsyncClient:
             return oauth_session.token["access_token"]
 
     async def close(self):
+        """
+        Release resources associated with the client instance.
+        """
         if self.__oauth2_session is not None:
             await self.__oauth2_session.aclose()
 
@@ -383,7 +436,7 @@ class AsyncClient:
         """Create a compute site to submit jobs or view jobs in the queue
 
         :param machine: Name of the compute machine to use
-        :return: Compute object that can be used to start jobs, 
+        :return: Compute object that can be used to start jobs,
         view the queue on the system, or list files and directories.
         """
         # Allows for creating a compute from a name string
@@ -403,20 +456,40 @@ class AsyncClient:
         return self._client_user
 
     async def user(self, username: Optional[str] = None) -> AsyncUser:
+        """
+        Get a user.
+
+        :param username: The username
+        :return: The user
+        :rtype: UserGroup
+        """
         return await AsyncUser._fetch_user(self, username)
 
     async def group(self, name: str) -> AsyncGroup:
+        """
+        Get a group.
+
+        :param name: The group name
+        :return: The group
+        :rtype: AsyncGroup
+        """
         return await AsyncGroup._fetch_group(self, name)
 
     @property
-    def api(self):
+    def api(self) -> AsyncApi:
+        """
+        API related information.
+        """
         if self._api is None:
             self._api = AsyncApi(self)
 
         return self._api
 
     @property
-    def resources(self):
+    def resources(self) -> AsyncResources:
+        """
+        Resource related information.
+        """
         if self._resources is None:
             self._resources = AsyncResources(self)
 
