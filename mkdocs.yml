@@ -1,12 +1,15 @@
 site_name: sfapi_client
 watch: [src/sfapi_client]
 nav:
-- Home:
-  - Overview: index.md
+- Overview: index.md
+- Usage:
+  - QuickStart: quickstart/
 - API Reference: reference/
 
 theme:
   name: "material"
+  features:
+    - content.code.copy
 
 extra_javascript:
   - javascript/apiselector.js
@@ -30,3 +33,14 @@ plugins:
             ignore_init_summary: yes
           merge_init_into_class: yes
           show_submodules: no
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
