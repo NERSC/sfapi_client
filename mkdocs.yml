@@ -10,7 +10,7 @@ theme:
   name: "material"
   features:
     - content.code.copy
-
+    - navigation.sections
 extra_javascript:
   - javascript/apiselector.js
 
