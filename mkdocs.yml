@@ -4,6 +4,8 @@ nav:
 - Home:
   - Overview: index.md
 - API Reference: reference/
+- Community:
+  - Contributing: community/contributing.md
 
 theme:
   name: "material"
