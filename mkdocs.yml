@@ -33,6 +33,7 @@ plugins:
               ignore_init_summary: yes
             merge_init_into_class: yes
             show_submodules: no
+
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
