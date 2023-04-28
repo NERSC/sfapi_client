@@ -2,7 +2,7 @@ import pytest
 
 from sfapi_client import AsyncClient
 
-
+@pytest.mark.public
 @pytest.mark.asyncio
 async def test_outages_by_resource(test_machine):
     async with AsyncClient() as client:
@@ -12,6 +12,7 @@ async def test_outages_by_resource(test_machine):
         assert outages[0].name == test_machine
 
 
+@pytest.mark.public
 @pytest.mark.asyncio
 async def test_planned_outages_by_resource(test_machine):
     async with AsyncClient() as client:
@@ -21,6 +22,7 @@ async def test_planned_outages_by_resource(test_machine):
         assert outages[0].name == test_machine
 
 
+@pytest.mark.public
 @pytest.mark.asyncio
 async def test_notes_by_resource(test_machine):
     async with AsyncClient() as client:
@@ -29,7 +31,7 @@ async def test_notes_by_resource(test_machine):
         assert len(notes) > 0
         assert notes[0].name == test_machine
 
-
+@pytest.mark.public
 @pytest.mark.asyncio
 async def test_status_by_resource(test_machine):
     async with AsyncClient() as client:
@@ -38,6 +40,7 @@ async def test_status_by_resource(test_machine):
         assert status.name == test_machine
 
 
+@pytest.mark.public
 @pytest.mark.asyncio
 async def test_outages(test_machine):
     async with AsyncClient() as client:
@@ -49,6 +52,7 @@ async def test_outages(test_machine):
         assert test_machine_outages[0].name == test_machine
 
 
+@pytest.mark.public
 @pytest.mark.asyncio
 async def test_planned_outages(test_machine):
     async with AsyncClient() as client:
@@ -59,7 +63,7 @@ async def test_planned_outages(test_machine):
         assert len(test_machine_outages) > 0
         assert test_machine_outages[0].name == test_machine
 
-
+@pytest.mark.public
 @pytest.mark.asyncio
 async def test_notes(test_machine):
     async with AsyncClient() as client:
@@ -70,7 +74,7 @@ async def test_notes(test_machine):
         assert len(test_machine_notes) > 0
         assert test_machine_notes[0].name == test_machine
 
-
+@pytest.mark.public
 @pytest.mark.asyncio
 async def test_status(test_machine):
     async with AsyncClient() as client:
