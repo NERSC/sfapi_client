@@ -14,6 +14,7 @@ extra_javascript:
 
 plugins:
   - search
+  - autorefs
   - gen-files:
       scripts:
         - docs/gen_sync.py
@@ -32,3 +33,11 @@ plugins:
               ignore_init_summary: yes
             merge_init_into_class: yes
             show_submodules: no
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
