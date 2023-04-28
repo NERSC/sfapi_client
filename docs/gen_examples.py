@@ -26,6 +26,9 @@ for notebook in Path('examples').glob('*.ipynb'):
 # Get our index page
 index_path = Path('docs/examples/index.md')
 
+# Ensure the directory exists
+index_path.parent.mkdir(exist_ok=True)
+
 # Open it up and write heading
 with index_path.open("w") as index:
     index.write("# Examples \n\n")
