@@ -3,6 +3,7 @@ import pytest
 from sfapi_client import AsyncClient
 
 
+@pytest.mark.public
 @pytest.mark.asyncio
 async def test_changelog():
     async with AsyncClient() as client:
@@ -10,6 +11,7 @@ async def test_changelog():
         assert len(changelog) > 0
 
 
+@pytest.mark.public
 @pytest.mark.asyncio
 async def test_config():
     async with AsyncClient() as client:
