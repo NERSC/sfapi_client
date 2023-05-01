@@ -5,6 +5,7 @@ const SYNC_PREFIX = "/sync";
 const SFAPI_CLIENT = "sfapi_client";
 const SFAPI_CLIENT_SYNC = "Sync";
 const SFAPI_CLIENT_ASYNC = "Async";
+const SFAPI_CLIENT_API_REF_LS_KEY = "sfapi_client_reference";
 const MD_NAV_LINK = "md-nav__link";
 const MD_HEADER_TOPIC = "md-header__topic";
 // Note: We are reuse styling from the version selector.
@@ -69,11 +70,15 @@ const enableElement = (id) => {
   if (id == SFAPI_CLIENT_ASYNC) {
     async.style.display = "list-item";
     sync.style.display = "none";
-    buttonLabel.textContent = ASYNCHRONOUS;
+    if (buttonLabel) {
+      buttonLabel.textContent = ASYNCHRONOUS;
+    }
   } else {
     async.style.display = "none";
     sync.style.display = " list-item";
-    buttonLabel.textContent = SYNCHRONOUS;
+    if (buttonLabel) {
+      buttonLabel.textContent = SYNCHRONOUS;
+    }
   }
 };
 
@@ -108,25 +113,35 @@ const initNavMenu = () => {
     li.setAttribute("id", textContent);
   });
 
-  if (location.pathname === "/") {
-    showSync();
-  } else if (location.pathname.includes(SYNC_PREFIX)) {
+  if (location.pathname.includes(SYNC_PREFIX)) {
     showSync();
   } else if (location.pathname.includes(ASYNC_PREFIX)) {
     showAsync();
+  } else {
+    // Try local storage
+    const referenceMode = localStorage.getItem(SFAPI_CLIENT_API_REF_LS_KEY)
+    if (referenceMode === SFAPI_CLIENT_ASYNC) {
+      enableElement(SFAPI_CLIENT_ASYNC)
+    } else {
+      enableElement(SFAPI_CLIENT_SYNC)
+    }
   }
 };
 
 const onClick = (e) => {
   if (e.target.textContent == ASYNCHRONOUS) {
     showAsync();
+    localStorage.setItem(SFAPI_CLIENT_API_REF_LS_KEY, SFAPI_CLIENT_ASYNC);
   } else {
     showSync();
+    localStorage.setItem(SFAPI_CLIENT_API_REF_LS_KEY, SFAPI_CLIENT_SYNC);
   }
 };
 
 const init = () => {
-  renderAsyncSyncSelector();
+  if (location.pathname.includes(SYNC_PREFIX) || location.pathname.includes(ASYNC_PREFIX)) {
+    renderAsyncSyncSelector();
+  }
   initNavMenu();
 };
 

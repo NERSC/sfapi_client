@@ -1,15 +1,18 @@
 site_name: sfapi_client
 watch: [src/sfapi_client]
 nav:
-- Home:
-  - Overview: index.md
+- Overview: index.md
+- Usage:
+  - QuickStart: quickstart/
 - API Reference: reference/
 - Community:
   - Contributing: community/contributing.md
 
 theme:
   name: "material"
-
+  features:
+    - content.code.copy
+    - navigation.sections
 extra_javascript:
   - javascript/apiselector.js
 
@@ -41,3 +44,5 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
