@@ -20,6 +20,7 @@ jobs:
     steps:
       - uses: trstringer/manual-approval@v1
         with:
+          secret: ${{ secrets.GITHUB_TOKEN }}
           approvers: cjh1,tylern
           minimum-approvals: 1
           exclude-workflow-initiator-as-approver: false
