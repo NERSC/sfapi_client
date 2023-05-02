@@ -12,6 +12,10 @@ class AsyncProject(ProjectBase):
     name: str = Field(alias="repo_name")
 
     async def create_group(self, name: str) -> "AsyncGroup":
+        """
+        Create a new project.
+        :param name: The project name
+        """
         from .groups import AsyncGroup
 
         params = {"name": name, "repo_name": self.repo_name}

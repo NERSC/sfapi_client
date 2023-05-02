@@ -25,6 +25,9 @@ class AsyncUser(UserBase):
         return user
 
     async def groups(self) -> List["AsyncGroup"]:
+        """
+        The groups that the user is a member of.
+        """
         # Avoid circular import
         from .groups import AsyncGroup
 
@@ -47,6 +50,9 @@ class AsyncUser(UserBase):
         return list(groups)
 
     async def projects(self) -> List[AsyncProject]:
+        """
+        The projects the user is associate with.
+        """
         if self.name != (await self.client._user()).name:
             raise SfApiError(f"Can only fetch projects for authenticated user.")
 

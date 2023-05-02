@@ -18,6 +18,7 @@ extra_javascript:
 
 plugins:
 - search
+- autorefs
 - gen-files:
     scripts:
     - docs/gen_sync.py
