@@ -11,6 +11,7 @@ from .jobs import AsyncJobSacct, AsyncJobSqueue, AsyncJobSqueue, JobCommand
 from .._models import (
     AppRoutersStatusModelsStatus as ComputeBase,
     Task,
+    StatusValue,
     PublicHost as Machines,
     BodyRunCommandUtilitiesCommandMachinePost as RunCommandBody,
     AppRoutersComputeModelsCommandOutput as RunCommandResponse,
@@ -27,6 +28,8 @@ class AsyncCompute(ComputeBase):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        if self.status in [StatusValue.unavailable, StatusValue.other]:
+            raise SfApiError(f"Compute resource {self.name} is {self.status.name}, {self.notes}")
         self._monitor = AsyncJobMonitor(self)
 
     def dict(self, *args, **kwargs) -> Dict:
@@ -50,8 +53,30 @@ class AsyncCompute(ComputeBase):
 
             return task.result
 
-    async def submit_job(self, batch_submit_filepath: str) -> "Job":
-        data = {"job": batch_submit_filepath, "isPath": True}
+    async def submit_job(self, script: Union[str, AsyncRemotePath]) -> AsyncJobSqueue:
+        """Submit a job to the compute resource
+
+        :param script: Path to file on the compute system, or script to run begining with `#!`.
+        :return: Object containing information about the job, its job id, and status on the system.
+        """
+
+        is_path: bool = True
+
+        # If it's a remote path we've already checked so just continue
+        if isinstance(script, AsyncRemotePath):
+            pass
+        # If the string input looks like a script we'll set is_path to false
+        elif script.startswith("#!") and "\n" in script:
+            # If it starts with shebang and has multiple lines
+            is_path = False
+        else:
+            # If we're given a path make sure it exists
+            script_path = await self.ls(script)
+            if len(script_path) != 1 or not script_path[0].is_file():
+                raise SfApiError(
+                    f"Script path not present or is not a file, {script}")
+
+        data = {"job": script, "isPath": is_path}
 
         r = await self.client.post(f"compute/jobs/{self.name}", data)
         r.raise_for_status()

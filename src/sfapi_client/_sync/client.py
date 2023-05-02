@@ -42,10 +42,19 @@ class retry_if_http_status_error(tenacity.retry_if_exception):
 
 
 class Api:
+    """
+    API information.
+    """
     def __init__(self, client: "Client"):
         self._client = client
 
     def changelog(self) -> List[ChangelogItem]:
+        """
+        Get the API changelog.
+
+        :return: The API changelog
+        :rtype: List[ChangelogItem]
+        """
         r = self._client.get("meta/changelog")
 
         json_response = r.json()
@@ -53,6 +62,12 @@ class Api:
         return [ChangelogItem.parse_obj(i) for i in json_response]
 
     def config(self) -> Dict[str, str]:
+        """
+        Get the configuration information for the API.
+
+        :return: The API configuration
+        :rtype: Dict[str, str]
+        """
         r = self._client.get("meta/config")
 
         json_response = r.json()
@@ -98,6 +113,13 @@ class Resources:
     def outages(
         self, resource_name: Optional[str] = None
     ) -> Union[Dict[str, List[Outage]], List[Outage]]:
+        """
+        Get outage information for a resource.
+
+        :param resource_name: The resource name
+        :return: The outages
+        :rtype: Union[Dict[str, List[Outage]], List[Outage]]
+        """
         resource_path = self._resource_name(resource_name)
         response = self._client.get(f"status/outages{resource_path}")
         json_response = response.json()
@@ -113,6 +135,13 @@ class Resources:
     def planned_outages(
         self, resource_name: Optional[str] = None
     ) -> Union[Dict[str, List[Outage]], List[Outage]]:
+        """
+        Get planned outage information for a resource.
+
+        :param resource_name: The resource name
+        :return: The planned outages
+        :rtype: Union[Dict[str, List[Outage]], List[Outage]]
+        """
         resource_path = self._resource_name(resource_name)
         response = self._client.get(f"status/outages/planned{resource_path}")
         json_response = response.json()
@@ -128,6 +157,13 @@ class Resources:
     def notes(
         self, resource_name: Optional[str] = None
     ) -> Union[Dict[str, List[Note]], List[Note]]:
+        """
+        Get notes associated with a resource.
+
+        :param resource_name: The resource name
+        :return: The resource notes
+        :rtype: Union[Dict[str, List[Note]], List[Note]]
+        """
         resource_path = self._resource_name(resource_name)
         response = self._client.get(f"status/notes{resource_path}")
         json_response = response.json()
@@ -143,6 +179,13 @@ class Resources:
     def status(
         self, resource_name: Optional[str] = None
     ) -> Union[Dict[str, Status], Status]:
+        """
+        Get the status of a resource.
+
+        :param resource_name: The resource name
+        :return: The resource status
+        :rtype: Union[Dict[str, Status], Status]
+        """
         resource_path = resource_name
         if resource_path is None:
             resource_path = ""
@@ -159,15 +202,6 @@ class Resources:
 
 
 class Client:
-    """
-    Create a client instance
-
-    :param client_id: The client ID
-    :type client_id: str
-    :param secret: The client secret
-    :type secret: str
-    """
-
     def __init__(
         self,
         client_id: Optional[str] = None,
@@ -176,6 +210,23 @@ class Client:
         api_base_url: Optional[str] = SFAPI_BASE_URL,
         wait_interval: int = 10,
     ):
+        """
+        Create a client instance.
+
+        Usage:
+
+        ```python
+        >>> from sfapi_client import Client
+        >>> with Client(client_id, client_secret) as client:
+        >>>    # Use client
+        ```
+
+        :param client_id: The client ID
+        :param secret: The client secret
+
+        :return: The client instance
+        :rtype: Client
+        """
         self._client_id = None
         self._secret = None
         if any(arg is None for arg in [client_id, secret]):
@@ -216,7 +267,20 @@ class Client:
 
         return self.__oauth2_session
 
+    @property
+    def token(self) -> str:
+        """
+        Bearer token string which can be helpful for debugging through swagger UI.
+        """
+
+        if self._client_id is not None:
+            oauth_session = self._oauth2_session()
+            return oauth_session.token["access_token"]
+
     def close(self):
+        """
+        Release resources associated with the client instance.
+        """
         if self.__oauth2_session is not None:
             self.__oauth2_session.close()
 
@@ -368,7 +432,15 @@ class Client:
 
         return r
 
-    def compute(self, machine: Machines) -> Compute:
+    def compute(self, machine: Union[Machines, str]) -> Compute:
+        """Create a compute site to submit jobs or view jobs in the queue
+
+        :param machine: Name of the compute machine to use
+        :return: Compute object that can be used to start jobs,
+        view the queue on the system, or list files and directories.
+        """
+        # Allows for creating a compute from a name string
+        machine = Machines(machine)
         response = self.get(f"status/{machine.value}")
 
         compute = Compute.parse_obj(response.json())
@@ -384,20 +456,40 @@ class Client:
         return self._client_user
 
     def user(self, username: Optional[str] = None) -> User:
+        """
+        Get a user.
+
+        :param username: The username
+        :return: The user
+        :rtype: UserGroup
+        """
         return User._fetch_user(self, username)
 
     def group(self, name: str) -> Group:
+        """
+        Get a group.
+
+        :param name: The group name
+        :return: The group
+        :rtype: Group
+        """
         return Group._fetch_group(self, name)
 
     @property
-    def api(self):
+    def api(self) -> Api:
+        """
+        API related information.
+        """
         if self._api is None:
             self._api = Api(self)
 
         return self._api
 
     @property
-    def resources(self):
+    def resources(self) -> Resources:
+        """
+        Resource related information.
+        """
         if self._resources is None:
             self._resources = Resources(self)
 
