@@ -1,3 +1,4 @@
 datamodel-code-generator
 unasync
 typer
+pytest-asyncio

@@ -12,15 +12,15 @@ from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):
-    SFAPI_CLIENT_ID: str
-    SFAPI_CLIENT_SECRET: str
-    TEST_JOB_PATH: str
+    SFAPI_CLIENT_ID: str = None
+    SFAPI_CLIENT_SECRET: str = None
+    TEST_JOB_PATH: str = None
     TEST_MACHINE: Machines = Machines.perlmutter
-    TEST_USERNAME: str
-    TEST_ANOTHER_USERNAME: str
-    TEST_TMP_DIR: str
-    TEST_PROJECT: str
-    TEST_GROUP: str
+    TEST_USERNAME: str = None
+    TEST_ANOTHER_USERNAME: str = None
+    TEST_TMP_DIR: str = None
+    TEST_PROJECT: str = None
+    TEST_GROUP: str = None
     DEV_API_URL: str = "https://api-dev.nersc.gov/api/v1.2"
 
     class Config:
