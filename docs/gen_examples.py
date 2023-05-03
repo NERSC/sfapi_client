@@ -1,15 +1,15 @@
 
 from pathlib import Path
 import os
+import json
 
-replacements = {
-    "tylern": "elvis",
-    "/global/homes/t": "/global/homes/e",
-    "/global/u1/t": "/global/homes/e",
-    "nstaff": "ntrain",
-    "dasrepo": "ntrain",
-    "95745": "12345"
-}
+replace = Path("replacements.json")
+
+if replace.exists():
+    with replace.open('r'):
+        replacements = json.loads(replace.read_text())
+else:
+    replacements = {}
 
 # Replace personal details in notebook
 for notebook in Path('examples').glob('*.ipynb'):

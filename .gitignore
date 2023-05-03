@@ -6,3 +6,4 @@ examples/index.md
 site/
 *.ipynb_checkpoints
 examples_dev
+*.json
