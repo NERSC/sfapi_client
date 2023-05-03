@@ -25,7 +25,7 @@ from .users import AsyncUser
 
 SFAPI_TOKEN_URL = "https://oidc.nersc.gov/c2id/token"
 SFAPI_BASE_URL = "https://api.nersc.gov/api/v1.2"
-MAX_RETRY = 2
+MAX_RETRY = 10
 
 
 # Retry on httpx.HTTPStatusError if status code is not 401 or 403
