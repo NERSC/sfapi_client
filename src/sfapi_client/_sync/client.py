@@ -25,6 +25,7 @@ from .users import User
 
 SFAPI_TOKEN_URL = "https://oidc.nersc.gov/c2id/token"
 SFAPI_BASE_URL = "https://api.nersc.gov/api/v1.2"
+MAX_RETRY = 2
 
 
 # Retry on httpx.HTTPStatusError if status code is not 401 or 403
@@ -45,6 +46,7 @@ class Api:
     """
     API information.
     """
+
     def __init__(self, client: "Client"):
         self._client = client
 
@@ -89,9 +91,11 @@ class Resources:
         self._client = client
 
     @staticmethod
-    def _resource_name(resource_name: Optional[str]):
+    def _resource_name(resource_name: Optional[Union[str, Machines]]):
         if resource_name is None:
             resource_name = ""
+        elif isinstance(resource_name, Machines):
+            resource_name = f"/{resource_name.name}"
         else:
             resource_name = f"/{resource_name}"
 
@@ -111,7 +115,7 @@ class Resources:
         return resource_map
 
     def outages(
-        self, resource_name: Optional[str] = None
+        self, resource_name: Optional[Union[str, Machines]] = None
     ) -> Union[Dict[str, List[Outage]], List[Outage]]:
         """
         Get outage information for a resource.
@@ -133,7 +137,7 @@ class Resources:
         return outages
 
     def planned_outages(
-        self, resource_name: Optional[str] = None
+        self, resource_name: Optional[Union[str, Machines]] = None
     ) -> Union[Dict[str, List[Outage]], List[Outage]]:
         """
         Get planned outage information for a resource.
@@ -155,7 +159,7 @@ class Resources:
         return outages
 
     def notes(
-        self, resource_name: Optional[str] = None
+        self, resource_name: Optional[Union[str, Machines]] = None
     ) -> Union[Dict[str, List[Note]], List[Note]]:
         """
         Get notes associated with a resource.
@@ -177,7 +181,7 @@ class Resources:
         return notes
 
     def status(
-        self, resource_name: Optional[str] = None
+        self, resource_name: Optional[Union[str, Machines]] = None
     ) -> Union[Dict[str, Status], Status]:
         """
         Get the status of a resource.
@@ -186,10 +190,14 @@ class Resources:
         :return: The resource status
         :rtype: Union[Dict[str, Status], Status]
         """
-        resource_path = resource_name
-        if resource_path is None:
-            resource_path = ""
-        response = self._client.get(f"status/{resource_path}")
+        resource_path = self._resource_name(resource_name)
+
+        # `/status` throws a 307 redirect error so we need the '/' added
+        # To get /status/
+        # TODO: Seems like something we could change on the api end
+        resource_path = "/" if resource_path == "" else resource_path
+
+        response = self._client.get(f"status{resource_path}")
         json_response = response.json()
 
         if resource_name:
@@ -301,7 +309,7 @@ class Client:
                 key_path = Path(key_paths[0])
 
         # We have no credentials
-        if key_path is None:
+        if key_path is None or key_path.is_dir():
             return
 
         # Check that key is read only in case it's not
@@ -333,8 +341,8 @@ class Client:
         retry=tenacity.retry_if_exception_type(httpx.TimeoutException)
         | tenacity.retry_if_exception_type(httpx.ConnectError)
         | retry_if_http_status_error(),
-        wait=tenacity.wait_exponential(max=10),
-        stop=tenacity.stop_after_attempt(10),
+        wait=tenacity.wait_exponential(max=MAX_RETRY),
+        stop=tenacity.stop_after_attempt(MAX_RETRY),
     )
     def get(self, url: str, params: Dict[str, Any] = {}) -> httpx.Response:
         if self._client_id is not None:
@@ -368,8 +376,8 @@ class Client:
         retry=tenacity.retry_if_exception_type(httpx.TimeoutException)
         | tenacity.retry_if_exception_type(httpx.ConnectError)
         | retry_if_http_status_error(),
-        wait=tenacity.wait_exponential(max=10),
-        stop=tenacity.stop_after_attempt(10),
+        wait=tenacity.wait_exponential(max=MAX_RETRY),
+        stop=tenacity.stop_after_attempt(MAX_RETRY),
     )
     def post(self, url: str, data: Dict[str, Any]) -> httpx.Response:
         oauth_session = self._oauth2_session()
@@ -390,8 +398,8 @@ class Client:
         retry=tenacity.retry_if_exception_type(httpx.TimeoutException)
         | tenacity.retry_if_exception_type(httpx.ConnectError)
         | retry_if_http_status_error(),
-        wait=tenacity.wait_exponential(max=10),
-        stop=tenacity.stop_after_attempt(10),
+        wait=tenacity.wait_exponential(max=MAX_RETRY),
+        stop=tenacity.stop_after_attempt(MAX_RETRY),
     )
     def put(
         self, url: str, data: Dict[str, Any] = None, files: Dict[str, Any] = None
@@ -415,8 +423,8 @@ class Client:
         retry=tenacity.retry_if_exception_type(httpx.TimeoutException)
         | tenacity.retry_if_exception_type(httpx.ConnectError)
         | retry_if_http_status_error(),
-        wait=tenacity.wait_exponential(max=10),
-        stop=tenacity.stop_after_attempt(10),
+        wait=tenacity.wait_exponential(max=MAX_RETRY),
+        stop=tenacity.stop_after_attempt(MAX_RETRY),
     )
     def delete(self, url: str) -> httpx.Response:
         oauth_session = self._oauth2_session()
