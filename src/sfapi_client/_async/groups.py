@@ -9,11 +9,17 @@ class AsyncGroupMember(GroupMemberBase):
     client: Optional["AsyncClient"]
 
     async def user(self) -> "AsyncUser":
+        """
+        Get the user associated with the membership.
+        """
         return await AsyncUser._fetch_user(self.client, self.name)
 
 
 # Note: We can't use our generated model as we want user => members ( to avoid confusion with User model )
 class AsyncGroup(BaseModel):
+    """
+    A user group.
+    """
     client: Optional["AsyncClient"]
     gid: Optional[int]
     name: Optional[str]
@@ -50,13 +56,26 @@ class AsyncGroup(BaseModel):
                 raise RuntimeError(r.text)
 
     async def add(self, users: Union[List[str], List["AsyncUser"]]):
+        """
+        Add users to the group.
+
+        :param users: The usernames to add
+        """
         await self._group_action(users, GroupAction.batch_add)
 
     async def remove(self, users: Union[List[str], List["AsyncUser"]]):
+        """
+        Remove users from the group.
+
+        :param users: The usernames to remove
+        """
         await self._group_action(users, GroupAction.batch_remove)
 
     @property
     def members(self):
+        """
+        The users in this group.
+        """
         members = [AsyncGroupMember.parse_obj(user_info) for user_info in self.users_]
 
         def _set_client(m):
