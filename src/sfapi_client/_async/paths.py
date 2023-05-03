@@ -23,11 +23,6 @@ def _is_no_such(error: SfApiError):
 
 
 class AsyncRemotePath(PathBase):
-    """
-    RemotePath is used to model a remote path, it takes inspiration from
-    pathlib and shares some of its interface.
-    """
-
     compute: Optional["AsyncCompute"]
     # It would be nice to be able subclass PurePosixPath, however, this
     # require using private interfaces. So we derive by composition.
@@ -61,6 +56,9 @@ class AsyncRemotePath(PathBase):
 
     @property
     def parent(self):
+        """
+        The parent of the path.
+        """
         parent_path = AsyncRemotePath(str(self._path.parent))
         # We have to set the compute field separately otherwise
         # we run into ForwardRef issue because of circular deps
@@ -70,6 +68,9 @@ class AsyncRemotePath(PathBase):
 
     @property
     def parents(self):
+        """
+        The parents of the path.
+        """
         parents = [AsyncRemotePath(str(p)) for p in self._path.parents]
 
         # We have to set the compute field separately otherwise

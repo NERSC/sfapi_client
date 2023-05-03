@@ -18,29 +18,29 @@ extra_javascript:
   - javascript/apiselector.js
 
 plugins:
-  - search
-  - autorefs
-  - mkdocs-jupyter:
-      include: ["*.ipynb"]
-      ignore: ["docs/*.py"]
-  - gen-files:
-      scripts:
-        - docs/gen_sync.py
-        - docs/gen_examples.py
-  - literate-nav:
-      nav_file: SUMMARY.txt
-  - section-index
-  - mkdocstrings:
-      handlers:
-        python:
-          import:
-            - https://docs.python.org/3/objects.inv
-          options:
-            docstring_style: sphinx
-            docstring_options:
-              ignore_init_summary: yes
-            merge_init_into_class: yes
-            show_submodules: no
+- search
+- autorefs
+- mkdocs-jupyter:
+    include: ["*.ipynb"]
+    ignore: ["docs/*.py"]
+- gen-files:
+    scripts:
+    - docs/gen_sync.py
+    - docs/gen_examples.py
+- literate-nav:
+    nav_file: SUMMARY.txt
+- section-index
+- mkdocstrings:
+    handlers:
+      python:
+        import:
+        - https://docs.python.org/3/objects.inv
+        options:
+          docstring_style: sphinx
+          docstring_options:
+            ignore_init_summary: yes
+          merge_init_into_class: yes
+          show_submodules: no
 
 markdown_extensions:
   - pymdownx.highlight:
