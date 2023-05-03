@@ -3,7 +3,7 @@ from pathlib import Path
 import os
 import json
 
-replace = Path("replacements.json")
+replace = Path('examples_dev') / "replacement.json"
 
 if replace.exists():
     with replace.open('r'):
@@ -12,16 +12,19 @@ else:
     replacements = {}
 
 # Replace personal details in notebook
-for notebook in Path('examples').glob('*.ipynb'):
+for notebook in Path('examples_dev').glob('*.ipynb'):
     # Read in notebook
     with notebook.open('r') as nb:
         full_nb = nb.read()
     # replace all key with value
     for k, v in replacements.items():
         full_nb = full_nb.replace(k, v)
+
+    new_path = Path("examples") / notebook.name
     # Open to write back to notebook
-    with notebook.open('w') as nb:
+    with new_path.open('w') as nb:
         nb.write(full_nb)
+
 
 # Get our index page
 index_path = Path('docs/examples/index.md')
