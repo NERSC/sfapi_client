@@ -1,109 +1,54 @@
-# SF API Python Client
+# Welcome to sfapi_client
 
-This a first pass at a basic async and generated sync client for the SF API. It sketches out some of the basic interfaces that could be provided. We are using pydantic models and Python typing to make the JSON responses from the API more discoverable during development. Using the various asyncio constructs such as `await` and `gather` it is possible to build up job based workflow pretty easily. This is very much a prototype, there are plenty of things that would need to be done before any of it could be used in production, its a first step.
+sfapi_client is a Python 3 client for NERSC's [Superfacility API](https://docs.nersc.gov/services/sfapi/).
 
-## Usage
+---
 
-### Accessing a compute resource
+Install sfapi_client using pip:
 
-#### async
-
-```python
-    from sfapi_client import AsyncClient
-    from sfapi_client.compute import Machines
-
-    async with AsyncClient(client_id, client_secret) as client:
-        cori = await client.compute(Machines.cori)
-
+```shell
+$ pip install sfapi_client
 ```
 
-#### sync
+Let's get started by checking the status of perlmutter:
 
-```python
-    from sfapi_client import Client
-    from sfapi_client.compute import Machines
-
-    with Client(client_id, client_secret) as client:
-        cori = client.compute(Machines.cori)
+```pycon
+>>> from sfapi_client import Client
+>>> from sfapi_client.compute import Machines
+>>> with Client() as client:
+...     status = client.compute(Machines.perlmutter)
+...
+>>> status
+Compute(name='perlmutter', full_name='Perlmutter', description='System Degraded', system_type='compute', notes=['2023-04-26 18:16 -- 2023-04-28 09:30 PDT, System Degraded, Rolling reboots are complete, a final reboot is scheduled for 0930 PDT'], status=<StatusValue.degraded: 'degraded'>, updated_at=datetime.datetime(2023, 4, 26, 18, 16, tzinfo=datetime.timezone(datetime.timedelta(days=-1, seconds=61200))), client=<sfapi_client._sync.client.Client object at 0x102c871c0>)
 ```
 
+## Features
 
-### Submitting a job
+* `async` interface and standard synchronous interface.
+* Fully type annotated.
 
-#### async
+## Documentation
 
-```python
-    from sfapi_client import AsyncClient
-    from sfapi_client.compute import Machines
+For the basics, head over to the [QuickStart](). We also have Jupyter Nodebook [examples]().
 
-    async with AsyncClient(client_id, client_secret) as client:
-        cori = await client.compute(Machines.cori)
-        job = await cori.submit_job(job_path)
+More in depth developer documentation can be found in the [API reference]().
 
-        # Now wait for the job to complete
-        await job.complete()
+## Dependencies
+
+The sfapi_client project relies on these libraries:
+
+* `httpx` - HTTP support.
+* `authlib` - OAuth 2.0 authentication.
+* `pydantic` - Data models.
+* `tenacity` - Retry.
+* `datamodel-code-generator` - Generating data models from the Open API specification.
+* `unasync` - Generating synchronous interface from asyn implementation.
+
+
+## Installation
+
+Install with pip:
+
+```shell
+$ pip install sfapi_client
 ```
-
-#### sync
-
-```python
-    from sfapi_client import Client
-    from sfapi_client.compute import Machines
-
-    with Client(client_id, client_secret) as client:
-        cori = client.compute(Machines.cori)
-        job = cori.submit_job(job_path)
-
-        # Now wait for the job to complete
-        job.complete()
-```
-
-### Cancelling a job
-
-#### async
-
-```python
-    from sfapi_client import AsyncClient
-    from sfapi_client.compute import Machines
-
-    async with AsyncClient(client_id, client_secret) as client:
-        cori = await client.compute(Machines.cori)
-        job = await cori.submit_job(job_path)
-
-        await job.cancel()
-```
-
-#### sync
-
-```python
-    from sfapi_client import Client
-    from sfapi_client.compute import Machines
-
-    with Client(client_id, client_secret) as client:
-        cori = client.compute(Machines.cori)
-        job = cori.submit_job(job_path)
-
-        job.cancel()
-```
-
-## Synchronous client generation
-
-The client is implemented using asyncio. However, we are using [unasync](https://github.com/python-trio/unasync)
-to generate a synchronous version. The synchronous client can be updated by running the following command:
-
-```bash
-python scripts/run.py unasync
-```
-
-`unasync` doesn't currently have support for `asyncio.sleep` so any use of `asyncio.sleep` should be replaced with
-`commmon._ASYNC_SLEEP` so we can apply the appropriate extract rule.
-
-## pydantic model generation
-
-The client uses pydantic models generated from the OpenAPI specification and optionally a sample job response. These
-models are generated into `_models/`. To refresh them run the following command:
-
-```bash
-python scripts/run.py codegen --job-json job.json
-```
-
