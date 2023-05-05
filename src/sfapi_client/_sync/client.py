@@ -94,8 +94,6 @@ class Resources:
     def _resource_name(resource_name: Optional[Union[str, Machines]]):
         if resource_name is None:
             resource_name = ""
-        elif isinstance(resource_name, Machines):
-            resource_name = f"/{resource_name.name}"
         else:
             resource_name = f"/{resource_name}"
 

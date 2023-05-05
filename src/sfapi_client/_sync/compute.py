@@ -21,6 +21,9 @@ from .paths import RemotePath
 from .._monitor import SyncJobMonitor
 from .._compute import CommandResult, SubmitJobResponse, SubmitJobResponseStatus
 
+# Patch to return str names from Enum of py3.11
+Machines.__str__ = lambda self: self.value
+
 
 class Compute(ComputeBase):
     client: Optional["Client"]
