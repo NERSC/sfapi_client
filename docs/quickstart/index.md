@@ -39,9 +39,57 @@ Lets get the status for permutter.
 
 ## Submitting a job
 
+=== "async"
+    ```python
+        from sfapi_client import AsyncClient
+        from sfapi_client.compute import Machines
+
+        async with AsyncClient(client_id, client_secret) as client:
+            cori = await client.compute(Machines.cori)
+            job = await cori.submit_job(job_path)
+
+            # Now wait for the job to complete
+            await job.complete()
+    ```
+=== "sync"
+    ```python
+        from sfapi_client import Client
+        from sfapi_client.compute import Machines
+
+        with Client(client_id, client_secret) as client:
+            cori = client.compute(Machines.cori)
+            job = cori.submit_job(job_path)
+
+            # Now wait for the job to complete
+            job.complete()
+    ```
+
 ## Monitoring a job
 
 ## Cancelling a job
+
+=== "async"
+    ```python
+        from sfapi_client import AsyncClient
+        from sfapi_client.compute import Machines
+
+        async with AsyncClient(client_id, client_secret) as client:
+            cori = await client.compute(Machines.cori)
+            job = await cori.submit_job(job_path)
+
+            await job.cancel()
+    ```
+=== "sync"
+    ```python
+        from sfapi_client import Client
+        from sfapi_client.compute import Machines
+
+        with Client(client_id, client_secret) as client:
+            cori = client.compute(Machines.cori)
+            job = cori.submit_job(job_path)
+
+            job.cancel()
+    ```
 
 ## Download a file
 
