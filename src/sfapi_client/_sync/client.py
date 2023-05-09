@@ -190,11 +190,6 @@ class Resources:
         """
         resource_path = self._resource_name(resource_name)
 
-        # `/status` throws a 307 redirect error so we need the '/' added
-        # To get /status/
-        # TODO: Seems like something we could change on the api end
-        resource_path = "/" if resource_path == "" else resource_path
-
         response = self._client.get(f"status{resource_path}")
         json_response = response.json()
 
