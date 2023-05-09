@@ -20,6 +20,7 @@ from .._models import (
     Note,
     AppRoutersStatusModelsStatus as Status,
 )
+from .._models.resources import Resource
 from .groups import AsyncGroup
 from .users import AsyncUser
 
@@ -179,7 +180,7 @@ class AsyncResources:
         return notes
 
     async def status(
-        self, resource_name: Optional[Union[str, Machines]] = None
+        self, resource_name: Optional[Union[str, Machines, Resource]] = None
     ) -> Union[Dict[str, Status], Status]:
         """
         Get the status of a resource.
@@ -495,3 +496,13 @@ class AsyncClient:
             self._resources = AsyncResources(self)
 
         return self._resources
+    
+    async def status(self, resource: Union[str, Machines, Resource]) -> Union[Dict[str, Status], Status]:
+        """Return the status of a resource
+
+        :param resource: Name of the resource to query
+        :return: Status object of the resource
+        :rtype: Union[Dict[str, Status], Status]
+        """
+        resource = Resource(resource)
+        return await self.resources.status(resource)
