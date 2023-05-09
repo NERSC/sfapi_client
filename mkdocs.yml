@@ -1,12 +1,13 @@
 site_name: sfapi_client
 watch: [src/sfapi_client]
 nav:
-- Overview: index.md
-- Usage:
-  - QuickStart: quickstart/
-- API Reference: reference/
-- Community:
-  - Contributing: community/contributing.md
+  - Overview: index.md
+  - Usage:
+      - QuickStart: quickstart/
+      - Examples: examples/index.md
+  - API Reference: reference/
+  - Community:
+      - Contributing: community/contributing.md
 
 theme:
   name: "material"
@@ -19,9 +20,13 @@ extra_javascript:
 plugins:
 - search
 - autorefs
+- mkdocs-jupyter:
+    include: ["*.ipynb"]
+    ignore: ["docs/*.py"]
 - gen-files:
     scripts:
     - docs/gen_sync.py
+    - docs/gen_examples.py
 - literate-nav:
     nav_file: SUMMARY.txt
 - section-index

@@ -1,6 +1,7 @@
 import os
 import re
 from pathlib import Path
+import json
 
 import typer
 import unasync
@@ -153,6 +154,35 @@ def datamodel_codegen(
             name_split = [name.capitalize() for name in name_split]
             job_model = _from_json(model, f"{''.join(name_split)}")
             fp.write(job_model)
+
+
+@cli.command(name="examples")
+def work_on_examples(
+    replace: Optional[Path] = typer.Option((Path('examples_dev') / "replacement.json"), dir_okay=False),
+):
+    dev_dir = Path(__file__).parent.parent / "examples_dev"
+    dev_dir.mkdir(exist_ok=True)
+    examples = (Path(__file__).parent.parent / "examples").glob("*.ipynb")
+
+    if replace.exists():
+        with replace.open('r'):
+            replacements = json.loads(replace.read_text())
+    else:
+        replacements = {}
+
+    # Replace personal details in notebook
+    for notebook in examples:
+        # Read in notebook
+        with notebook.open('r') as nb:
+            full_nb = nb.read()
+        # replace all key with value
+        for v, k in replacements.items():
+            full_nb = full_nb.replace(k, v)
+
+        new_path = dev_dir / notebook.name
+        # Open to write back to notebook
+        with new_path.open('w') as nb:
+            nb.write(full_nb)
 
 
 if __name__ == "__main__":

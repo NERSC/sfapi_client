@@ -1,4 +1,9 @@
 __pycache__
 .env
 docs/reference/sync
+docs/examples/*.md
+examples/index.md
 site/
+*.ipynb_checkpoints
+examples_dev
+*.json
