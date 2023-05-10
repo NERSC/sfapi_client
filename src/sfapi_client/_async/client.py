@@ -9,7 +9,7 @@ import httpx
 import tenacity
 from authlib.jose import JsonWebKey
 
-from .compute import Machines, AsyncCompute
+from .compute import Machine, AsyncCompute
 from ..exceptions import SfApiError
 from .._models import (
     JobOutput as JobStatusResponse,
@@ -92,7 +92,7 @@ class AsyncResources:
         self._client = client
 
     @staticmethod
-    def _resource_name(resource_name: Optional[Union[str, Machines]]):
+    def _resource_name(resource_name: Optional[Union[str, Machine]]):
         if resource_name is None:
             resource_name = ""
         else:
@@ -114,7 +114,7 @@ class AsyncResources:
         return resource_map
 
     async def outages(
-        self, resource_name: Optional[Union[str, Machines]] = None
+        self, resource_name: Optional[Union[str, Machine]] = None
     ) -> Union[Dict[str, List[Outage]], List[Outage]]:
         """
         Get outage information for a resource.
@@ -136,7 +136,7 @@ class AsyncResources:
         return outages
 
     async def planned_outages(
-        self, resource_name: Optional[Union[str, Machines]] = None
+        self, resource_name: Optional[Union[str, Machine]] = None
     ) -> Union[Dict[str, List[Outage]], List[Outage]]:
         """
         Get planned outage information for a resource.
@@ -158,7 +158,7 @@ class AsyncResources:
         return outages
 
     async def notes(
-        self, resource_name: Optional[Union[str, Machines]] = None
+        self, resource_name: Optional[Union[str, Machine]] = None
     ) -> Union[Dict[str, List[Note]], List[Note]]:
         """
         Get notes associated with a resource.
@@ -180,7 +180,7 @@ class AsyncResources:
         return notes
 
     async def status(
-        self, resource_name: Optional[Union[str, Machines, Resource]] = None
+        self, resource_name: Optional[Union[str, Machine, Resource]] = None
     ) -> Union[Dict[str, Status], Status]:
         """
         Get the status of a resource.
@@ -208,7 +208,7 @@ class AsyncClient:
         self,
         client_id: Optional[str] = None,
         secret: Optional[str] = None,
-        key_name: Optional[str] = None,
+        key_name: Optional[Union[str, Path]] = None,
         api_base_url: Optional[str] = SFAPI_BASE_URL,
         wait_interval: int = 10,
     ):
@@ -434,7 +434,7 @@ class AsyncClient:
 
         return r
 
-    async def compute(self, machine: Union[Machines, str]) -> AsyncCompute:
+    async def compute(self, machine: Union[Machine, str]) -> AsyncCompute:
         """Create a compute site to submit jobs or view jobs in the queue
 
         :param machine: Name of the compute machine to use
@@ -442,7 +442,7 @@ class AsyncClient:
         view the queue on the system, or list files and directories.
         """
         # Allows for creating a compute from a name string
-        machine = Machines(machine)
+        machine = Machine(machine)
         response = await self.get(f"status/{machine.value}")
 
         compute = AsyncCompute.parse_obj(response.json())
@@ -497,7 +497,7 @@ class AsyncClient:
 
         return self._resources
     
-    async def status(self, resource: Union[str, Machines, Resource]) -> Union[Dict[str, Status], Status]:
+    async def status(self, resource: Union[str, Machine, Resource]) -> Union[Dict[str, Status], Status]:
         """Return the status of a resource
 
         :param resource: Name of the resource to query

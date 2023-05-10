@@ -2,7 +2,7 @@ import pytest
 import asyncio
 
 from sfapi_client import AsyncClient
-from sfapi_client.compute import Machines
+from sfapi_client.compute import Machine
 from sfapi_client.compute import AsyncCompute
 from sfapi_client.jobs import AsyncJobSqueue, AsyncJobSacct, JobCommand, JobState
 
