@@ -497,12 +497,3 @@ class AsyncClient:
 
         return self._resources
     
-    async def status(self, resource: Union[str, Machine, Resource]) -> Union[Dict[str, Status], Status]:
-        """Return the status of a resource
-
-        :param resource: Name of the resource to query
-        :return: Status object of the resource
-        :rtype: Union[Dict[str, Status], Status]
-        """
-        resource = Resource(resource)
-        return await self.resources.status(resource)
