@@ -3,3 +3,4 @@ unasync
 typer
 pytest
 pytest-asyncio
+mkdocs-jupyter
