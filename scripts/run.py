@@ -162,6 +162,7 @@ def resources_codegen(
         name = name if name != "int" else f'_{name}'
         name = name.replace('-', '_')
         names.append(f"    {name} = \"{value}\"")
+        names.append(f"    \"\"\" {s['system_type']}: {s['full_name']}\"\"\"")
 
     resources = '\n'.join(names)
     now = datetime.datetime.now()

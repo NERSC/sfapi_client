@@ -7,6 +7,7 @@
     * [paths](async/paths/index.md)
     * [projects](async/projects/index.md)
     * [users](async/users/index.md)
+    * [resources](async/resources/index.md)
 * Sync
     * [client](sync/client/index.md)
     * [compute](sync/compute/index.md)
@@ -16,3 +17,4 @@
     * [paths](sync/paths/index.md)
     * [projects](sync/projects/index.md)
     * [users](sync/users/index.md)
+    * [resources](sync/resources/index.md)
