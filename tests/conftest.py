@@ -6,7 +6,8 @@ import string
 import pytest
 from authlib.jose import JsonWebKey
 
-from sfapi_client.compute import Machines
+from sfapi_client.compute import Machine
+from sfapi_client import Resource
 
 from pydantic import BaseSettings
 
@@ -15,7 +16,8 @@ class Settings(BaseSettings):
     SFAPI_CLIENT_ID: str = None
     SFAPI_CLIENT_SECRET: str = None
     TEST_JOB_PATH: str = None
-    TEST_MACHINE: Machines = Machines.perlmutter
+    TEST_MACHINE: Machine = Machine.perlmutter
+    TEST_RESOURCE: Resource = Resource.spin
     TEST_USERNAME: str = None
     TEST_ANOTHER_USERNAME: str = None
     TEST_TMP_DIR: str = None
@@ -52,6 +54,9 @@ def test_job_path():
 def test_machine():
     return settings.TEST_MACHINE
 
+@pytest.fixture
+def test_resource():
+    return settings.TEST_RESOURCE
 
 @pytest.fixture
 def test_username():

@@ -22,10 +22,10 @@ by include the parent explicitly. -->
         filters:
             - "!^_[^_]"
 
-## `Machines`
+## `Machine`
 
 The possible compute resources.
 
-::: sfapi_client.compute.Machines
+::: sfapi_client.compute.Machine
     options:
         show_if_no_docstring: yes

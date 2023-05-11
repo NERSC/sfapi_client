@@ -1,5 +1,5 @@
 import pytest
-from sfapi_client import Client
+from sfapi_client import Client, StatusValue
 
 
 @pytest.mark.public
@@ -78,3 +78,11 @@ def test_status(test_machine):
         assert test_machine.value in status
         test_machine_status = status[test_machine.value]
         assert test_machine_status.name == test_machine
+
+@pytest.mark.public
+def test_resouce_status(test_resource):
+    with Client() as client:
+        status = client.resources.status(test_resource)
+
+        assert test_resource.value in status.name
+        assert status.status in StatusValue

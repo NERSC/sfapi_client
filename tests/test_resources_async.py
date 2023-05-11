@@ -1,6 +1,6 @@
 import pytest
 
-from sfapi_client import AsyncClient
+from sfapi_client import AsyncClient, StatusValue
 
 @pytest.mark.public
 @pytest.mark.asyncio
@@ -83,3 +83,13 @@ async def test_status(test_machine):
         assert test_machine.value in status
         test_machine_status = status[test_machine.value]
         assert test_machine_status.name == test_machine
+
+
+@pytest.mark.public
+@pytest.mark.asyncio
+async def test_resouce_status(test_resource):
+   async with AsyncClient() as client:
+        status = await client.resources.status(test_resource)
+
+        assert test_resource.value in status.name
+        assert status.status in StatusValue
