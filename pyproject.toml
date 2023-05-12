@@ -10,7 +10,8 @@ name = "sfapi_client"
 dynamic = ['version']
 version = "0.0.1"
 authors = [
-  { name="Chris Harrs", email="cjh@lbl.gov" },
+  { name="Chris Harris", email="cjh@lbl.gov" },
+  {name="Nicholas Tyler", email="tylern@lbl.gov" }
 ]
 description = "Python client for NERSC SF API"
 readme = "README.md"
