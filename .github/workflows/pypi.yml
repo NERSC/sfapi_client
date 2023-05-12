@@ -1,0 +1,57 @@
+name: pypi
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "*"
+  pull_request:
+
+jobs:
+  build:
+    name: Build wheel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+      - name: Install pypa/build
+        run: >-
+          python -m
+          pip install
+          build
+          --user
+
+      - name: Build a binary wheel and a source tarball
+        run: >-
+          python -m
+          build
+          --sdist
+          --wheel
+          --outdir dist/
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: wheel
+          path: ./dist/
+
+  pypi-publish:
+    needs: build
+    name: Upload release to PyPI
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/sfapi_client
+    permissions:
+      id-token: write
+    if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/')
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: wheel
+          path: dist
+      - name: Publish package PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
