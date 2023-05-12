@@ -1,9 +1,13 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "vcs"
 
 [project]
 name = "sfapi_client"
+dynamic = ['version']
 version = "0.0.1"
 authors = [
   { name="Chris Harrs", email="cjh@lbl.gov" },
