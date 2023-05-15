@@ -45,8 +45,8 @@ Lets get the status for permutter.
     >>> from sfapi_client.compute import Machine
     >>>
     >>> async with AsyncClient(client_id, client_secret) as client:
-    ...     cori = await client.compute(Machine.cori)
-    ...     job = await cori.submit_job(job_path)
+    ...     perlmutter = await client.compute(Machine.perlmutter)
+    ...     job = await perlmutter.submit_job(job_path)
     ...
     ...     # Now wait for the job to complete
     ...     await job.complete()
@@ -57,8 +57,8 @@ Lets get the status for permutter.
     >>> from sfapi_client.compute import Machine
     >>>
     >>> with Client(client_id, client_secret) as client:
-    ...     cori = client.compute(Machine.cori)
-    ...     job = cori.submit_job(job_path)
+    ...     perlmutter = client.compute(Machine.perlmutter)
+    ...     job = perlmutter.submit_job(job_path)
     ...
     ...     # Now wait for the job to complete
     ...     job.complete()
@@ -73,8 +73,8 @@ Lets get the status for permutter.
     >>> from sfapi_client.compute import Machine
     >>>
     >>> async with AsyncClient(client_id, client_secret) as client:
-    ...     cori = await client.compute(Machine.cori)
-    ...     job = await cori.submit_job(job_path)
+    ...     perlmutter = await client.compute(Machine.perlmutter)
+    ...     job = await perlmutter.submit_job(job_path)
     ...
     ...     while True:
     ...         # Update the job state
@@ -93,8 +93,8 @@ Lets get the status for permutter.
     >>> from sfapi_client.compute import Machine
     >>>
     >>> with Client(client_id, client_secret) as client:
-    ...     cori = client.compute(Machine.cori)
-    ...     job = cori.submit_job(job_path)
+    ...     perlmutter = client.compute(Machine.perlmutter)
+    ...     job = perlmutter.submit_job(job_path)
     ...
     ...     while True:
     ...         # Update the job state
@@ -107,7 +107,6 @@ Lets get the status for permutter.
     JobState.RUNNING
     ```
 
-
 ## Cancelling a job
 
 === "async"
@@ -116,8 +115,8 @@ Lets get the status for permutter.
     >>> from sfapi_client.compute import Machine
     >>>
     >>> async with AsyncClient(client_id, client_secret) as client:
-    ...     cori = await client.compute(Machine.cori)
-    ...     job = await cori.submit_job(job_path)
+    ...     perlmutter = await client.compute(Machine.perlmutter)
+    ...     job = await perlmutter.submit_job(job_path)
     ...
     ...     await job.cancel()
     ```
@@ -127,8 +126,8 @@ Lets get the status for permutter.
     >>> from sfapi_client.compute import Machine
     >>>
     >>> with Client(client_id, client_secret) as client:
-    ...     cori = client.compute(Machine.cori)
-    ...     job = cori.submit_job(job_path)
+    ...     perlmutter = client.compute(Machine.perlmutter)
+    ...     job = perlmutter.submit_job(job_path)
     ...
     ...     job.cancel()
     ```
@@ -141,8 +140,8 @@ Lets get the status for permutter.
     >>> from sfapi_client.compute import Machine
     >>>
     >>> async with AsyncClient(client_id, key) as client:
-    ...     cori = await client.compute(Machine.cori)
-    ...     [file] = await cori.ls(path)
+    ...     perlmutter = await client.compute(Machine.perlmutter)
+    ...     [file] = await perlmutter.ls(path)
     ...     await file.download()
     ...
     <_io.StringIO object at 0x107f45120>
@@ -153,8 +152,8 @@ Lets get the status for permutter.
     >>> from sfapi_client.compute import Machine
     >>>
     >>> with Client(client_id, key) as client:
-    ...     cori = client.compute(Machine.cori)
-    ...     [file] = cori.ls(path)
+    ...     perlmutter = client.compute(Machine.perlmutter)
+    ...     [file] = perlmutter.ls(path)
     ...     file.download()
     ...
     <_io.StringIO object at 0x102aa5000>
@@ -168,11 +167,11 @@ Lets get the status for permutter.
     >>> from sfapi_client.compute import Machine
     >>>
     >>> async with AsyncClient(client_id, key) as client:
-    ...     cori = await client.compute(Machine.cori)
-    ...     [path] = await cori.ls(target, directory=True)
+    ...     perlmutter = await client.compute(Machine.perlmutter)
+    ...     [path] = await perlmutter.ls(target, directory=True)
     ...     await path.upload(file)
     ...
-    AsyncRemotePath(perms=None, hardlinks=0, user=None, group=None, size=0, date=None, name='hello.txt', compute=AsyncCompute(name='cori', full_name='Cori', description='System is active', system_type='compute', notes=[], status=<StatusValue.active: 'active'>, updated_at=datetime.datetime(2023, 5, 9, 22, 5, tzinfo=datetime.timezone(datetime.timedelta(days=-1, seconds=61200))), client=<sfapi_client._async.client.AsyncClient object at 0x107f85840>))
+    AsyncRemotePath(perms=None, hardlinks=0, user=None, group=None, size=0, date=None, name='hello.txt', compute=AsyncCompute(name='perlmutter', full_name='perlmutter', description='System is active', system_type='compute', notes=[], status=<StatusValue.active: 'active'>, updated_at=datetime.datetime(2023, 5, 9, 22, 5, tzinfo=datetime.timezone(datetime.timedelta(days=-1, seconds=61200))), client=<sfapi_client._async.client.AsyncClient object at 0x107f85840>))
     ```
 === "sync"
     ```pycon
@@ -180,9 +179,9 @@ Lets get the status for permutter.
     >>> from sfapi_client.compute import Machine
     >>>
     >>> with Client(client_id, key) as client:
-    ...     cori = client.compute(Machine.cori)
-    ...     [path] = cori.ls(target, directory=True)
+    ...     perlmutter = client.compute(Machine.perlmutter)
+    ...     [path] = perlmutter.ls(target, directory=True)
     ...     path.upload(file)
     ...
-    RemotePath(perms=None, hardlinks=0, user=None, group=None, size=0, date=None, name='hello.txt', compute=Compute(name='cori', full_name='Cori', description='System is active', system_type='compute', notes=[], status=<StatusValue.active: 'active'>, updated_at=datetime.datetime(2023, 5, 9, 22, 5, tzinfo=datetime.timezone(datetime.timedelta(days=-1, seconds=61200))), client=<sfapi_client._sync.client.Client object at 0x107f84e20>))
+    RemotePath(perms=None, hardlinks=0, user=None, group=None, size=0, date=None, name='hello.txt', compute=Compute(name='perlmutter', full_name='perlmutter', description='System is active', system_type='compute', notes=[], status=<StatusValue.active: 'active'>, updated_at=datetime.datetime(2023, 5, 9, 22, 5, tzinfo=datetime.timezone(datetime.timedelta(days=-1, seconds=61200))), client=<sfapi_client._sync.client.Client object at 0x107f84e20>))
     ```
