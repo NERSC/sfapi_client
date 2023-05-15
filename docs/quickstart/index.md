@@ -37,6 +37,82 @@ Lets get the status for permutter.
 
 ## Setting up credentials
 
+Our [NERSC Documentation](https://docs.nersc.gov/services/sfapi/authentication/#client) has more information about getting the `client_id` and `client_secret` from iris.
+Once you retrive the keys there are a few ways to use them to activate the client.
+
+### Storing as environment variables
+
+The simplest way to get started is to export them into your environment, and then retrive them in your python script from the `os` module.
+
+```bash
+export SFAPI_CLIENT_ID='randmstrgz'
+export SFAPI_SECRET='{"kty": "RSA", "n": ...}'
+```
+
+=== "async"
+    ```pycon
+    >>> from sfapi_client import AsyncClient
+    >>> from sfapi_client.compute import Machine
+    >>> import os
+    >>>
+    >>> client_id = os.getenv("SFAPI_CLIENT_ID")
+    >>> client_secret = os.getenv("SFAPI_SECRET")
+    >>>
+    >>> async with AsyncClient(client_id, client_secret) as client:
+    ...     perlmutter = await client.compute(Machine.perlmutter)
+```
+=== "sync"
+    ```pycon
+    >>> from sfapi_client import Client
+    >>> from sfapi_client.compute import Machine
+    >>> import os
+    >>>
+    >>> client_id = os.getenv("SFAPI_CLIENT_ID")
+    >>> client_secret = os.getenv("SFAPI_SECRET")
+    >>>
+    >>> with Client(client_id, client_secret) as client:
+    ...     perlmutter = client.compute(Machine.perlmutter)
+```
+
+### Storing keys in files
+
+Keys can also be stored in a file. By default the client will look for files saved to the `~/.superfacility` directory in the pem format with the `client_id` in the first line.
+Files should be saved as read/write only by the user with `chmod 600 ~/.superfacility/key.pem`.
+
+```pem
+randmstrgz
+-----BEGIN RSA PRIVATE KEY-----
+...
+-----END RSA PRIVATE KEY-----
+```
+
+If the key is stored in a different location, possibly as a secret file storage in Spin, the `key_path` can be given explicilty to the client.
+
+=== "async"
+    ```pycon
+    >>> from sfapi_client import AsyncClient
+    >>> from sfapi_client.compute import Machine
+    >>> from pathlib import Path
+    >>>
+    >>> key_path = Path("/path/to/secret/key.pem")
+    >>>
+    >>> async with AsyncClient(key_name=key_path) as client:
+    ...     perlmutter = await client.compute(Machine.perlmutter)
+
+    ```
+=== "sync"
+    ```pycon
+    >>> from sfapi_client import Client
+    >>> from sfapi_client.compute import Machine
+    >>> from pathlib import Path
+    >>>
+    >>> key_path = Path("/path/to/secret/key.pem")
+    >>>
+    >>> with Client(key_name=key_path) as client:
+    ...     perlmutter = client.compute(Machine.perlmutter)
+```
+
+
 ## Submitting a job
 
 === "async"
