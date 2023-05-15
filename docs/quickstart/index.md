@@ -1,43 +1,85 @@
 # QuickStart
 
-Import the client
+This will be a basic guide to using the `sfapi_client`. Documentation on all the features can be found under the API Reference,
+and exaple jupyter notebooks can be found in [Examples](../examples).
 
-=== "sync"
+## Downloading
 
-    ```pycon
-    >>> from sfapi_client import Client
-    ```
+The library is availbe on [PyPi](https://pypi.org/project/sfapi_client/) and installable with `pip`.
+
+```bash
+pip install sfapi_client
+```
+
+## Loading the Client
+
+The client can be loaded into your existing python codes by importing the client you want to use.
+
 === "async"
 
     ```pycon
     >>> from sfapi_client import AsyncClient
     ```
-
-Lets get the status for permutter.
-
 === "sync"
 
     ```pycon
-    >>> from sfapi_client.compute import Machine
-    >>> with Client() as client:
-    ...     status = client.compute(Machine.perlmutter)
-    ...
-    >>> status
-    Compute(name='perlmutter', full_name='Perlmutter', description='System Degraded', system_type='compute', notes=['2023-04-26 18:16 -- 2023-04-28 09:30 PDT, System Degraded, Rolling reboots are complete, a final reboot is scheduled for 0930 PDT'], status=<StatusValue.degraded: 'degraded'>, updated_at=datetime.datetime(2023, 4, 26, 18, 16, tzinfo=datetime.timezone(datetime.timedelta(days=-1, seconds=61200))), client=<sfapi_client._sync.client.Client object at 0x102c871c0>)
+    >>> from sfapi_client import Client
     ```
+
+## Getting system status
+
+The status of the compute machines as well as other resources available at NERSC can be gotten without authentication.
+Here's an example of getting the status of perlmutter.
+
 === "async"
     ```pycon
+    >>> from sfapi_client import AsyncClient
     >>> from sfapi_client.compute import Machine
     >>> async with AsyncClient() as client:
     ...     status = await client.compute(Machine.perlmutter)
     ...
     >>> status
-    AsyncCompute(name='perlmutter', full_name='Perlmutter', description='System Degraded', system_type='compute', notes=['2023-04-26 18:16 -- 2023-04-28 09:30 PDT, System Degraded, Rolling reboots are complete, a final reboot is scheduled for 0930 PDT'], status=<StatusValue.degraded: 'degraded'>, updated_at=datetime.datetime(2023, 4, 26, 18, 16, tzinfo=datetime.timezone(datetime.timedelta(days=-1, seconds=61200))), client=<sfapi_client._sync.client.AsyncClient object at 0x102c871c0>)
+    AsyncCompute(name='perlmutter', full_name='Perlmutter', description='System is active', system_type='compute', notes=[], status=<StatusValue.active: 'active'>, updated_at=datetime.datetime(2023, 5, 11, 13, 50, tzinfo=datetime.timezone(datetime.timedelta(days=-1, seconds=61200))), client=<sfapi_client._async.client.AsyncClient object at 0x1070b0790>)
     ```
+=== "sync"
+    ```pycon
+    >>> from sfapi_client import Client
+    >>> from sfapi_client.compute import Machine
+    >>> with Client() as client:
+    ...     status = client.compute(Machine.perlmutter)
+    ...
+    >>> status
+    Compute(name='perlmutter', full_name='Perlmutter', description='System is active', system_type='compute', notes=[], status=<StatusValue.active: 'active'>, updated_at=datetime.datetime(2023, 5, 11, 13, 50, tzinfo=datetime.timezone(datetime.timedelta(days=-1, seconds=61200))), client=<sfapi_client._sync.client.Client object at 0x10679afe0>)
+    ```
+
+And an example of getting the most recent outages for a resouce such as Spin.
+
+=== "async"
+    ```pycon
+    >>> from sfapi_client import AsyncClient
+    >>> from sfapi_client import Resource
+    >>> async with AsyncClient() as client:
+    ...     outages = await client.resources.outages(Resource.spin)
+    ...
+    >>> outages[0]
+    Outage(name='spin', start_at=datetime.datetime(2023, 5, 5, 13, 50, tzinfo=datetime.timezone(datetime.timedelta(days=-1, seconds=61200))), end_at=datetime.datetime(2023, 5, 5, 15, 30, tzinfo=datetime.timezone(datetime.timedelta(days=-1, seconds=61200))), description='System Degraded', notes='The Rancher 2 development cluster was unavailable from 13:50-14:10 due to a control plane node RAM shortage combined with reaching a ceiling on total cluster pod count. Staff increased RAM and unanimously agreed to raise the pod count ceiling; workloads will be briefly unavailable (1-2 min) for rolling node reboots.', status='Completed', swo='degr', update_at=None)
+    ```
+=== "sync"
+    ```pycon
+    >>> from sfapi_client import Client
+    >>> from sfapi_client import Resource
+    >>> with Client() as client:
+    ...     outages = client.resources.outages(Resource.spin)
+    ...
+    >>> outages[0]
+    Outage(name='spin', start_at=datetime.datetime(2023, 5, 5, 13, 50, tzinfo=datetime.timezone(datetime.timedelta(days=-1, seconds=61200))), end_at=datetime.datetime(2023, 5, 5, 15, 30, tzinfo=datetime.timezone(datetime.timedelta(days=-1, seconds=61200))), description='System Degraded', notes='The Rancher 2 development cluster was unavailable from 13:50-14:10 due to a control plane node RAM shortage combined with reaching a ceiling on total cluster pod count. Staff increased RAM and unanimously agreed to raise the pod count ceiling; workloads will be briefly unavailable (1-2 min) for rolling node reboots.', status='Completed', swo='degr', update_at=None)
+    ```
+
 
 ## Setting up credentials
 
-Our [NERSC Documentation](https://docs.nersc.gov/services/sfapi/authentication/#client) has more information about getting the `client_id` and `client_secret` from iris.
+To get more detailed information from NERSC systems like your projects allocations or the current jobs in the queue you will beed to provide a credential. 
+The [NERSC Documentation](https://docs.nersc.gov/services/sfapi/authentication/#client) has more information about getting the `client_id` and `client_secret` from iris.
 Once you retrive the keys there are a few ways to use them to activate the client.
 
 ### Storing as environment variables
@@ -60,7 +102,7 @@ export SFAPI_SECRET='{"kty": "RSA", "n": ...}'
     >>>
     >>> async with AsyncClient(client_id, client_secret) as client:
     ...     perlmutter = await client.compute(Machine.perlmutter)
-```
+    ```
 === "sync"
     ```pycon
     >>> from sfapi_client import Client
@@ -72,7 +114,7 @@ export SFAPI_SECRET='{"kty": "RSA", "n": ...}'
     >>>
     >>> with Client(client_id, client_secret) as client:
     ...     perlmutter = client.compute(Machine.perlmutter)
-```
+    ```
 
 ### Storing keys in files
 
@@ -110,7 +152,7 @@ If the key is stored in a different location, possibly as a secret file storage 
     >>>
     >>> with Client(key_name=key_path) as client:
     ...     perlmutter = client.compute(Machine.perlmutter)
-```
+    ```
 
 
 ## Submitting a job
