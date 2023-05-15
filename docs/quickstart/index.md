@@ -3,7 +3,7 @@
 This will be a basic guide to using the `sfapi_client`. Documentation on all the features can be found under the API Reference,
 and exaple jupyter notebooks can be found in [Examples](../examples).
 
-## Downloading
+## Installation
 
 The library is availbe on [PyPi](https://pypi.org/project/sfapi_client/) and installable with `pip`.
 
