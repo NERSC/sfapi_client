@@ -144,7 +144,7 @@ If the key is stored in a different location, possibly as a secret file storage 
     >>>
     >>> key_path = Path("/path/to/secret/key.pem")
     >>>
-    >>> async with AsyncClient(key_name=key_path) as client:
+    >>> async with AsyncClient(key=key_path) as client:
     ...     perlmutter = await client.compute(Machine.perlmutter)
 
     ```
@@ -156,7 +156,7 @@ If the key is stored in a different location, possibly as a secret file storage 
     >>>
     >>> key_path = Path("/path/to/secret/key.pem")
     >>>
-    >>> with Client(key_name=key_path) as client:
+    >>> with Client(key=key_path) as client:
     ...     perlmutter = client.compute(Machine.perlmutter)
     ```
 
