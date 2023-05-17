@@ -209,6 +209,10 @@ class JobSacct(Job, JobSacctBase):
 
 
 class JobSqueue(Job, JobSqueueBase):
+    """
+    Models a job running on a compute resource, the informatio is
+    fetched using `squeue`.
+    """
     _command: ClassVar[JobCommand] = JobCommand.squeue
 
     def _fetch_state(self):

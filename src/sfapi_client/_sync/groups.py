@@ -9,11 +9,17 @@ class GroupMember(GroupMemberBase):
     client: Optional["Client"]
 
     def user(self) -> "User":
+        """
+        Get the user associated with the membership.
+        """
         return User._fetch_user(self.client, self.name)
 
 
 # Note: We can't use our generated model as we want user => members ( to avoid confusion with User model )
 class Group(BaseModel):
+    """
+    A user group.
+    """
     client: Optional["Client"]
     gid: Optional[int]
     name: Optional[str]
@@ -50,13 +56,26 @@ class Group(BaseModel):
                 raise RuntimeError(r.text)
 
     def add(self, users: Union[List[str], List["User"]]):
+        """
+        Add users to the group.
+
+        :param users: The usernames to add
+        """
         self._group_action(users, GroupAction.batch_add)
 
     def remove(self, users: Union[List[str], List["User"]]):
+        """
+        Remove users from the group.
+
+        :param users: The usernames to remove
+        """
         self._group_action(users, GroupAction.batch_remove)
 
     @property
     def members(self):
+        """
+        The users in this group.
+        """
         members = [GroupMember.parse_obj(user_info) for user_info in self.users_]
 
         def _set_client(m):
