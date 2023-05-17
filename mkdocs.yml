@@ -4,7 +4,7 @@ nav:
   - Overview: index.md
   - Usage:
       - QuickStart: quickstart/
-      - Examples: examples/index.md
+      - Examples: examples/
   - API Reference: reference/
   - Community:
       - Contributing: community/contributing.md
