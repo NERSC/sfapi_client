@@ -1,17 +1,17 @@
 # QuickStart
 
 This will be a basic guide to using the `sfapi_client`. Documentation on all the features can be found under the API Reference,
-and exaple jupyter notebooks can be found in [Examples](../examples).
+and example jupyter notebooks can be found in [Examples](../examples).
 
 ## Installation
 
-The library is availbe on [PyPi](https://pypi.org/project/sfapi_client/) and installable with `pip`.
+The library is available on [PyPi](https://pypi.org/project/sfapi_client/) and installable with `pip`.
 
 ```bash
 pip install sfapi_client
 ```
 
-## Loading the Client
+## Importing the Client
 
 The client can be loaded into your existing python codes by importing the client you want to use.
 
@@ -28,8 +28,8 @@ The client can be loaded into your existing python codes by importing the client
 
 ## Getting system status
 
-The status of the compute machines as well as other resources available at NERSC can be gotten without authentication.
-Here's an example of getting the status of perlmutter.
+The status of the compute machines as well as other resources available at NERSC can be fetched without authentication.
+Here's an example of getting the status of Perlmutter.
 
 === "async"
     ```pycon
@@ -52,7 +52,7 @@ Here's an example of getting the status of perlmutter.
     Compute(name='perlmutter', full_name='Perlmutter', description='System is active', system_type='compute', notes=[], status=<StatusValue.active: 'active'>, updated_at=datetime.datetime(2023, 5, 11, 13, 50, tzinfo=datetime.timezone(datetime.timedelta(days=-1, seconds=61200))), client=<sfapi_client._sync.client.Client object at 0x10679afe0>)
     ```
 
-And an example of getting the most recent outages for a resouce such as Spin.
+And an example of getting the most recent outages for a resource such as Spin.
 
 === "async"
     ```pycon
@@ -78,13 +78,13 @@ And an example of getting the most recent outages for a resouce such as Spin.
 
 ## Setting up credentials
 
-To get more detailed information from NERSC systems like your projects allocations or the current jobs in the queue you will beed to provide a credential. 
+To get more detailed information from NERSC systems like your projects allocations or the current jobs in the queue you will need to provide credentials. 
 The [NERSC Documentation](https://docs.nersc.gov/services/sfapi/authentication/#client) has more information about getting the `client_id` and `client_secret` from iris.
-Once you retrive the keys there are a few ways to use them to activate the client.
+Once you retrieve the keys there are a few ways to use them to activate the client.
 
 ### Storing as environment variables
 
-The simplest way to get started is to export them into your environment, and then retrive them in your python script from the `os` module.
+The simplest way to get started is to export them into your environment, and then retrieve them in your python script from the `os` module.
 
 ```bash
 export SFAPI_CLIENT_ID='randmstrgz'
@@ -128,7 +128,7 @@ randmstrgz
 -----END RSA PRIVATE KEY-----
 ```
 
-If the key is stored in a different location, possibly as a secret file storage in Spin, the `key_path` can be given explicilty to the client.
+If the key is stored in a different location, possibly as a secret file storage in Spin, the `key_path` can be given explicitly to the client.
 
 === "async"
     ```pycon
