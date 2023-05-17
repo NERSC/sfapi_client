@@ -48,5 +48,6 @@ docs = [
 test = [
   "pytest",
   "pydantic[dotenv]",
-  "pytest-mock"
+  "pytest-mock",
+  "pytest-asyncio"
 ]
