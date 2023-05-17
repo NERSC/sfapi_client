@@ -29,9 +29,9 @@ Compute(name='perlmutter', full_name='Perlmutter', description='System Degraded'
 
 ## Documentation
 
-For the basics, head over to the [QuickStart](). We also have Jupyter Nodebook [examples]().
+For the basics, head over to the [QuickStart](https://nersc.github.io/sfapi_client/quickstart/). We also have Jupyter Nodebook [examples](https://nersc.github.io/sfapi_client/examples/).
 
-More in depth developer documentation can be found in the [API reference]().
+More in depth developer documentation can be found in the [API reference](https://nersc.github.io/sfapi_client/reference/async/client/).
 
 ## Dependencies
 
