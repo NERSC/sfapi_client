@@ -13,7 +13,7 @@ pip install sfapi_client
 
 ## Importing the Client
 
-The client can be loaded into your existing python codes by importing the client you want to use.
+The client can be imported into your existing python codes by importing the client you want to use.
 
 === "async"
 
@@ -225,7 +225,7 @@ If the key is stored in a different location, possibly as a secret file storage 
     JobState.RUNNING
     ```
 
-## Cancelling a job
+## Canceling a job
 
 === "async"
     ```pycon
