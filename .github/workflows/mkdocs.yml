@@ -23,4 +23,5 @@ jobs:
           restore-keys: |
             mkdocs-
       - run: pip install .[docs]
+      - run: mkdocs build
       - run: mkdocs gh-deploy --force
