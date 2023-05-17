@@ -208,7 +208,7 @@ class Client:
         self,
         client_id: Optional[str] = None,
         secret: Optional[str] = None,
-        key_name: Optional[Union[str, Path]] = None,
+        key: Optional[Union[str, Path]] = None,
         api_base_url: Optional[str] = SFAPI_BASE_URL,
         wait_interval: int = 10,
     ):
@@ -232,7 +232,7 @@ class Client:
         self._client_id = None
         self._secret = None
         if any(arg is None for arg in [client_id, secret]):
-            self._read_client_secret_from_file(key_name)
+            self._read_client_secret_from_file(key)
         else:
             self._client_id = client_id
             self._secret = secret
@@ -496,4 +496,3 @@ class Client:
             self._resources = Resources(self)
 
         return self._resources
-    

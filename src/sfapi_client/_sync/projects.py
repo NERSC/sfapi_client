@@ -12,6 +12,10 @@ class Project(ProjectBase):
     name: str = Field(alias="repo_name")
 
     def create_group(self, name: str) -> "Group":
+        """
+        Create a new project.
+        :param name: The project name
+        """
         from .groups import Group
 
         params = {"name": name, "repo_name": self.repo_name}
