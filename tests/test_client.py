@@ -12,5 +12,6 @@ def test_no_creds():
 @pytest.mark.public
 def test_no_creds_auth_required(test_machine):
     with Client() as client:
+        machine = client.compute(test_machine)
         with pytest.raises(SfApiError):
-            client.compute(test_machine)
+            machine.jobs()

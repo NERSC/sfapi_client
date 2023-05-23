@@ -14,5 +14,6 @@ async def test_no_creds():
 @pytest.mark.asyncio
 async def test_no_creds_auth_required(test_machine):
     async with AsyncClient() as client:
+        machine = await client.compute(test_machine)
         with pytest.raises(SfApiError):
-            machine = await client.compute(test_machine)
+            await machine.jobs()

@@ -441,9 +441,6 @@ class Client:
         :return: Compute object that can be used to start jobs,
         view the queue on the system, or list files and directories.
         """
-        if self._client_id is None:
-            raise SfApiError(
-                "Cannot connect to compute with an unathenticated client.")
         # Allows for creating a compute from a name string
         machine = Machine(machine)
         response = self.get(f"status/{machine.value}")
@@ -468,9 +465,6 @@ class Client:
         :return: The user
         :rtype: UserGroup
         """
-        if self._client_id is None:
-            raise SfApiError(
-                "Cannot get user information with an unathenticated client.")
         return User._fetch_user(self, username)
 
     def group(self, name: str) -> Group:
@@ -481,9 +475,6 @@ class Client:
         :return: The group
         :rtype: Group
         """
-        if self._client_id is None:
-            raise SfApiError(
-                "Cannot get user information with an unathenticated client.")
         return Group._fetch_group(self, name)
 
     @property

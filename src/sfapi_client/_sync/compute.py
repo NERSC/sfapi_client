@@ -1,9 +1,9 @@
 import asyncio
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union, Callable
 import json
 from enum import Enum
 from pydantic import BaseModel, PrivateAttr
-
+from functools import wraps
 
 from ..exceptions import SfApiError
 from .._utils import _SLEEP
@@ -25,14 +25,25 @@ from .._compute import CommandResult, SubmitJobResponse, SubmitJobResponseStatus
 Machine.__str__ = lambda self: self.value
 
 
+def check_auth(method: Callable):
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        if self.client._client_id is None:
+            raise SfApiError(
+                f"Cannot call {self.__class__.__name__}.{method.__name__}() with an unauthenticated client.")
+        elif self.status in [StatusValue.unavailable]:
+            raise SfApiError(
+                f"Compute resource {self.name} is {self.status.name}, {self.notes}")
+        return method(self, *args, **kwargs)
+    return wrapper
+
+
 class Compute(ComputeBase):
     client: Optional["Client"]
     _monitor: SyncJobMonitor = PrivateAttr()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        if self.status in [StatusValue.unavailable, StatusValue.other]:
-            raise SfApiError(f"Compute resource {self.name} is {self.status.name}, {self.notes}")
         self._monitor = SyncJobMonitor(self)
 
     def dict(self, *args, **kwargs) -> Dict:
@@ -56,6 +67,7 @@ class Compute(ComputeBase):
 
             return task.result
 
+    @check_auth
     def submit_job(self, script: Union[str, RemotePath]) -> JobSqueue:
         """Submit a job to the compute resource
 
@@ -107,6 +119,7 @@ class Compute(ComputeBase):
 
         return job
 
+    @check_auth
     def job(
         self, jobid: int, command: Optional[JobCommand] = JobCommand.sacct
     ) -> Union["JobSacct", "JobSqueue"]:
@@ -118,6 +131,7 @@ class Compute(ComputeBase):
 
         return jobs[0]
 
+    @check_auth
     def jobs(
         self,
         jobids: Optional[int] = None,
@@ -135,9 +149,11 @@ class Compute(ComputeBase):
                 self, jobids=jobids, user=user, partition=partition
             )
 
+    @check_auth
     def ls(self, path, directory=False) -> List[RemotePath]:
         return RemotePath._ls(self, path, directory)
 
+    @check_auth
     def run(self, args: Union[str, RemotePath, List[str]]):
         body: RunCommandBody = {
             "executable": args if not isinstance(args, list) else " ".join(args)
