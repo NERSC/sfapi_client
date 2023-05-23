@@ -441,6 +441,9 @@ class AsyncClient:
         :return: Compute object that can be used to start jobs,
         view the queue on the system, or list files and directories.
         """
+        if self._client_id is None:
+            raise SfApiError(
+                "Cannot connect to compute with an unathenticated client.")
         # Allows for creating a compute from a name string
         machine = Machine(machine)
         response = await self.get(f"status/{machine.value}")
@@ -465,6 +468,9 @@ class AsyncClient:
         :return: The user
         :rtype: UserGroup
         """
+        if self._client_id is None:
+            raise SfApiError(
+                "Cannot get user information with an unathenticated client.")
         return await AsyncUser._fetch_user(self, username)
 
     async def group(self, name: str) -> AsyncGroup:
@@ -475,6 +481,9 @@ class AsyncClient:
         :return: The group
         :rtype: AsyncGroup
         """
+        if self._client_id is None:
+            raise SfApiError(
+                "Cannot get user information with an unathenticated client.")
         return await AsyncGroup._fetch_group(self, name)
 
     @property
