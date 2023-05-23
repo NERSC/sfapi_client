@@ -1,7 +1,6 @@
 import pytest
-import httpx
 
-from sfapi_client import AsyncClient
+from sfapi_client import AsyncClient, SfApiError
 
 
 @pytest.mark.public
@@ -15,6 +14,5 @@ async def test_no_creds():
 @pytest.mark.asyncio
 async def test_no_creds_auth_required(test_machine):
     async with AsyncClient() as client:
-        machine = await client.compute(test_machine)
-        with pytest.raises(httpx.HTTPStatusError):
-            await machine.jobs()
+        with pytest.raises(SfApiError):
+            machine = await client.compute(test_machine)
