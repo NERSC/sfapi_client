@@ -8,7 +8,7 @@ from ..exceptions import SfApiError
 import pydantic
 
 
-class SyncRole(ProjectBase):
+class Role(ProjectBase):
     client: Optional["Client"]
 
     @pydantic.root_validator(pre=False)

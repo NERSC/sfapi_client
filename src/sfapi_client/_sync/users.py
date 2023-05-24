@@ -5,7 +5,7 @@ from .._models import (
     UserInfo as UserBase,
     GroupList as GroupsResponse,
 )
-from .projects import Project, SyncRole
+from .projects import Project, Role
 from ..exceptions import SfApiError
 
 
@@ -83,7 +83,7 @@ class User(UserBase):
 
         return list(projects)
 
-    def roles(self) -> List[SyncRole]:
+    def roles(self) -> List[Role]:
         """
         The roles the user is associate with.
         """
@@ -94,7 +94,7 @@ class User(UserBase):
 
         json_response = r.json()
 
-        roles = [SyncRole.parse_obj(p) for p in json_response]
+        roles = [Role.parse_obj(p) for p in json_response]
 
         def _set_client(p):
             p.client = self.client

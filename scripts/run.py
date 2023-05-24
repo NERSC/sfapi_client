@@ -31,6 +31,7 @@ def run_unasync():
         "AsyncGroupMember": "GroupMember",
         "AsyncRemotePath": "RemotePath",
         "AsyncProject": "Project",
+        "AsyncRole": "Role",
         "AsyncUser": "User",
         "AsyncJob": "Job",
         "AsyncJobSacct": "JobSacct",
@@ -151,7 +152,8 @@ def resources_codegen(
     ),
 ):
 
-    import requests, datetime
+    import requests
+    import datetime
     api_url = "https://api.nersc.gov/api/v1.2/status"
     response = requests.get(api_url)
     status = response.json()
