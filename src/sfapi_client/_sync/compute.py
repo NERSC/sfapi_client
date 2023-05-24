@@ -59,7 +59,7 @@ class Compute(ComputeBase):
     def submit_job(self, script: Union[str, RemotePath]) -> JobSqueue:
         """Submit a job to the compute resource
 
-        :param script: Path to file on the compute system, or script to run begining with `#!`.
+        :param script: Path to file on the compute system, or script to run beginning with `#!`.
         :return: Object containing information about the job, its job id, and status on the system.
         """
 

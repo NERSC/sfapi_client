@@ -136,7 +136,7 @@ class RemotePath(PathBase):
 
     def is_dir(self) -> bool:
         """
-        :return: Returns True if path is a directory, False othewise .
+        :return: Returns True if path is a directory, False otherwise .
         """
         if self.perms is None:
             self.update()
@@ -145,7 +145,7 @@ class RemotePath(PathBase):
 
     def is_file(self) -> bool:
         """
-        :return: Returns True if path is a file, False othewise .
+        :return: Returns True if path is a file, False otherwise .
         """
         return not self.is_dir()
 

@@ -119,7 +119,7 @@ class AsyncRemotePath(PathBase):
 
     async def is_dir(self):
         """
-        :return: Returns True if path is a directory, False othewise .
+        :return: Returns True if path is a directory, False otherwise .
         """
         if self.perms is None:
             await self.update()
@@ -128,7 +128,7 @@ class AsyncRemotePath(PathBase):
 
     async def is_file(self):
         """
-        :return: Returns True if path is a file, False othewise .
+        :return: Returns True if path is a file, False otherwise .
         """
         return not await self.is_dir()
 

@@ -128,7 +128,7 @@ class SyncJobMonitor:
         self._requests: Dict[Type, Set[JobRequest]] = {}
         # Lock to protect access to self._requests
         self._requests_lock = Lock()
-        # Lock to prevent multipe server requests concurrently
+        # Lock to prevent multiple server requests concurrently
         self._request_lock = Lock()
 
     def fetch_jobs(
