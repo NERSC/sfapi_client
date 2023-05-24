@@ -210,7 +210,7 @@ class AsyncJobSacct(AsyncJob, JobSacctBase):
 
 class AsyncJobSqueue(AsyncJob, JobSqueueBase):
     """
-    Models a job running on a compute resource, the informatio is
+    Models a job running on a compute resource, the information is
     fetched using `squeue`.
     """
     _command: ClassVar[JobCommand] = JobCommand.squeue

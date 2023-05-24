@@ -16,7 +16,7 @@
 
 ## `AsyncJobSacct`
 
-Models a job running on a compute resource, the informatio is fetched using `sacct`.
+Models a job running on a compute resource, the information is fetched using `sacct`.
 
 <!-- mkdocsstring doesn't display inherited pydantic members, so we fake
 by include the parent explicitly. -->
@@ -38,7 +38,7 @@ by include the parent explicitly. -->
 
 ## `AsyncJobSqueue`
 
-Models a job running on a compute resource, the informatio is fetched using `squeue`.
+Models a job running on a compute resource, the information is fetched using `squeue`.
 
 <!-- mkdocsstring doesn't display inherited pydantic members, so we fake
 by include the parent explicitly. -->
