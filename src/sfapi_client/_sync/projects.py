@@ -5,6 +5,21 @@ from .._models import (
     ProjectStats as ProjectBase,
 )
 from ..exceptions import SfApiError
+import pydantic
+
+
+class SyncRole(ProjectBase):
+    client: Optional["Client"]
+
+    @pydantic.root_validator(pre=False)
+    def check(cls, values):
+        # Remove keys that are None
+        items = list(values.items())
+        for key, val in items:
+            if val is None:
+                del values[key]
+
+        return values
 
 
 class Project(ProjectBase):

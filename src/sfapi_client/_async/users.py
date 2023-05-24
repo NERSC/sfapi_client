@@ -5,7 +5,7 @@ from .._models import (
     UserInfo as UserBase,
     GroupList as GroupsResponse,
 )
-from .projects import AsyncProject
+from .projects import AsyncProject, AsyncRole
 from ..exceptions import SfApiError
 
 
@@ -83,7 +83,7 @@ class AsyncUser(UserBase):
 
         return list(projects)
 
-    async def roles(self) -> List[AsyncProject]:
+    async def roles(self) -> List[AsyncRole]:
         """
         The roles the user is associate with.
         """
@@ -94,7 +94,7 @@ class AsyncUser(UserBase):
 
         json_response = r.json()
 
-        roles = [AsyncProject.parse_obj(p) for p in json_response]
+        roles = [AsyncRole.parse_obj(p) for p in json_response]
 
         def _set_client(p):
             p.client = self.client
