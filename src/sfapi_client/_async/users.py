@@ -1,4 +1,6 @@
-from typing import List, Optional
+from typing import List, Optional, Callable
+from functools import wraps
+
 from .._models import (
     UserInfo as UserBase,
     GroupList as GroupsResponse,
@@ -7,10 +9,21 @@ from .projects import AsyncProject
 from ..exceptions import SfApiError
 
 
+def check_auth(method: Callable):
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        if self._client_id is None:
+            raise SfApiError(
+                f"Cannot call {self.__class__.__name__}.{method.__name__}() with an unauthenticated client.")
+        return method(self, *args, **kwargs)
+    return wrapper
+
+
 class AsyncUser(UserBase):
     client: Optional["AsyncClient"]
 
     @staticmethod
+    @check_auth
     async def _fetch_user(client: "AsyncClient", username: Optional[str] = None):
         url = "account/"
         if username is not None:

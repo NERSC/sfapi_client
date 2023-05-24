@@ -1,8 +1,19 @@
-from typing import Optional, Union, List, Any
+from typing import Optional, Union, List, Any, Callable
+from functools import wraps
 from pydantic import ValidationError, Field, BaseModel, validator
 from .._models import BatchGroupAction as GroupAction, UserStats as GroupMemberBase
 from ..exceptions import SfApiError
 from .users import AsyncUser
+
+
+def check_auth(method: Callable):
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        if self._client_id is None:
+            raise SfApiError(
+                f"Cannot call {self.__class__.__name__}.{method.__name__}() with an unauthenticated client.")
+        return method(self, *args, **kwargs)
+    return wrapper
 
 
 class AsyncGroupMember(GroupMemberBase):
@@ -88,6 +99,7 @@ class AsyncGroup(BaseModel):
         return list(members)
 
     @staticmethod
+    @check_auth
     async def _fetch_group(client: "AsyncClient", name):
         response = await client.get(f"account/groups/{name}")
         json_response = response.json()

@@ -1,7 +1,6 @@
 import pytest
-import httpx
 
-from sfapi_client import Client
+from sfapi_client import Client, SfApiError
 
 
 @pytest.mark.public
@@ -14,5 +13,5 @@ def test_no_creds():
 def test_no_creds_auth_required(test_machine):
     with Client() as client:
         machine = client.compute(test_machine)
-        with pytest.raises(httpx.HTTPStatusError):
+        with pytest.raises(SfApiError):
             machine.jobs()
