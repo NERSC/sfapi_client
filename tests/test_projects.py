@@ -26,7 +26,6 @@ async def test_create_group(
         assert group.name == test_create_group
 
 
-@pytest.mark.asyncio
 def test_projects(
     client_id, client_secret
 ):
@@ -36,7 +35,6 @@ def test_projects(
         assert projects
 
 
-@pytest.mark.asyncio
 def test_roles(
     client_id, client_secret
 ):
