@@ -121,7 +121,7 @@ class AsyncCompute(ComputeBase):
 
     @check_auth
     async def job(
-        self, jobid: int, command: Optional[JobCommand] = JobCommand.sacct
+        self, jobid: Union[int, str], command: Optional[JobCommand] = JobCommand.sacct
     ) -> Union["AsyncJobSacct", "AsyncJobSqueue"]:
         # Get different job depending on query
         Job = AsyncJobSacct if (command == JobCommand.sacct) else AsyncJobSqueue
@@ -134,7 +134,7 @@ class AsyncCompute(ComputeBase):
     @check_auth
     async def jobs(
         self,
-        jobids: Optional[int] = None,
+        jobids: Optional[Union[List[int], List[str]]] = None,
         user: Optional[str] = None,
         partition: Optional[str] = None,
         command: Optional[JobCommand] = JobCommand.squeue,

@@ -121,7 +121,7 @@ class Compute(ComputeBase):
 
     @check_auth
     def job(
-        self, jobid: int, command: Optional[JobCommand] = JobCommand.sacct
+        self, jobid: Union[int, str], command: Optional[JobCommand] = JobCommand.sacct
     ) -> Union["JobSacct", "JobSqueue"]:
         # Get different job depending on query
         Job = JobSacct if (command == JobCommand.sacct) else JobSqueue
@@ -134,7 +134,7 @@ class Compute(ComputeBase):
     @check_auth
     def jobs(
         self,
-        jobids: Optional[int] = None,
+        jobids: Optional[Union[List[int], List[str]]] = None,
         user: Optional[str] = None,
         partition: Optional[str] = None,
         command: Optional[JobCommand] = JobCommand.squeue,
