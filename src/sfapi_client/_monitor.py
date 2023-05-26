@@ -62,7 +62,7 @@ class AsyncJobMonitor:
         return job_type
 
     async def fetch_jobs(
-        self, job_type: Union[AsyncJobSacct, AsyncJobSqueue], jobids: Union[List[int], List[str]]
+        self, job_type: Union[AsyncJobSacct, AsyncJobSqueue], jobids: List[Union[int, str]]
     ) -> List[Union[AsyncJobSacct, AsyncJobSqueue]]:
         jobids = list(map(str, jobids))
         jobids_for_type = self._jobids.setdefault(job_type, set())
@@ -133,7 +133,7 @@ class SyncJobMonitor:
         self._request_lock = Lock()
 
     def fetch_jobs(
-        self, job_type: Union["JobSacct", "JobSqueue"], jobids: Union[List[int], List[str]]
+        self, job_type: Union["JobSacct", "JobSqueue"], jobids: List[Union[int, str]]
     ) -> List[Union[JobSqueue, JobSacct]]:
         jobids = list(map(str, jobids))
         # First update the jobids and create a request context

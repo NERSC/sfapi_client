@@ -134,7 +134,7 @@ class AsyncCompute(ComputeBase):
     @check_auth
     async def jobs(
         self,
-        jobids: Optional[Union[List[int], List[str]]] = None,
+        jobids: Optional[List[Union[int, str]]] = None,
         user: Optional[str] = None,
         partition: Optional[str] = None,
         command: Optional[JobCommand] = JobCommand.squeue,
