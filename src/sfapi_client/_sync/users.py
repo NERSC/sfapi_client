@@ -40,6 +40,8 @@ class User(UserBase):
     def groups(self) -> List["Group"]:
         """
         The groups that the user is a member of.
+
+        :return: the groups
         """
         # Avoid circular import
         from .groups import Group
@@ -65,6 +67,8 @@ class User(UserBase):
     def projects(self) -> List[Project]:
         """
         The projects the user is associate with.
+
+        :return: the projects
         """
         if self.name != (self.client._user()).name:
             raise SfApiError(f"Can only fetch projects for authenticated user.")
@@ -86,6 +90,8 @@ class User(UserBase):
     def roles(self) -> List[Role]:
         """
         The roles the user is associate with.
+
+        :return: the roles
         """
         if self.name != (self.client._user()).name:
             raise SfApiError(f"Can only fetch roles for authenticated user.")
