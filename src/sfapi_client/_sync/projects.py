@@ -3,8 +3,13 @@ from pydantic import ValidationError, Field
 
 from .._models import (
     ProjectStats as ProjectBase,
+    RoleStats as RoleBase
 )
 from ..exceptions import SfApiError
+
+
+class Role(RoleBase):
+    client: Optional["Client"]
 
 
 class Project(ProjectBase):

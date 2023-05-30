@@ -5,7 +5,7 @@ from .._models import (
     UserInfo as UserBase,
     GroupList as GroupsResponse,
 )
-from .projects import AsyncProject
+from .projects import AsyncProject, AsyncRole
 from ..exceptions import SfApiError
 
 
@@ -69,7 +69,7 @@ class AsyncUser(UserBase):
         if self.name != (await self.client._user()).name:
             raise SfApiError(f"Can only fetch projects for authenticated user.")
 
-        r = await self.client.get("account/roles")
+        r = await self.client.get("account/projects")
 
         json_response = r.json()
 
@@ -82,3 +82,24 @@ class AsyncUser(UserBase):
         projects = map(_set_client, projects)
 
         return list(projects)
+
+    async def roles(self) -> List[AsyncRole]:
+        """
+        The roles the user is associate with.
+        """
+        if self.name != (await self.client._user()).name:
+            raise SfApiError(f"Can only fetch roles for authenticated user.")
+
+        r = await self.client.get("account/roles")
+
+        json_response = r.json()
+
+        roles = [AsyncRole.parse_obj(p) for p in json_response]
+
+        def _set_client(p):
+            p.client = self.client
+            return p
+
+        roles = map(_set_client, roles)
+
+        return list(roles)

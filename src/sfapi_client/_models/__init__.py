@@ -91,6 +91,13 @@ class PublicHost(str, Enum):
     perlmutter = "perlmutter"
 
 
+class RoleStats(BaseModel):
+    id: int = Field(..., title="Id")
+    description: str = Field(..., title="Description")
+    repo_name: str = Field(..., title="Repo Name")
+    iris_role: Optional[str] = Field(None, title="Iris Role")
+
+
 class StatusValue(str, Enum):
     active = "active"
     unavailable = "unavailable"

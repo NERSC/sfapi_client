@@ -5,7 +5,7 @@ from .._models import (
     UserInfo as UserBase,
     GroupList as GroupsResponse,
 )
-from .projects import Project
+from .projects import Project, Role
 from ..exceptions import SfApiError
 
 
@@ -69,7 +69,7 @@ class User(UserBase):
         if self.name != (self.client._user()).name:
             raise SfApiError(f"Can only fetch projects for authenticated user.")
 
-        r = self.client.get("account/roles")
+        r = self.client.get("account/projects")
 
         json_response = r.json()
 
@@ -82,3 +82,24 @@ class User(UserBase):
         projects = map(_set_client, projects)
 
         return list(projects)
+
+    def roles(self) -> List[Role]:
+        """
+        The roles the user is associate with.
+        """
+        if self.name != (self.client._user()).name:
+            raise SfApiError(f"Can only fetch roles for authenticated user.")
+
+        r = self.client.get("account/roles")
+
+        json_response = r.json()
+
+        roles = [Role.parse_obj(p) for p in json_response]
+
+        def _set_client(p):
+            p.client = self.client
+            return p
+
+        roles = map(_set_client, roles)
+
+        return list(roles)
