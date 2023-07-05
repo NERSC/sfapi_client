@@ -19,6 +19,7 @@ dependencies = [
   "authlib",
   "httpx",
   "pydantic~=v2.0",
+  "pydantic-settings",
   "tenacity"
 ]
 classifiers = [
