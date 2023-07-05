@@ -23,6 +23,11 @@ def _is_no_such(error: SfApiError):
 
 
 class AsyncRemotePath(PathBase):
+    """
+    RemotePath is used to model a remote path, it takes inspiration from
+    pathlib and shares some of its interface.
+    """
+
     compute: Optional["AsyncCompute"]
     # It would be nice to be able subclass PurePosixPath, however, this
     # require using private interfaces. So we derive by composition.
@@ -55,9 +60,12 @@ class AsyncRemotePath(PathBase):
         return str(self._path)
 
     @property
-    def parent(self):
+    def parent(self) -> "RemotePath":
         """
         The parent of the path.
+
+        :return: the parent
+
         """
         parent_path = AsyncRemotePath(str(self._path.parent))
         # We have to set the compute field separately otherwise
@@ -67,9 +75,11 @@ class AsyncRemotePath(PathBase):
         return parent_path
 
     @property
-    def parents(self):
+    def parents(self) -> List["RemotePath"]:
         """
         The parents of the path.
+
+        :return: the parents
         """
         parents = [AsyncRemotePath(str(p)) for p in self._path.parents]
 
@@ -84,31 +94,38 @@ class AsyncRemotePath(PathBase):
         return parents
 
     @property
-    def stem(self):
+    def stem(self) -> str:
         """
         The final path component, without its suffix.
+
+        :return: the path stem
         """
         return self._path.stem
 
     @property
-    def suffix(self):
+    def suffix(self) -> str:
         """
         The path extension.
-        """
 
+        :return: the path extension
+        """
         return self._path.suffix
 
     @property
-    def suffixes(self):
+    def suffixes(self) -> List[str]:
         """
         A list of the path extensions.
+
+        :return: the path extensions
         """
         return self._path.suffixes
 
     @property
-    def parts(self):
+    def parts(self) -> Tuple[str]:
         """
         The paths components as a tuple.
+
+        :return: the path components
         """
         return self._path.parts
 
@@ -117,7 +134,7 @@ class AsyncRemotePath(PathBase):
             kwargs["exclude"] = {"compute"}
         return super().dict(*args, **kwargs)
 
-    async def is_dir(self):
+    async def is_dir(self) -> bool:
         """
         :return: Returns True if path is a directory, False otherwise.
         """
@@ -126,7 +143,7 @@ class AsyncRemotePath(PathBase):
 
         return self.perms[0] == "d"
 
-    async def is_file(self):
+    async def is_file(self) -> bool:
         """
         :return: Returns True if path is a file, False otherwise.
         """
@@ -209,6 +226,8 @@ class AsyncRemotePath(PathBase):
     async def ls(self) -> List["AsyncRemotePath"]:
         """
         List the current path
+
+        :return: the list of child paths
         """
         return await self._ls(self.compute, str(self._path))
 
@@ -281,7 +300,6 @@ class AsyncRemotePath(PathBase):
 
         raises: IsDirectoryError: If the path is not a file.
         """
-
         try:
             if await self.is_dir():
                 raise IsADirectoryError()
