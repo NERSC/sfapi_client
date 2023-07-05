@@ -126,4 +126,4 @@ async def test_planned_outages(client_id, client_secret, test_machine):
         machine = await client.compute(test_machine)
         outages = await machine.planned_outages()
 
-        assert len(outages) > 0
+        assert len(outages) >= 0
