@@ -28,7 +28,7 @@ class AsyncProject(ProjectBase):
         r = await self.client.post("account/groups", data=params)
         json_response = r.json()
         try:
-            group = AsyncGroup.parse_obj(json_response)
+            group = AsyncGroup.model_validate(json_response)
         except ValidationError:
             # See if we have validation error raise it
             if "details" in json_response:

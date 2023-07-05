@@ -44,7 +44,7 @@ def _fetch_raw_state(
     r = compute.client.get(job_url, params)
 
     json_response = r.json()
-    job_state_response = JobStateResponse.parse_obj(json_response)
+    job_state_response = JobStateResponse.model_validate(json_response)
 
     if job_state_response == JobResponseStatus.ERROR:
         error = json_response.error
@@ -64,7 +64,7 @@ def _fetch_jobs(
         compute, jobids, user, partition, job_type._command == JobCommand.sacct
     )
 
-    jobs = [job_type.parse_obj(state) for state in job_states]
+    jobs = [job_type.model_validate(state) for state in job_states]
 
     for job in jobs:
         job.compute = compute

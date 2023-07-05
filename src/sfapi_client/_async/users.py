@@ -32,7 +32,7 @@ class AsyncUser(UserBase):
         response = await client.get(url)
         json_response = response.json()
 
-        user = AsyncUser.parse_obj(json_response)
+        user = AsyncUser.model_validate(json_response)
         user.client = client
 
         return user
@@ -52,9 +52,9 @@ class AsyncUser(UserBase):
         r = await self.client.get("account/groups")
 
         json_response = r.json()
-        groups_reponse = GroupsResponse.parse_obj(json_response)
+        groups_reponse = GroupsResponse.model_validate(json_response)
 
-        groups = [AsyncGroup.parse_obj(g) for g in groups_reponse.groups]
+        groups = [AsyncGroup.model_validate(g) for g in groups_reponse.groups]
 
         def _set_client(g):
             g.client = self.client
@@ -77,7 +77,7 @@ class AsyncUser(UserBase):
 
         json_response = r.json()
 
-        projects = [AsyncProject.parse_obj(p) for p in json_response]
+        projects = [AsyncProject.model_validate(p) for p in json_response]
 
         def _set_client(p):
             p.client = self.client
@@ -100,7 +100,7 @@ class AsyncUser(UserBase):
 
         json_response = r.json()
 
-        roles = [AsyncRole.parse_obj(p) for p in json_response]
+        roles = [AsyncRole.model_validate(p) for p in json_response]
 
         def _set_client(p):
             p.client = self.client

@@ -32,7 +32,7 @@ class User(UserBase):
         response = client.get(url)
         json_response = response.json()
 
-        user = User.parse_obj(json_response)
+        user = User.model_validate(json_response)
         user.client = client
 
         return user
@@ -52,9 +52,9 @@ class User(UserBase):
         r = self.client.get("account/groups")
 
         json_response = r.json()
-        groups_reponse = GroupsResponse.parse_obj(json_response)
+        groups_reponse = GroupsResponse.model_validate(json_response)
 
-        groups = [Group.parse_obj(g) for g in groups_reponse.groups]
+        groups = [Group.model_validate(g) for g in groups_reponse.groups]
 
         def _set_client(g):
             g.client = self.client
@@ -77,7 +77,7 @@ class User(UserBase):
 
         json_response = r.json()
 
-        projects = [Project.parse_obj(p) for p in json_response]
+        projects = [Project.model_validate(p) for p in json_response]
 
         def _set_client(p):
             p.client = self.client
@@ -100,7 +100,7 @@ class User(UserBase):
 
         json_response = r.json()
 
-        roles = [Role.parse_obj(p) for p in json_response]
+        roles = [Role.model_validate(p) for p in json_response]
 
         def _set_client(p):
             p.client = self.client

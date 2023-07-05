@@ -66,7 +66,7 @@ class AsyncApi:
 
         json_response = r.json()
 
-        return [ChangelogItem.parse_obj(i) for i in json_response]
+        return [ChangelogItem.model_validate(i) for i in json_response]
 
     async def config(self) -> Dict[str, str]:
         """
@@ -79,7 +79,7 @@ class AsyncApi:
 
         json_response = r.json()
 
-        config_items = [ConfItem.parse_obj(i) for i in json_response]
+        config_items = [ConfItem.model_validate(i) for i in json_response]
 
         config = {}
         for i in config_items:
@@ -132,9 +132,9 @@ class AsyncResources:
         json_response = response.json()
 
         if resource_name:
-            outages = [Outage.parse_obj(o) for o in json_response]
+            outages = [Outage.model_validate(o) for o in json_response]
         else:
-            outages = [[Outage.parse_obj(o) for o in r] for r in json_response]
+            outages = [[Outage.model_validate(o) for o in r] for r in json_response]
             outages = self._list_to_resource_map(outages)
 
         return outages
@@ -154,9 +154,9 @@ class AsyncResources:
         json_response = response.json()
 
         if resource_name:
-            outages = [Outage.parse_obj(o) for o in json_response]
+            outages = [Outage.model_validate(o) for o in json_response]
         else:
-            outages = [[Outage.parse_obj(o) for o in r] for r in json_response]
+            outages = [[Outage.model_validate(o) for o in r] for r in json_response]
             outages = self._list_to_resource_map(outages)
 
         return outages
@@ -176,9 +176,9 @@ class AsyncResources:
         json_response = response.json()
 
         if resource_name:
-            notes = [Note.parse_obj(n) for n in json_response]
+            notes = [Note.model_validate(n) for n in json_response]
         else:
-            notes = [[Note.parse_obj(n) for n in r] for r in json_response]
+            notes = [[Note.model_validate(n) for n in r] for r in json_response]
             notes = self._list_to_resource_map(notes)
 
         return notes
@@ -199,9 +199,9 @@ class AsyncResources:
         json_response = response.json()
 
         if resource_name:
-            status = Status.parse_obj(json_response)
+            status = Status.model_validate(json_response)
         else:
-            status = [Status.parse_obj(s) for s in json_response]
+            status = [Status.model_validate(s) for s in json_response]
             status = {s.name: s for s in status}
 
         return status

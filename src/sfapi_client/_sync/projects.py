@@ -28,7 +28,7 @@ class Project(ProjectBase):
         r = self.client.post("account/groups", data=params)
         json_response = r.json()
         try:
-            group = Group.parse_obj(json_response)
+            group = Group.model_validate(json_response)
         except ValidationError:
             # See if we have validation error raise it
             if "details" in json_response:

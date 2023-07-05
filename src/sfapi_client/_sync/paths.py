@@ -164,7 +164,7 @@ class RemotePath(PathBase):
             f"utilities/download/{self.compute.name}/{self._path}?binary={binary}"
         )
         json_response = r.json()
-        download_response = FileDownloadResponse.parse_obj(json_response)
+        download_response = FileDownloadResponse.model_validate(json_response)
 
         if download_response.status == FileDownloadResponseStatus.ERROR:
             raise SfApiError(download_response.error)
@@ -183,7 +183,7 @@ class RemotePath(PathBase):
         r = compute.client.get(f"utilities/ls/{compute.name}/{path}")
 
         json_response = r.json()
-        directory_listing_response = DirectoryListingResponse.parse_obj(json_response)
+        directory_listing_response = DirectoryListingResponse.model_validate(json_response)
         if directory_listing_response.status == DirectoryListingResponseStatus.ERROR:
             raise SfApiError(directory_listing_response.error)
 
@@ -282,7 +282,7 @@ class RemotePath(PathBase):
         r = self.compute.client.put(url, files=files)
 
         json_response = r.json()
-        upload_response = UploadResponse.parse_obj(json_response)
+        upload_response = UploadResponse.model_validate(json_response)
         if upload_response.status == UploadResponseStatus.ERROR:
             raise SfApiError(upload_response.error)
 

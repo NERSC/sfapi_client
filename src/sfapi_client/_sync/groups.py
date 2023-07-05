@@ -57,7 +57,7 @@ class Group(BaseModel):
 
         # if successful will return group object
         try:
-            new_group = Group.parse_obj(json_response)
+            new_group = Group.model_validate(json_response)
             self._update(new_group)
         except ValidationError:
             # See if we have validation error raise it
@@ -87,7 +87,7 @@ class Group(BaseModel):
         """
         The users in this group.
         """
-        members = [GroupMember.parse_obj(user_info) for user_info in self.users_]
+        members = [GroupMember.model_validate(user_info) for user_info in self.users_]
 
         def _set_client(m):
             m.client = self.client
@@ -104,7 +104,7 @@ class Group(BaseModel):
         response = client.get(f"account/groups/{name}")
         json_response = response.json()
 
-        group = Group.parse_obj(json_response)
+        group = Group.model_validate(json_response)
         group.client = client
 
         return group

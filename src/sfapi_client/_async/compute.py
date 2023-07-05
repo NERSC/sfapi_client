@@ -56,7 +56,7 @@ class AsyncCompute(ComputeBase):
             r = await self.client.get(f"tasks/{task_id}")
 
             json_response = r.json()
-            task = Task.parse_obj(json_response)
+            task = Task.model_validate(json_response)
 
             if task.status.lower() in ["error", "failed"]:
                 raise SfApiError(task.result)
@@ -97,7 +97,7 @@ class AsyncCompute(ComputeBase):
         r.raise_for_status()
 
         json_response = r.json()
-        job_response = SubmitJobResponse.parse_obj(json_response)
+        job_response = SubmitJobResponse.model_validate(json_response)
 
         if job_response.status == SubmitJobResponseStatus.ERROR:
             raise SfApiError(job_response.error)
@@ -161,7 +161,7 @@ class AsyncCompute(ComputeBase):
 
         r = await self.client.post(f"utilities/command/{self.name}", data=body)
         json_response = r.json()
-        run_response = RunCommandResponse.parse_obj(json_response)
+        run_response = RunCommandResponse.model_validate(json_response)
         if run_response.status == RunCommandResponseStatus.ERROR:
             raise SfApiError(run_response.error)
 
