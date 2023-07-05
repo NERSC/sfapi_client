@@ -113,6 +113,7 @@ def _from_json(json: Path, class_name: str) -> str:
             aliases={
                 "OutputItem": "JobStatus",
             },
+            use_subclass_enum=True,
         )
 
         return output.read_text()
