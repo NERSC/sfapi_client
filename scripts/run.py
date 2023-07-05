@@ -87,6 +87,18 @@ def run_unasync():
                         fp.write(code)
 
 
+# As the SF API doesn't list values for most of the enums, datamodel-code-generator
+# can't determine the type, so we have to patch things up, for now they are all
+# string based enums.
+def _to_str_enum(code: str) -> str:
+    pattern = re.compile(rf"(.*)\(Enum\)(.*)", re.DOTALL)
+
+    while pattern.match(code):
+        code = re.sub(pattern, rf"\1(str, Enum)\2", code)
+
+    return code
+
+
 def _from_open_api() -> str:
     with TemporaryDirectory() as tempdir:
         output = Path(tempdir) / "model.py"
@@ -95,9 +107,12 @@ def _from_open_api() -> str:
             input_=urlparse("https://api.nersc.gov/api/v1.2/openapi.json"),
             input_file_type=InputFileType.OpenAPI,
             output=output,
+            use_subclass_enum=True,
         )
+        code = output.read_text()
+        code = _to_str_enum(code)
 
-        return output.read_text()
+        return code
 
 
 def _from_json(json: Path, class_name: str) -> str:
