@@ -3,6 +3,7 @@ import pytest
 from sfapi_client import AsyncClient
 
 
+@pytest.mark.api_dev
 @pytest.mark.asyncio
 async def test_group(client_id, client_secret, test_group, dev_api_url):
     async with AsyncClient(
@@ -13,6 +14,7 @@ async def test_group(client_id, client_secret, test_group, dev_api_url):
         assert group.name == test_group
 
 
+@pytest.mark.api_dev
 @pytest.mark.asyncio
 async def test_create_group(
     client_id,
@@ -44,6 +46,7 @@ async def test_create_group(
         assert group.name == test_random_group
 
 
+@pytest.mark.api_dev
 @pytest.mark.asyncio
 async def test_add_user(
     client_id,
@@ -89,6 +92,7 @@ async def test_add_user(
         assert is_member
 
 
+@pytest.mark.api_dev
 @pytest.mark.asyncio
 async def test_remove_user(
     client_id,
@@ -139,6 +143,7 @@ async def test_remove_user(
         assert group.members == []
 
 
+@pytest.mark.api_dev
 @pytest.mark.asyncio
 async def test_groupmember_to_user(
     client_id,

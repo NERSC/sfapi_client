@@ -61,6 +61,7 @@ def test_complete_timeout(client_id, client_secret, test_job_path, test_machine)
             job.complete(timeout=10)
 
 
+@pytest.mark.api_dev
 def test_job_monitor_check_request(
     mocker,
     client_id,
@@ -125,6 +126,7 @@ def test_job_monitor_check_request(
 
 
 # We currently run this in api-dev as its a new feature deployed there
+@pytest.mark.api_dev
 def test_job_monitor_multiple_threads(
     client_id, client_secret, test_job_path, test_machine, dev_api_url
 ):

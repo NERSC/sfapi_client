@@ -170,6 +170,7 @@ async def test_job_monitor_job_types(
 
 
 # We currently run this in api-dev as its a new feature deployed there
+@pytest.mark.api_dev
 @pytest.mark.asyncio
 async def test_job_monitor_gather(
     client_id, client_secret, test_job_path, test_machine, dev_api_url
