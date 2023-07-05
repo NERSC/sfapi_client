@@ -9,7 +9,7 @@ from .._models.job_status_response_sacct import OutputItem as JobSacctBase
 from .._models.job_status_response_squeue import OutputItem as JobSqueueBase
 from .._models import AppRoutersComputeModelsStatus as JobResponseStatus
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 from .._jobs import JobCommand
 from .._jobs import JobStateResponse
@@ -81,7 +81,7 @@ class Job(BaseModel, ABC):
     state: Optional[JobState]
     jobid: Optional[str]
 
-    @validator("state", pre=True, check_fields=False)
+    @field_validator("state", check_fields=False)
     def state_validate(cls, v):
         # sacct return a state of the form "CANCELLED by XXXX" for the
         # cancelled state, coerce into value that will match a state
