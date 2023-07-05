@@ -445,8 +445,9 @@ class Client:
         machine = Machine(machine)
         response = self.get(f"status/{machine.value}")
 
-        compute = Compute.parse_obj(response.json())
-        compute.client = self
+        values = response.json()
+        values["client"] = self
+        compute = Compute.model_validate(values)
 
         return compute
 

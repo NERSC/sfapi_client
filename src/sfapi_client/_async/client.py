@@ -449,8 +449,9 @@ class AsyncClient:
         machine = Machine(machine)
         response = await self.get(f"status/{machine.value}")
 
-        compute = AsyncCompute.parse_obj(response.json())
-        compute.client = self
+        values = response.json()
+        values["client"] = self
+        compute = AsyncCompute.model_validate(values)
 
         return compute
 
