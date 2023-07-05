@@ -9,7 +9,8 @@ from authlib.jose import JsonWebKey
 from sfapi_client.compute import Machine
 from sfapi_client import Resource
 
-from pydantic import BaseSettings
+from pydantic import ConfigDict
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
