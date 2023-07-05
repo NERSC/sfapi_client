@@ -99,6 +99,21 @@ def _to_str_enum(code: str) -> str:
     return code
 
 
+#
+def _fix_date_import(code: str) -> str:
+    replacements = {
+        "import date": "import date as date_",
+        "date: Optional\[date\]": "date: Optional[date_]",
+    }
+
+    for target, replacement in replacements.items():
+        pattern = re.compile(rf"(.*){target}(.*)", re.DOTALL)
+        pattern.match(code)
+        code = re.sub(pattern, rf"\1{replacement}\2", code)
+
+    return code
+
+
 def _from_open_api() -> str:
     with TemporaryDirectory() as tempdir:
         output = Path(tempdir) / "model.py"
@@ -111,6 +126,7 @@ def _from_open_api() -> str:
         )
         code = output.read_text()
         code = _to_str_enum(code)
+        code = _fix_date_import(code)
 
         return code
 
