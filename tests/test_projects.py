@@ -26,18 +26,14 @@ async def test_create_group(
         assert group.name == test_create_group
 
 
-def test_projects(
-    client_id, client_secret
-):
+def test_projects(client_id, client_secret):
     with Client(client_id, client_secret) as client:
         user = client.user()
         projects = user.projects()
         assert projects
 
 
-def test_roles(
-    client_id, client_secret
-):
+def test_roles(client_id, client_secret):
     with Client(client_id, client_secret) as client:
         user = client.user()
         roles = user.roles()

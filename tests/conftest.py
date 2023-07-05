@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     TEST_GROUP: str = None
     DEV_API_URL: str = "https://api-dev.nersc.gov/api/v1.2"
 
-    model_config = ConfigDict(case_sensitive = True, env_file = ".env")
+    model_config = ConfigDict(case_sensitive=True, env_file=".env")
 
 
 settings = Settings()
@@ -53,9 +53,11 @@ def test_job_path():
 def test_machine():
     return settings.TEST_MACHINE
 
+
 @pytest.fixture
 def test_resource():
     return settings.TEST_RESOURCE
+
 
 @pytest.fixture
 def test_username():

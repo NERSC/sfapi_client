@@ -29,9 +29,7 @@ async def test_create_group(
 
 
 @pytest.mark.asyncio
-async def test_projects(
-    client_id, client_secret
-):
+async def test_projects(client_id, client_secret):
     async with AsyncClient(client_id, client_secret) as client:
         user = await client.user()
         projects = await user.projects()
@@ -39,9 +37,7 @@ async def test_projects(
 
 
 @pytest.mark.asyncio
-async def test_roles(
-    client_id, client_secret
-):
+async def test_roles(client_id, client_secret):
     async with AsyncClient(client_id, client_secret) as client:
         user = await client.user()
         roles = await user.roles()

@@ -62,7 +62,9 @@ class AsyncJobMonitor:
         return job_type
 
     async def fetch_jobs(
-        self, job_type: Union[AsyncJobSacct, AsyncJobSqueue], jobids: List[Union[int, str]]
+        self,
+        job_type: Union[AsyncJobSacct, AsyncJobSqueue],
+        jobids: List[Union[int, str]],
     ) -> List[Union[AsyncJobSacct, AsyncJobSqueue]]:
         jobids = list(map(str, jobids))
         jobids_for_type = self._jobids.setdefault(job_type, set())

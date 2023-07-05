@@ -11,8 +11,10 @@ def check_auth(method: Callable):
     def wrapper(self, *args, **kwargs):
         if self._client_id is None:
             raise SfApiError(
-                f"Cannot call {self.__class__.__name__}.{method.__name__}() with an unauthenticated client.")
+                f"Cannot call {self.__class__.__name__}.{method.__name__}() with an unauthenticated client."
+            )
         return method(self, *args, **kwargs)
+
     return wrapper
 
 
@@ -31,6 +33,7 @@ class AsyncGroup(BaseModel):
     """
     A user group.
     """
+
     client: Optional["AsyncClient"]
     gid: Optional[int]
     name: Optional[str]
@@ -87,7 +90,9 @@ class AsyncGroup(BaseModel):
         """
         The users in this group.
         """
-        members = [AsyncGroupMember.model_validate(user_info) for user_info in self.users_]
+        members = [
+            AsyncGroupMember.model_validate(user_info) for user_info in self.users_
+        ]
 
         def _set_client(m):
             m.client = self.client

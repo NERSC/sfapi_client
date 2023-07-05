@@ -79,6 +79,7 @@ def test_status(test_machine):
         test_machine_status = status[test_machine.value]
         assert test_machine_status.name == test_machine
 
+
 @pytest.mark.public
 def test_resouce_status(test_resource):
     with Client() as client:

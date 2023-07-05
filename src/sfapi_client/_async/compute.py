@@ -30,11 +30,14 @@ def check_auth(method: Callable):
     def wrapper(self, *args, **kwargs):
         if self.client._client_id is None:
             raise SfApiError(
-                f"Cannot call {self.__class__.__name__}.{method.__name__}() with an unauthenticated client.")
+                f"Cannot call {self.__class__.__name__}.{method.__name__}() with an unauthenticated client."
+            )
         elif self.status in [StatusValue.unavailable]:
             raise SfApiError(
-                f"Compute resource {self.name} is {self.status.name}, {self.notes}")
+                f"Compute resource {self.name} is {self.status.name}, {self.notes}"
+            )
         return method(self, *args, **kwargs)
+
     return wrapper
 
 
@@ -90,8 +93,7 @@ class AsyncCompute(ComputeBase):
             # If we're given a path make sure it exists
             script_path = await self.ls(script)
             if len(script_path) != 1 or not script_path[0].is_file():
-                raise SfApiError(
-                    f"Script path not present or is not a file, {script}")
+                raise SfApiError(f"Script path not present or is not a file, {script}")
 
         data = {"job": script, "isPath": is_path}
 

@@ -183,7 +183,9 @@ class AsyncRemotePath(PathBase):
         r = await compute.client.get(f"utilities/ls/{compute.name}/{path}")
 
         json_response = r.json()
-        directory_listing_response = DirectoryListingResponse.model_validate(json_response)
+        directory_listing_response = DirectoryListingResponse.model_validate(
+            json_response
+        )
         if directory_listing_response.status == DirectoryListingResponseStatus.ERROR:
             raise SfApiError(directory_listing_response.error)
 

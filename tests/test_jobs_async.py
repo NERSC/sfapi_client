@@ -76,9 +76,7 @@ async def test_job_monitor_check_request(
     mocker, client_id, client_secret, test_job_path, test_machine
 ):
     async with AsyncClient(client_id, client_secret) as client:
-        _fetch_jobs_async = mocker.patch(
-            "sfapi_client._monitor._fetch_jobs_async"
-        )
+        _fetch_jobs_async = mocker.patch("sfapi_client._monitor._fetch_jobs_async")
         machine = await client.compute(test_machine)
 
         # Create some test jobs for mocking
@@ -120,9 +118,7 @@ async def test_job_monitor_job_types(
     mocker, client_id, client_secret, test_job_path, test_machine
 ):
     async with AsyncClient(client_id, client_secret) as client:
-        _fetch_jobs_async = mocker.patch(
-            "sfapi_client._monitor._fetch_jobs_async"
-        )
+        _fetch_jobs_async = mocker.patch("sfapi_client._monitor._fetch_jobs_async")
         machine = await client.compute(test_machine)
 
         test_job_specs = [

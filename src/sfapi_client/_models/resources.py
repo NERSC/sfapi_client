@@ -4,6 +4,7 @@
 
 from enum import Enum
 
+
 class Resource(str, Enum):
     perlmutter = "perlmutter"
     """ compute: Perlmutter"""
@@ -71,5 +72,6 @@ class Resource(str, Enum):
     """ storage: HPSS Regent (Backup)"""
     archive = "archive"
     """ storage: HPSS Archive (User)"""
+
 
 Resource.__str__ = lambda self: self.value

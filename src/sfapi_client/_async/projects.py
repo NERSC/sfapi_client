@@ -1,10 +1,7 @@
 from typing import Optional
 from pydantic import ValidationError, Field
 
-from .._models import (
-    ProjectStats as ProjectBase,
-    RoleStats as RoleBase
-)
+from .._models import ProjectStats as ProjectBase, RoleStats as RoleBase
 from ..exceptions import SfApiError
 
 
