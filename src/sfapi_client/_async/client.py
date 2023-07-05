@@ -501,3 +501,5 @@ class AsyncClient:
             self._resources = AsyncResources(self)
 
         return self._resources
+
+AsyncCompute.model_rebuild()

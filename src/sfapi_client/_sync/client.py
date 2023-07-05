@@ -497,3 +497,5 @@ class Client:
             self._resources = Resources(self)
 
         return self._resources
+
+Compute.model_rebuild()
