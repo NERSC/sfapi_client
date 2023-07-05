@@ -26,9 +26,7 @@ class Settings(BaseSettings):
     TEST_GROUP: str = None
     DEV_API_URL: str = "https://api-dev.nersc.gov/api/v1.2"
 
-    class Config:
-        case_sensitive = True
-        env_file = ".env"
+    model_config = ConfigDict(case_sensitive = True, env_file = ".env")
 
 
 settings = Settings()

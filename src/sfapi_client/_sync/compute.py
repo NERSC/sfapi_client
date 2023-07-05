@@ -2,7 +2,7 @@ import asyncio
 from typing import Dict, List, Optional, Union, Callable
 import json
 from enum import Enum
-from pydantic import BaseModel, PrivateAttr
+from pydantic import BaseModel, PrivateAttr, ConfigDict
 from functools import wraps
 
 from ..exceptions import SfApiError
@@ -41,6 +41,8 @@ def check_auth(method: Callable):
 class Compute(ComputeBase):
     client: Optional["Client"]
     _monitor: SyncJobMonitor = PrivateAttr()
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
