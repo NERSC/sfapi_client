@@ -210,6 +210,7 @@ class Client:
         secret: Optional[str] = None,
         key: Optional[Union[str, Path]] = None,
         api_base_url: Optional[str] = SFAPI_BASE_URL,
+        token_url: Optional[str] = SFAPI_TOKEN_URL,
         wait_interval: int = 10,
     ):
         """
@@ -237,6 +238,7 @@ class Client:
             self._client_id = client_id
             self._secret = secret
         self._api_base_url = api_base_url
+        self._token_url = token_url
         self._client_user = None
         self.__oauth2_session = None
         self._api = None
@@ -255,9 +257,9 @@ class Client:
             self.__oauth2_session = OAuth2Client(
                 client_id=self._client_id,
                 client_secret=self._secret,
-                token_endpoint_auth_method=PrivateKeyJWT(SFAPI_TOKEN_URL),
+                token_endpoint_auth_method=PrivateKeyJWT(self._token_url),
                 grant_type="client_credentials",
-                token_endpoint=SFAPI_TOKEN_URL,
+                token_endpoint=self._token_url,
                 timeout=10.0,
             )
 
