@@ -94,7 +94,9 @@ class Group(BaseModel):
         """
         The users in this group.
         """
-        members = [GroupMember.model_validate(user_info) for user_info in self.users_]
+        members = [
+            GroupMember.model_validate(user_info) for user_info in self.users_
+        ]
 
         def _set_client(m):
             m.client = self.client
@@ -110,10 +112,8 @@ class Group(BaseModel):
     def _fetch_group(client: "Client", name):
         response = client.get(f"account/groups/{name}")
 
-        values = response.json()
-        values["client"] = client
-
-        group = Group.model_validate(values)
+        json_response = response.json()
+        group = Group.model_validate(dict(json_response, client=client))
 
         return group
 

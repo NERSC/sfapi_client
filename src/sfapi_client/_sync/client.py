@@ -31,17 +31,21 @@ SFAPI_BASE_URL = "https://api.nersc.gov/api/v1.2"
 MAX_RETRY = 10
 
 
-# Retry on httpx.HTTPStatusError if status code is not 401 or 403
+# Retry on httpx.HTTPStatusError recoverable status codes
 class retry_if_http_status_error(tenacity.retry_if_exception):
     def __init__(self):
         super().__init__(self._retry)
 
     def _retry(self, e: Exception):
-        dont_retry_codes = [httpx.codes.FORBIDDEN, httpx.codes.UNAUTHORIZED]
+        retry_codes = [
+            httpx.codes.TOO_MANY_REQUESTS,
+            httpx.codes.BAD_GATEWAY,
+            httpx.codes.SERVICE_UNAVAILABLE,
+            httpx.codes.GATEWAY_TIMEOUT,
+        ]
         return (
             isinstance(e, httpx.HTTPStatusError)
-            and cast(httpx.HTTPStatusError, e).response.status_code
-            not in dont_retry_codes
+            and cast(httpx.HTTPStatusError, e).response.status_code in retry_codes
         )
 
 

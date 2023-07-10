@@ -36,11 +36,9 @@ class User(UserBase):
             url = f"{url}?username={username}"
 
         response = client.get(url)
-        values = response.json()
-        values["client"] = client
+        json_response = response.json()
 
-        user = User.model_validate(values)
-
+        user = User.model_validate(dict(json_response, client=client))
 
         return user
 

@@ -30,11 +30,14 @@ def check_auth(method: Callable):
     def wrapper(self, *args, **kwargs):
         if self.client._client_id is None:
             raise SfApiError(
-                f"Cannot call {self.__class__.__name__}.{method.__name__}() with an unauthenticated client.")
+                f"Cannot call {self.__class__.__name__}.{method.__name__}() with an unauthenticated client."
+            )
         elif self.status in [StatusValue.unavailable]:
             raise SfApiError(
-                f"Compute resource {self.name} is {self.status.name}, {self.notes}")
+                f"Compute resource {self.name} is {self.status.name}, {self.notes}"
+            )
         return method(self, *args, **kwargs)
+
     return wrapper
 
 

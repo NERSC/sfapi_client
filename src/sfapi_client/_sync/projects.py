@@ -26,13 +26,12 @@ class Project(ProjectBase):
         params = {"name": name, "repo_name": self.repo_name}
 
         r = self.client.post("account/groups", data=params)
-        values = r.json()
-        values["client"] = self.client
+        json_response = r.json()
         try:
-            group = Group.model_validate(values)
+            group = Group.model_validate(dict(json_response, client=self.client))
         except ValidationError:
             # See if we have validation error raise it
-            if "details" in values:
+            if "details" in json_response:
                 raise SfApiError(r.text())
             else:
                 raise RuntimeError(r.text())
