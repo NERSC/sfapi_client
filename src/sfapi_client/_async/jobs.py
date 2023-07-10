@@ -96,7 +96,7 @@ class AsyncJob(BaseModel, ABC):
         self._update(job_state)
 
     def _update(self, new_job_state: Any) -> Job:
-        for k in new_job_state.__fields_set__:
+        for k in new_job_state.model_fields_set:
             v = getattr(new_job_state, k)
             setattr(self, k, v)
 

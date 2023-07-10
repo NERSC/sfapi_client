@@ -233,7 +233,7 @@ class RemotePath(PathBase):
         self._update(new_state)
 
     def _update(self, new_file_state: "RemotePath") -> "RemotePath":
-        for k in new_file_state.__fields_set__:
+        for k in new_file_state.model_fields_set:
             v = getattr(new_file_state, k)
             setattr(self, k, v)
 
