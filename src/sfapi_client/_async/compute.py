@@ -92,7 +92,8 @@ class AsyncCompute(ComputeBase):
         else:
             # If we're given a path make sure it exists
             script_path = await self.ls(script)
-            if len(script_path) != 1 or not script_path[0].is_file():
+            is_file = await script_path[0].is_file()
+            if len(script_path) != 1 or not is_file:
                 raise SfApiError(f"Script path not present or is not a file, {script}")
 
         data = {"job": script, "isPath": is_path}
