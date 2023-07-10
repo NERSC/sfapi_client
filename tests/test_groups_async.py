@@ -6,7 +6,8 @@ from sfapi_client import AsyncClient
 @pytest.mark.asyncio
 async def test_group(client_id, client_secret, test_group):
     async with AsyncClient(
-        client_id=client_id, secret=client_secret,
+        client_id=client_id,
+        secret=client_secret,
     ) as client:
         group = await client.group(test_group)
         assert group is not None
@@ -25,7 +26,10 @@ async def test_create_group(
     dev_token_url,
 ):
     async with AsyncClient(
-        client_id=dev_client_id, secret=dev_client_secret, api_base_url=dev_api_url, token_url=dev_token_url
+        client_id=dev_client_id,
+        secret=dev_client_secret,
+        api_base_url=dev_api_url,
+        token_url=dev_token_url,
     ) as client:
         user = await client.user(test_username)
         projects = await user.projects()
@@ -58,7 +62,10 @@ async def test_add_user(
     dev_token_url,
 ):
     async with AsyncClient(
-        client_id=dev_client_id, secret=dev_client_secret, api_base_url=dev_api_url, token_url=dev_token_url
+        client_id=dev_client_id,
+        secret=dev_client_secret,
+        api_base_url=dev_api_url,
+        token_url=dev_token_url,
     ) as client:
         user = await client.user(test_username)
         projects = await user.projects()
@@ -105,7 +112,10 @@ async def test_remove_user(
     dev_token_url,
 ):
     async with AsyncClient(
-        client_id=dev_client_id, secret=dev_client_secret, api_base_url=dev_api_url, token_url=dev_token_url
+        client_id=dev_client_id,
+        secret=dev_client_secret,
+        api_base_url=dev_api_url,
+        token_url=dev_token_url,
     ) as client:
         user = await client.user(test_username)
         projects = await user.projects()
@@ -157,7 +167,10 @@ async def test_groupmember_to_user(
     dev_token_url,
 ):
     async with AsyncClient(
-        client_id=dev_client_id, secret=dev_client_secret, api_base_url=dev_api_url, token_url=dev_token_url
+        client_id=dev_client_id,
+        secret=dev_client_secret,
+        api_base_url=dev_api_url,
+        token_url=dev_token_url,
     ) as client:
         user = await client.user(test_username)
         projects = await user.projects()

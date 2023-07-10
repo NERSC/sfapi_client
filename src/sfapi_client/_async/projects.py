@@ -10,6 +10,7 @@ class AsyncRole(RoleBase):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
+
 class AsyncProject(ProjectBase):
     client: Optional["AsyncClient"]
     name: str = Field(alias="repo_name")

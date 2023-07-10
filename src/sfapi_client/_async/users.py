@@ -59,7 +59,10 @@ class AsyncUser(UserBase):
         json_response = r.json()
         groups_reponse = GroupsResponse.model_validate(json_response)
 
-        groups = [AsyncGroup.model_validate(dict(g, client=self.client)) for g in groups_reponse.groups]
+        groups = [
+            AsyncGroup.model_validate(dict(g, client=self.client))
+            for g in groups_reponse.groups
+        ]
 
         return groups
 
@@ -76,7 +79,10 @@ class AsyncUser(UserBase):
 
         project_values = r.json()
 
-        projects = [AsyncProject.model_validate(dict(p, client=self.client)) for p in project_values]
+        projects = [
+            AsyncProject.model_validate(dict(p, client=self.client))
+            for p in project_values
+        ]
 
         return projects
 
@@ -93,6 +99,8 @@ class AsyncUser(UserBase):
 
         json_response = r.json()
 
-        roles = [AsyncRole.model_validate(dict(p, client=self.client)) for p in json_response]
+        roles = [
+            AsyncRole.model_validate(dict(p, client=self.client)) for p in json_response
+        ]
 
         return roles

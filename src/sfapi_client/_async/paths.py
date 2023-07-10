@@ -72,7 +72,10 @@ class AsyncRemotePath(PathBase):
 
         :return: the parents
         """
-        parents = [AsyncRemotePath(path=str(p), compute=self.compute) for p in self._path.parents]
+        parents = [
+            AsyncRemotePath(path=str(p), compute=self.compute)
+            for p in self._path.parents
+        ]
 
         return parents
 

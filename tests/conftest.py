@@ -46,6 +46,7 @@ def client_secret():
 
     return JsonWebKey.import_key(json.loads(json_web_key))
 
+
 @pytest.fixture
 def dev_client_id():
     return settings.SFAPI_DEV_CLIENT_ID
@@ -113,6 +114,7 @@ def test_project():
 @pytest.fixture
 def dev_api_url():
     return settings.DEV_API_URL
+
 
 @pytest.fixture
 def dev_token_url():
