@@ -168,7 +168,7 @@ class Compute(ComputeBase):
 
         task_id = run_response.task_id
         task_result = self._wait_for_task(task_id)
-        command_result = CommandResult.parse_raw(task_result)
+        command_result = CommandResult.model_validate_json(task_result)
         if command_result.status == "error":
             raise SfApiError(command_result.error)
 
