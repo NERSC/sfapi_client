@@ -65,17 +65,20 @@ async def test_job_monitor_check_request(
     mocker, client_id, client_secret, test_job_path, test_machine
 ):
     async with AsyncClient(client_id, client_secret) as client:
-        _fetch_jobs_async = mocker.patch("sfapi_client._monitor._fetch_jobs_async")
+        _fetch_jobs_async = mocker.patch(
+            "sfapi_client._monitor._fetch_jobs_async"
+        )
         machine = await client.compute(test_machine)
 
         # Create some test jobs for mocking
-        test_jobs = [AsyncJobSqueue(jobid=i) for i in range(0, 10)]
-        for j in test_jobs:
-            j.compute = machine
+        test_jobs = [AsyncJobSqueue(jobid=str(i), compute=machine) for i in range(0, 10)]
+        test_jobs_futures = [asyncio.Future() for _ in range(0, 10)]
+        for i in range(0, 10):
+            test_jobs_futures[i].set_result(test_jobs[i])
 
         # Patch the submit_job to return the test jobs
         submit_job = mocker.patch.object(AsyncCompute, "submit_job")
-        submit_job.side_effect = test_jobs
+        submit_job.side_effect = test_jobs_futures
 
         # Patch the return value of _fetch_jobs_async to return
         # the test jobs
@@ -85,6 +88,7 @@ async def test_job_monitor_check_request(
         jobs = []
         for _ in range(0, 10):
             jobs.append(await machine.submit_job(test_job_path))
+        jobs = test_jobs
 
         # Call update on all jobs
         await asyncio.gather(*[asyncio.create_task(j.update()) for j in jobs])
@@ -118,13 +122,14 @@ async def test_job_monitor_job_types(
         ]
 
         # Create some test jobs for mocking
-        test_jobs = [job_class(jobid=i) for (job_class, i) in test_job_specs]
-        for j in test_jobs:
-            j.compute = machine
+        test_jobs = [job_class(jobid=str(i), compute=machine) for (job_class, i) in test_job_specs]
+        test_jobs_futures = [asyncio.Future() for _ in range(len(test_job_specs))]
+        for i, f in enumerate(test_jobs_futures) :
+            f.set_result(test_jobs[i])
 
-        # Patch the submit_job to return the test jobs
+        # Patch the job method to return the test jobs
         job = mocker.patch.object(AsyncCompute, "job")
-        job.side_effect = test_jobs
+        job.side_effect = test_jobs_futures
 
         # Patch the return value of _fetch_jobs_async to return
         # the test jobs
