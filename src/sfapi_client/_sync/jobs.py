@@ -78,8 +78,8 @@ class Job(BaseModel, ABC):
     """
 
     compute: Optional["Compute"] = None
-    state: Optional[JobState]
-    jobid: Optional[str]
+    state: Optional[JobState] = None
+    jobid: Optional[str] = None
 
     @field_validator("state", check_fields=False)
     def state_validate(cls, v):

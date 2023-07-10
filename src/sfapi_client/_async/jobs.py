@@ -75,8 +75,8 @@ class AsyncJob(BaseModel, ABC):
     """
 
     compute: Optional["AsyncCompute"] = None
-    state: Optional[JobState]
-    jobid: Optional[str]
+    state: Optional[JobState] = None
+    jobid: Optional[str] = None
 
     @field_validator("state", check_fields=False)
     def state_validate(cls, v):
