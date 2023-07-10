@@ -17,15 +17,16 @@ async def test_group(client_id, client_secret, test_group, dev_api_url):
 @pytest.mark.api_dev
 @pytest.mark.asyncio
 async def test_create_group(
-    client_id,
-    client_secret,
+    dev_client_id,
+    dev_client_secret,
     test_project,
     test_random_group,
     test_username,
     dev_api_url,
+    dev_token_url,
 ):
     async with AsyncClient(
-        client_id, client_secret, api_base_url=dev_api_url
+        client_id=dev_client_id, secret=dev_client_secret, api_base_url=dev_api_url, token_url=dev_token_url
     ) as client:
         user = await client.user(test_username)
         projects = await user.projects()
@@ -49,15 +50,16 @@ async def test_create_group(
 @pytest.mark.api_dev
 @pytest.mark.asyncio
 async def test_add_user(
-    client_id,
-    client_secret,
+    dev_client_id,
+    dev_client_secret,
     test_project,
     test_random_group,
     test_username,
     dev_api_url,
+    dev_token_url,
 ):
     async with AsyncClient(
-        client_id, client_secret, api_base_url=dev_api_url
+        client_id=dev_client_id, secret=dev_client_secret, api_base_url=dev_api_url, token_url=dev_token_url
     ) as client:
         user = await client.user(test_username)
         projects = await user.projects()
@@ -95,15 +97,16 @@ async def test_add_user(
 @pytest.mark.api_dev
 @pytest.mark.asyncio
 async def test_remove_user(
-    client_id,
-    client_secret,
+    dev_client_id,
+    dev_client_secret,
     test_project,
     test_random_group,
     test_username,
     dev_api_url,
+    dev_token_url,
 ):
     async with AsyncClient(
-        client_id, client_secret, api_base_url=dev_api_url
+        client_id=dev_client_id, secret=dev_client_secret, api_base_url=dev_api_url, token_url=dev_token_url
     ) as client:
         user = await client.user(test_username)
         projects = await user.projects()
@@ -146,15 +149,16 @@ async def test_remove_user(
 @pytest.mark.api_dev
 @pytest.mark.asyncio
 async def test_groupmember_to_user(
-    client_id,
-    client_secret,
+    dev_client_id,
+    dev_client_secret,
     test_project,
     test_random_group,
     test_username,
     dev_api_url,
+    dev_token_url,
 ):
     async with AsyncClient(
-        client_id, client_secret, api_base_url=dev_api_url
+        client_id=dev_client_id, secret=dev_client_secret, api_base_url=dev_api_url, token_url=dev_token_url
     ) as client:
         user = await client.user(test_username)
         projects = await user.projects()

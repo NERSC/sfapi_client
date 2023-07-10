@@ -16,6 +16,8 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     SFAPI_CLIENT_ID: str = None
     SFAPI_CLIENT_SECRET: str = None
+    SFAPI_DEV_CLIENT_ID: str = None
+    SFAPI_DEV_CLIENT_SECRET: str = None
     TEST_JOB_PATH: str = None
     TEST_MACHINE: Machine = Machine.perlmutter
     TEST_RESOURCE: Resource = Resource.spin
@@ -25,6 +27,7 @@ class Settings(BaseSettings):
     TEST_PROJECT: str = None
     TEST_GROUP: str = None
     DEV_API_URL: str = "https://api-dev.nersc.gov/api/v1.2"
+    DEV_TOKEN_URL: str = "https://oidc-dev.nersc.gov/c2id/token"
 
     model_config = ConfigDict(case_sensitive=True, env_file=".env")
 
@@ -40,6 +43,17 @@ def client_id():
 @pytest.fixture
 def client_secret():
     json_web_key = settings.SFAPI_CLIENT_SECRET
+
+    return JsonWebKey.import_key(json.loads(json_web_key))
+
+@pytest.fixture
+def dev_client_id():
+    return settings.SFAPI_DEV_CLIENT_ID
+
+
+@pytest.fixture
+def dev_client_secret():
+    json_web_key = settings.SFAPI_DEV_CLIENT_SECRET
 
     return JsonWebKey.import_key(json.loads(json_web_key))
 
@@ -99,3 +113,7 @@ def test_project():
 @pytest.fixture
 def dev_api_url():
     return settings.DEV_API_URL
+
+@pytest.fixture
+def dev_token_url():
+    return settings.DEV_TOKEN_URL

@@ -158,10 +158,10 @@ async def test_job_monitor_job_types(
 @pytest.mark.api_dev
 @pytest.mark.asyncio
 async def test_job_monitor_gather(
-    client_id, client_secret, test_job_path, test_machine, dev_api_url
+    dev_client_id, dev_client_secret, test_job_path, test_machine, dev_api_url, dev_token_url
 ):
     async with AsyncClient(
-        client_id, client_secret, api_base_url=dev_api_url
+        client_id=dev_client_id, secret=dev_client_secret, api_base_url=dev_api_url, token_url=dev_token_url
     ) as client:
         machine = await client.compute(test_machine)
 

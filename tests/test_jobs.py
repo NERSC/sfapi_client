@@ -55,13 +55,14 @@ def test_complete_timeout(client_id, client_secret, test_job_path, test_machine)
 @pytest.mark.api_dev
 def test_job_monitor_check_request(
     mocker,
-    client_id,
-    client_secret,
+    dev_client_id,
+    dev_client_secret,
     test_job_path,
     test_machine,
     dev_api_url,
+    dev_token_url,
 ):
-    with Client(client_id, client_secret, api_base_url=dev_api_url) as client:
+    with Client(client_id=dev_client_id, secret=dev_client_secret, api_base_url=dev_api_url, token_url=dev_token_url) as client:
         num_jobs = 10
         _fetch_jobs = mocker.patch("sfapi_client._monitor._fetch_jobs")
 
@@ -119,11 +120,11 @@ def test_job_monitor_check_request(
 # We currently run this in api-dev as its a new feature deployed there
 @pytest.mark.api_dev
 def test_job_monitor_multiple_threads(
-    client_id, client_secret, test_job_path, test_machine, dev_api_url
+    dev_client_id, dev_client_secret, test_job_path, test_machine, dev_api_url, dev_token_url
 ):
     num_jobs = 5
 
-    with Client(client_id, client_secret, api_base_url=dev_api_url) as client:
+    with Client(client_id=dev_client_id, secret=dev_client_secret, api_base_url=dev_api_url, token_url=dev_token_url) as client:
         machine = client.compute(test_machine)
 
         jobs = []
