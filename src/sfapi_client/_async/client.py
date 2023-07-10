@@ -23,6 +23,8 @@ from .._models import (
 from .._models.resources import Resource
 from .groups import AsyncGroup
 from .users import AsyncUser
+from .projects import AsyncProject, AsyncRole
+from .paths import AsyncRemotePath
 
 SFAPI_TOKEN_URL = "https://oidc.nersc.gov/c2id/token"
 SFAPI_BASE_URL = "https://api.nersc.gov/api/v1.2"
@@ -504,3 +506,8 @@ class AsyncClient:
 
 
 AsyncCompute.model_rebuild()
+AsyncGroup.model_rebuild()
+AsyncUser.model_rebuild()
+AsyncProject.model_rebuild()
+AsyncRemotePath.model_rebuild()
+AsyncRole.model_rebuild()

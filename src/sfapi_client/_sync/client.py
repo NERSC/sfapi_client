@@ -498,4 +498,10 @@ class Client:
 
         return self._resources
 
+
 Compute.model_rebuild()
+Group.model_rebuild()
+User.model_rebuild()
+Project.model_rebuild()
+RemotePath.model_rebuild()
+Role.model_rebuild()
