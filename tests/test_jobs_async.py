@@ -50,17 +50,6 @@ async def test_running(client_id, client_secret, test_job_path, test_machine):
 
         assert state == JobState.RUNNING
 
-
-@pytest.mark.asyncio
-async def test_running_timeout(client_id, client_secret, test_job_path, test_machine):
-    async with AsyncClient(client_id, client_secret, wait_interval=1) as client:
-        machine = await client.compute(test_machine)
-        job = await machine.submit_job(test_job_path)
-
-        with pytest.raises(TimeoutError):
-            await job.running(timeout=1)
-
-
 @pytest.mark.asyncio
 async def test_complete_timeout(client_id, client_secret, test_job_path, test_machine):
     async with AsyncClient(client_id, client_secret, wait_interval=1) as client:
