@@ -1,4 +1,4 @@
-from typing import Optional, List, IO, AnyStr, Dict
+from typing import Optional, List, IO, AnyStr, Dict, Tuple
 from pathlib import PurePosixPath, Path
 from pydantic import PrivateAttr
 from io import StringIO, BytesIO
