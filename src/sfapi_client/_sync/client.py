@@ -23,6 +23,8 @@ from .._models import (
 from .._models.resources import Resource
 from .groups import Group
 from .users import User
+from .projects import Project, Role
+from .paths import RemotePath
 
 SFAPI_TOKEN_URL = "https://oidc.nersc.gov/c2id/token"
 SFAPI_BASE_URL = "https://api.nersc.gov/api/v1.2"
