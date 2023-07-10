@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import ValidationError, Field
+from pydantic import ValidationError, Field, ConfigDict
 
 from .._models import ProjectStats as ProjectBase, RoleStats as RoleBase
 from ..exceptions import SfApiError
@@ -8,10 +8,13 @@ from ..exceptions import SfApiError
 class AsyncRole(RoleBase):
     client: Optional["AsyncClient"]
 
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 class AsyncProject(ProjectBase):
     client: Optional["AsyncClient"]
     name: str = Field(alias="repo_name")
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     async def create_group(self, name: str) -> "AsyncGroup":
         """
@@ -25,7 +28,7 @@ class AsyncProject(ProjectBase):
         r = await self.client.post("account/groups", data=params)
         json_response = r.json()
         try:
-            group = AsyncGroup.model_validate(json_response)
+            group = AsyncGroup.model_validate(dict(json_response, client=self.client))
         except ValidationError:
             # See if we have validation error raise it
             if "details" in json_response:

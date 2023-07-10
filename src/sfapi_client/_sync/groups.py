@@ -1,6 +1,6 @@
 from typing import Optional, Union, List, Any, Callable
 from functools import wraps
-from pydantic import ValidationError, Field, BaseModel, validator
+from pydantic import ValidationError, Field, BaseModel, ConfigDict
 from .._models import BatchGroupAction as GroupAction, UserStats as GroupMemberBase
 from ..exceptions import SfApiError
 from .users import User
@@ -11,13 +11,17 @@ def check_auth(method: Callable):
     def wrapper(self, *args, **kwargs):
         if self._client_id is None:
             raise SfApiError(
-                f"Cannot call {self.__class__.__name__}.{method.__name__}() with an unauthenticated client.")
+                f"Cannot call {self.__class__.__name__}.{method.__name__}() with an unauthenticated client."
+            )
         return method(self, *args, **kwargs)
+
     return wrapper
 
 
 class GroupMember(GroupMemberBase):
     client: Optional["Client"]
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def user(self) -> "User":
         """
@@ -31,10 +35,13 @@ class Group(BaseModel):
     """
     A user group.
     """
+
     client: Optional["Client"]
     gid: Optional[int]
     name: Optional[str]
     users_: Optional[List[GroupMemberBase]] = Field(..., alias="users")
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def _group_action(
         self,
@@ -102,10 +109,11 @@ class Group(BaseModel):
     @check_auth
     def _fetch_group(client: "Client", name):
         response = client.get(f"account/groups/{name}")
-        json_response = response.json()
 
-        group = Group.model_validate(json_response)
-        group.client = client
+        values = response.json()
+        values["client"] = client
+
+        group = Group.model_validate(values)
 
         return group
 

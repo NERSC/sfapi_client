@@ -64,10 +64,7 @@ async def _fetch_jobs(
         compute, jobids, user, partition, job_type._command == JobCommand.sacct
     )
 
-    jobs = [job_type.model_validate(state) for state in job_states]
-
-    for job in jobs:
-        job.compute = compute
+    jobs = [job_type.model_validate(dict(state, compute=compute)) for state in job_states]
 
     return jobs
 

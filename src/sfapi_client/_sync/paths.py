@@ -41,18 +41,12 @@ class RemotePath(PathBase):
             self.name = self._path.name
 
     def __truediv__(self, key):
-        remote_path = RemotePath(str(self._path / key))
-        # We have to set the compute field separately otherwise
-        # we run into ForwardRef issue because of circular deps
-        remote_path.compute = self.compute
+        remote_path = RemotePath(path=str(self._path / key), compute=self.compute)
 
         return remote_path
 
     def __rtruediv__(self, key):
-        remote_path = RemotePath(str(key / self._path))
-        # We have to set the compute field separately otherwise
-        # we run into ForwardRef issue because of circular deps
-        remote_path.compute = self.compute
+        remote_path = RemotePath(path=str(key / self._path), compute=self.compute)
 
         return remote_path
 
@@ -67,10 +61,7 @@ class RemotePath(PathBase):
         :return: the parent
 
         """
-        parent_path = RemotePath(str(self._path.parent))
-        # We have to set the compute field separately otherwise
-        # we run into ForwardRef issue because of circular deps
-        parent_path.compute = self.compute
+        parent_path = RemotePath(path=str(self._path.parent), compute=self.compute)
 
         return parent_path
 
@@ -81,15 +72,7 @@ class RemotePath(PathBase):
 
         :return: the parents
         """
-        parents = [RemotePath(str(p)) for p in self._path.parents]
-
-        # We have to set the compute field separately otherwise
-        # we run into ForwardRef issue because of circular deps
-        def _set_compute(p):
-            p.compute = self.compute
-            return p
-
-        parents = map(_set_compute, parents)
+        parents = [RemotePath(path=str(p), compute=self.compute) for p in self._path.parents]
 
         return parents
 
@@ -183,17 +166,18 @@ class RemotePath(PathBase):
         r = compute.client.get(f"utilities/ls/{compute.name}/{path}")
 
         json_response = r.json()
-        directory_listing_response = DirectoryListingResponse.model_validate(json_response)
+        directory_listing_response = DirectoryListingResponse.model_validate(
+            json_response
+        )
         if directory_listing_response.status == DirectoryListingResponseStatus.ERROR:
             raise SfApiError(directory_listing_response.error)
 
         paths = []
 
         def _to_remote_path(path, entry):
-            kwargs = entry.dict()
-            kwargs.update(path=path)
+            kwargs = entry.model_dump()
+            kwargs.update(path=path, compute=compute)
             p = RemotePath(**kwargs)
-            p.compute = compute
 
             return p
 
@@ -286,8 +270,7 @@ class RemotePath(PathBase):
         if upload_response.status == UploadResponseStatus.ERROR:
             raise SfApiError(upload_response.error)
 
-        remote_path = RemotePath(upload_path)
-        remote_path.compute = self.compute
+        remote_path = RemotePath(path=upload_path, compute=self.compute)
 
         return remote_path
 

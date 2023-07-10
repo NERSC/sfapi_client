@@ -119,8 +119,7 @@ class AsyncCompute(ComputeBase):
         if jobid is None:
             raise SfApiError(f"Unable to extract jobid if for task: {task_id}")
 
-        job = AsyncJobSqueue(jobid=jobid)
-        job.compute = self
+        job = AsyncJobSqueue(jobid=jobid, compute=self)
 
         return job
 

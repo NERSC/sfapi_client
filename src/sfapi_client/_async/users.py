@@ -1,6 +1,8 @@
 from typing import List, Optional, Callable
 from functools import wraps
 
+from pydantic import ConfigDict
+
 from .._models import (
     UserInfo as UserBase,
     GroupList as GroupsResponse,
@@ -24,6 +26,8 @@ def check_auth(method: Callable):
 class AsyncUser(UserBase):
     client: Optional["AsyncClient"]
 
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     @staticmethod
     @check_auth
     async def _fetch_user(client: "AsyncClient", username: Optional[str] = None):
@@ -34,8 +38,7 @@ class AsyncUser(UserBase):
         response = await client.get(url)
         json_response = response.json()
 
-        user = AsyncUser.model_validate(json_response)
-        user.client = client
+        user = AsyncUser.model_validate(dict(json_response, client=client))
 
         return user
 
@@ -56,15 +59,9 @@ class AsyncUser(UserBase):
         json_response = r.json()
         groups_reponse = GroupsResponse.model_validate(json_response)
 
-        groups = [AsyncGroup.model_validate(g) for g in groups_reponse.groups]
+        groups = [AsyncGroup.model_validate(dict(g, client=self.client)) for g in groups_reponse.groups]
 
-        def _set_client(g):
-            g.client = self.client
-            return g
-
-        groups = map(_set_client, groups)
-
-        return list(groups)
+        return groups
 
     async def projects(self) -> List[AsyncProject]:
         """
@@ -77,17 +74,11 @@ class AsyncUser(UserBase):
 
         r = await self.client.get("account/projects")
 
-        json_response = r.json()
+        project_values = r.json()
 
-        projects = [AsyncProject.model_validate(p) for p in json_response]
+        projects = [AsyncProject.model_validate(dict(p, client=self.client)) for p in project_values]
 
-        def _set_client(p):
-            p.client = self.client
-            return p
-
-        projects = map(_set_client, projects)
-
-        return list(projects)
+        return projects
 
     async def roles(self) -> List[AsyncRole]:
         """
@@ -102,12 +93,6 @@ class AsyncUser(UserBase):
 
         json_response = r.json()
 
-        roles = [AsyncRole.model_validate(p) for p in json_response]
+        roles = [AsyncRole.model_validate(dict(p, client=self.client)) for p in json_response]
 
-        def _set_client(p):
-            p.client = self.client
-            return p
-
-        roles = map(_set_client, roles)
-
-        return list(roles)
+        return roles

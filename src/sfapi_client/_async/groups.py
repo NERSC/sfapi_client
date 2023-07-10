@@ -1,6 +1,6 @@
 from typing import Optional, Union, List, Any, Callable
 from functools import wraps
-from pydantic import ValidationError, Field, BaseModel, validator
+from pydantic import ValidationError, Field, BaseModel, ConfigDict
 from .._models import BatchGroupAction as GroupAction, UserStats as GroupMemberBase
 from ..exceptions import SfApiError
 from .users import AsyncUser
@@ -21,6 +21,8 @@ def check_auth(method: Callable):
 class AsyncGroupMember(GroupMemberBase):
     client: Optional["AsyncClient"]
 
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     async def user(self) -> "AsyncUser":
         """
         Get the user associated with the membership.
@@ -38,6 +40,8 @@ class AsyncGroup(BaseModel):
     gid: Optional[int]
     name: Optional[str]
     users_: Optional[List[GroupMemberBase]] = Field(..., alias="users")
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     async def _group_action(
         self,
@@ -107,10 +111,9 @@ class AsyncGroup(BaseModel):
     @check_auth
     async def _fetch_group(client: "AsyncClient", name):
         response = await client.get(f"account/groups/{name}")
-        json_response = response.json()
 
-        group = AsyncGroup.model_validate(json_response)
-        group.client = client
+        json_response = response.json()
+        group = AsyncGroup.model_validate(dict(json_response, client=client))
 
         return group
 

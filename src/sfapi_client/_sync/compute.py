@@ -116,8 +116,7 @@ class Compute(ComputeBase):
         if jobid is None:
             raise SfApiError(f"Unable to extract jobid if for task: {task_id}")
 
-        job = JobSqueue(jobid=jobid)
-        job.compute = self
+        job = JobSqueue(jobid=jobid, compute=self)
 
         return job
 
