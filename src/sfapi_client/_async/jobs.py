@@ -78,7 +78,7 @@ class AsyncJob(BaseModel, ABC):
     state: Optional[JobState] = None
     jobid: Optional[str] = None
 
-    @field_validator("state", check_fields=False)
+    @field_validator("state", mode="before", check_fields=False)
     def state_validate(cls, v):
         # sacct return a state of the form "CANCELLED by XXXX" for the
         # cancelled state, coerce into value that will match a state
