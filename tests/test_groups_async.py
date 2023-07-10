@@ -3,11 +3,10 @@ import pytest
 from sfapi_client import AsyncClient
 
 
-@pytest.mark.api_dev
 @pytest.mark.asyncio
-async def test_group(client_id, client_secret, test_group, dev_api_url):
+async def test_group(client_id, client_secret, test_group):
     async with AsyncClient(
-        client_id, client_secret, api_base_url=dev_api_url
+        client_id=client_id, secret=client_secret,
     ) as client:
         group = await client.group(test_group)
         assert group is not None
