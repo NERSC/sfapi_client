@@ -69,7 +69,7 @@ def test_job_monitor_check_request(
         machine = client.compute(test_machine)
 
         # Create some test jobs for mocking
-        test_jobs = [JobSqueue(jobid=i) for i in range(0, num_jobs)]
+        test_jobs = [JobSqueue(jobid=str(i)) for i in range(0, num_jobs)]
         for j in test_jobs:
             j.compute = machine
 
