@@ -21,7 +21,7 @@ from .._models import (
     AppRoutersStatusModelsStatus as Status,
 )
 from .._models.resources import Resource
-from .groups import AsyncGroup
+from .groups import AsyncGroup, AsyncGroupMember
 from .users import AsyncUser
 from .projects import AsyncProject, AsyncRole
 from .paths import AsyncRemotePath
@@ -513,3 +513,4 @@ AsyncUser.model_rebuild()
 AsyncProject.model_rebuild()
 AsyncRemotePath.model_rebuild()
 AsyncRole.model_rebuild()
+AsyncGroupMember.model_rebuild()

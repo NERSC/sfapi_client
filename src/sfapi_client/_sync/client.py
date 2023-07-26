@@ -21,7 +21,7 @@ from .._models import (
     AppRoutersStatusModelsStatus as Status,
 )
 from .._models.resources import Resource
-from .groups import Group
+from .groups import Group, GroupMember
 from .users import User
 from .projects import Project, Role
 from .paths import RemotePath
@@ -513,3 +513,4 @@ User.model_rebuild()
 Project.model_rebuild()
 RemotePath.model_rebuild()
 Role.model_rebuild()
+GroupMember.model_rebuild()
