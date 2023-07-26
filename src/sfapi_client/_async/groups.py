@@ -125,7 +125,7 @@ class AsyncGroup(BaseModel):
         self._update(group_state)
 
     def _update(self, new_group_state: Any) -> "AsyncGroup":
-        for k in new_group_state.__fields_set__:
+        for k in new_group_state.model_fields_set:
             v = getattr(new_group_state, k)
             setattr(self, k, v)
 
