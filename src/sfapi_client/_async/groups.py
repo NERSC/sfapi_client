@@ -64,7 +64,9 @@ class AsyncGroup(BaseModel):
 
         # if successful will return group object
         try:
-            new_group = AsyncGroup.model_validate(dict(json_response, client=self.client))
+            new_group = AsyncGroup.model_validate(
+                dict(json_response, client=self.client)
+            )
             self._update(new_group)
         except ValidationError:
             # See if we have validation error raise it
@@ -95,7 +97,10 @@ class AsyncGroup(BaseModel):
         The users in this group.
         """
         members = [
-            AsyncGroupMember.model_validate(dict(user_info.model_dump(), client=self.client)) for user_info in self.users_
+            AsyncGroupMember.model_validate(
+                dict(user_info.model_dump(), client=self.client)
+            )
+            for user_info in self.users_
         ]
 
         def _set_client(m):

@@ -72,7 +72,10 @@ class RemotePath(PathBase):
 
         :return: the parents
         """
-        parents = [RemotePath(path=str(p), compute=self.compute) for p in self._path.parents]
+        parents = [
+            RemotePath(path=str(p), compute=self.compute)
+            for p in self._path.parents
+        ]
 
         return parents
 

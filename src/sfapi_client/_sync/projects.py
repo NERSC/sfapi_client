@@ -10,6 +10,7 @@ class Role(RoleBase):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
+
 class Project(ProjectBase):
     client: Optional["Client"]
     name: str = Field(alias="repo_name")
