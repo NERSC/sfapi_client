@@ -9,8 +9,8 @@ from sfapi_client.paths import RemotePath
 
 
 def test_concat():
-    a = RemotePath("/a")
-    b = RemotePath("b")
+    a = RemotePath("/a", compute=None)
+    b = RemotePath("b", compute=None)
     c = "c"
 
     new_path = a / b
@@ -27,7 +27,7 @@ def test_concat():
 
 
 def test_parent():
-    test_path = RemotePath("/foo")
+    test_path = RemotePath("/foo", compute=None)
     assert isinstance(test_path.parent, RemotePath)
     for p in test_path.parents:
         assert isinstance(p, RemotePath)

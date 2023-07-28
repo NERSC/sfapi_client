@@ -1,4 +1,4 @@
-from typing import Optional, List, IO, AnyStr, Dict
+from typing import Optional, List, IO, AnyStr, Dict, Tuple
 from pathlib import PurePosixPath, Path
 from pydantic import PrivateAttr
 from io import StringIO, BytesIO
@@ -23,6 +23,11 @@ def _is_no_such(error: SfApiError):
 
 
 class AsyncRemotePath(PathBase):
+    """
+    RemotePath is used to model a remote path, it takes inspiration from
+    pathlib and shares some of its interface.
+    """
+
     compute: Optional["AsyncCompute"]
     # It would be nice to be able subclass PurePosixPath, however, this
     # require using private interfaces. So we derive by composition.
@@ -36,18 +41,12 @@ class AsyncRemotePath(PathBase):
             self.name = self._path.name
 
     def __truediv__(self, key):
-        remote_path = AsyncRemotePath(str(self._path / key))
-        # We have to set the compute field separately otherwise
-        # we run into ForwardRef issue because of circular deps
-        remote_path.compute = self.compute
+        remote_path = AsyncRemotePath(path=str(self._path / key), compute=self.compute)
 
         return remote_path
 
     def __rtruediv__(self, key):
-        remote_path = AsyncRemotePath(str(key / self._path))
-        # We have to set the compute field separately otherwise
-        # we run into ForwardRef issue because of circular deps
-        remote_path.compute = self.compute
+        remote_path = AsyncRemotePath(path=str(key / self._path), compute=self.compute)
 
         return remote_path
 
@@ -55,60 +54,64 @@ class AsyncRemotePath(PathBase):
         return str(self._path)
 
     @property
-    def parent(self):
+    def parent(self) -> "RemotePath":
         """
         The parent of the path.
+
+        :return: the parent
+
         """
-        parent_path = AsyncRemotePath(str(self._path.parent))
-        # We have to set the compute field separately otherwise
-        # we run into ForwardRef issue because of circular deps
-        parent_path.compute = self.compute
+        parent_path = AsyncRemotePath(path=str(self._path.parent), compute=self.compute)
 
         return parent_path
 
     @property
-    def parents(self):
+    def parents(self) -> List["RemotePath"]:
         """
         The parents of the path.
+
+        :return: the parents
         """
-        parents = [AsyncRemotePath(str(p)) for p in self._path.parents]
-
-        # We have to set the compute field separately otherwise
-        # we run into ForwardRef issue because of circular deps
-        def _set_compute(p):
-            p.compute = self.compute
-            return p
-
-        parents = map(_set_compute, parents)
+        parents = [
+            AsyncRemotePath(path=str(p), compute=self.compute)
+            for p in self._path.parents
+        ]
 
         return parents
 
     @property
-    def stem(self):
+    def stem(self) -> str:
         """
         The final path component, without its suffix.
+
+        :return: the path stem
         """
         return self._path.stem
 
     @property
-    def suffix(self):
+    def suffix(self) -> str:
         """
         The path extension.
-        """
 
+        :return: the path extension
+        """
         return self._path.suffix
 
     @property
-    def suffixes(self):
+    def suffixes(self) -> List[str]:
         """
         A list of the path extensions.
+
+        :return: the path extensions
         """
         return self._path.suffixes
 
     @property
-    def parts(self):
+    def parts(self) -> Tuple[str]:
         """
         The paths components as a tuple.
+
+        :return: the path components
         """
         return self._path.parts
 
@@ -117,7 +120,7 @@ class AsyncRemotePath(PathBase):
             kwargs["exclude"] = {"compute"}
         return super().dict(*args, **kwargs)
 
-    async def is_dir(self):
+    async def is_dir(self) -> bool:
         """
         :return: Returns True if path is a directory, False otherwise.
         """
@@ -126,7 +129,7 @@ class AsyncRemotePath(PathBase):
 
         return self.perms[0] == "d"
 
-    async def is_file(self):
+    async def is_file(self) -> bool:
         """
         :return: Returns True if path is a file, False otherwise.
         """
@@ -147,7 +150,7 @@ class AsyncRemotePath(PathBase):
             f"utilities/download/{self.compute.name}/{self._path}?binary={binary}"
         )
         json_response = r.json()
-        download_response = FileDownloadResponse.parse_obj(json_response)
+        download_response = FileDownloadResponse.model_validate(json_response)
 
         if download_response.status == FileDownloadResponseStatus.ERROR:
             raise SfApiError(download_response.error)
@@ -166,17 +169,18 @@ class AsyncRemotePath(PathBase):
         r = await compute.client.get(f"utilities/ls/{compute.name}/{path}")
 
         json_response = r.json()
-        directory_listing_response = DirectoryListingResponse.parse_obj(json_response)
+        directory_listing_response = DirectoryListingResponse.model_validate(
+            json_response
+        )
         if directory_listing_response.status == DirectoryListingResponseStatus.ERROR:
             raise SfApiError(directory_listing_response.error)
 
         paths = []
 
         def _to_remote_path(path, entry):
-            kwargs = entry.dict()
-            kwargs.update(path=path)
+            kwargs = entry.model_dump()
+            kwargs.update(path=path, compute=compute)
             p = AsyncRemotePath(**kwargs)
-            p.compute = compute
 
             return p
 
@@ -209,6 +213,8 @@ class AsyncRemotePath(PathBase):
     async def ls(self) -> List["AsyncRemotePath"]:
         """
         List the current path
+
+        :return: the list of child paths
         """
         return await self._ls(self.compute, str(self._path))
 
@@ -230,7 +236,7 @@ class AsyncRemotePath(PathBase):
         self._update(new_state)
 
     def _update(self, new_file_state: "AsyncRemotePath") -> "AsyncRemotePath":
-        for k in new_file_state.__fields_set__:
+        for k in new_file_state.model_fields_set:
             v = getattr(new_file_state, k)
             setattr(self, k, v)
 
@@ -263,12 +269,11 @@ class AsyncRemotePath(PathBase):
         r = await self.compute.client.put(url, files=files)
 
         json_response = r.json()
-        upload_response = UploadResponse.parse_obj(json_response)
+        upload_response = UploadResponse.model_validate(json_response)
         if upload_response.status == UploadResponseStatus.ERROR:
             raise SfApiError(upload_response.error)
 
-        remote_path = AsyncRemotePath(upload_path)
-        remote_path.compute = self.compute
+        remote_path = AsyncRemotePath(path=upload_path, compute=self.compute)
 
         return remote_path
 
@@ -281,7 +286,6 @@ class AsyncRemotePath(PathBase):
 
         raises: IsDirectoryError: If the path is not a file.
         """
-
         try:
             if await self.is_dir():
                 raise IsADirectoryError()

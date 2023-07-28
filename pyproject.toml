@@ -18,7 +18,8 @@ requires-python = ">=3.7"
 dependencies = [
   "authlib",
   "httpx",
-  "pydantic==v1.10.10",
+  "pydantic~=2.0",
+  "pydantic-settings",
   "tenacity"
 ]
 classifiers = [

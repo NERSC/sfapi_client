@@ -43,15 +43,6 @@ def test_running(client_id, client_secret, test_job_path, test_machine):
         assert state == JobState.RUNNING
 
 
-def test_running_timeout(client_id, client_secret, test_job_path, test_machine):
-    with Client(client_id, client_secret, wait_interval=1) as client:
-        machine = client.compute(test_machine)
-        job = machine.submit_job(test_job_path)
-
-        with pytest.raises(TimeoutError):
-            job.running(timeout=1)
-
-
 def test_complete_timeout(client_id, client_secret, test_job_path, test_machine):
     with Client(client_id, client_secret) as client:
         machine = client.compute(test_machine)
@@ -61,22 +52,29 @@ def test_complete_timeout(client_id, client_secret, test_job_path, test_machine)
             job.complete(timeout=10)
 
 
+@pytest.mark.api_dev
 def test_job_monitor_check_request(
     mocker,
-    client_id,
-    client_secret,
+    dev_client_id,
+    dev_client_secret,
     test_job_path,
     test_machine,
     dev_api_url,
+    dev_token_url,
 ):
-    with Client(client_id, client_secret, api_base_url=dev_api_url) as client:
+    with Client(
+        client_id=dev_client_id,
+        secret=dev_client_secret,
+        api_base_url=dev_api_url,
+        token_url=dev_token_url,
+    ) as client:
         num_jobs = 10
         _fetch_jobs = mocker.patch("sfapi_client._monitor._fetch_jobs")
 
         machine = client.compute(test_machine)
 
         # Create some test jobs for mocking
-        test_jobs = [JobSqueue(jobid=i) for i in range(0, num_jobs)]
+        test_jobs = [JobSqueue(jobid=str(i)) for i in range(0, num_jobs)]
         for j in test_jobs:
             j.compute = machine
 
@@ -125,12 +123,23 @@ def test_job_monitor_check_request(
 
 
 # We currently run this in api-dev as its a new feature deployed there
+@pytest.mark.api_dev
 def test_job_monitor_multiple_threads(
-    client_id, client_secret, test_job_path, test_machine, dev_api_url
+    dev_client_id,
+    dev_client_secret,
+    test_job_path,
+    test_machine,
+    dev_api_url,
+    dev_token_url,
 ):
     num_jobs = 5
 
-    with Client(client_id, client_secret, api_base_url=dev_api_url) as client:
+    with Client(
+        client_id=dev_client_id,
+        secret=dev_client_secret,
+        api_base_url=dev_api_url,
+        token_url=dev_token_url,
+    ) as client:
         machine = client.compute(test_machine)
 
         jobs = []

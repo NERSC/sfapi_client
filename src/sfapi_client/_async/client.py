@@ -21,8 +21,10 @@ from .._models import (
     AppRoutersStatusModelsStatus as Status,
 )
 from .._models.resources import Resource
-from .groups import AsyncGroup
+from .groups import AsyncGroup, AsyncGroupMember
 from .users import AsyncUser
+from .projects import AsyncProject, AsyncRole
+from .paths import AsyncRemotePath
 
 SFAPI_TOKEN_URL = "https://oidc.nersc.gov/c2id/token"
 SFAPI_BASE_URL = "https://api.nersc.gov/api/v1.2"
@@ -66,7 +68,7 @@ class AsyncApi:
 
         json_response = r.json()
 
-        return [ChangelogItem.parse_obj(i) for i in json_response]
+        return [ChangelogItem.model_validate(i) for i in json_response]
 
     async def config(self) -> Dict[str, str]:
         """
@@ -79,7 +81,7 @@ class AsyncApi:
 
         json_response = r.json()
 
-        config_items = [ConfItem.parse_obj(i) for i in json_response]
+        config_items = [ConfItem.model_validate(i) for i in json_response]
 
         config = {}
         for i in config_items:
@@ -132,9 +134,9 @@ class AsyncResources:
         json_response = response.json()
 
         if resource_name:
-            outages = [Outage.parse_obj(o) for o in json_response]
+            outages = [Outage.model_validate(o) for o in json_response]
         else:
-            outages = [[Outage.parse_obj(o) for o in r] for r in json_response]
+            outages = [[Outage.model_validate(o) for o in r] for r in json_response]
             outages = self._list_to_resource_map(outages)
 
         return outages
@@ -154,9 +156,9 @@ class AsyncResources:
         json_response = response.json()
 
         if resource_name:
-            outages = [Outage.parse_obj(o) for o in json_response]
+            outages = [Outage.model_validate(o) for o in json_response]
         else:
-            outages = [[Outage.parse_obj(o) for o in r] for r in json_response]
+            outages = [[Outage.model_validate(o) for o in r] for r in json_response]
             outages = self._list_to_resource_map(outages)
 
         return outages
@@ -176,9 +178,9 @@ class AsyncResources:
         json_response = response.json()
 
         if resource_name:
-            notes = [Note.parse_obj(n) for n in json_response]
+            notes = [Note.model_validate(n) for n in json_response]
         else:
-            notes = [[Note.parse_obj(n) for n in r] for r in json_response]
+            notes = [[Note.model_validate(n) for n in r] for r in json_response]
             notes = self._list_to_resource_map(notes)
 
         return notes
@@ -199,9 +201,9 @@ class AsyncResources:
         json_response = response.json()
 
         if resource_name:
-            status = Status.parse_obj(json_response)
+            status = Status.model_validate(json_response)
         else:
-            status = [Status.parse_obj(s) for s in json_response]
+            status = [Status.model_validate(s) for s in json_response]
             status = {s.name: s for s in status}
 
         return status
@@ -214,6 +216,7 @@ class AsyncClient:
         secret: Optional[str] = None,
         key: Optional[Union[str, Path]] = None,
         api_base_url: Optional[str] = SFAPI_BASE_URL,
+        token_url: Optional[str] = SFAPI_TOKEN_URL,
         wait_interval: int = 10,
     ):
         """
@@ -241,6 +244,7 @@ class AsyncClient:
             self._client_id = client_id
             self._secret = secret
         self._api_base_url = api_base_url
+        self._token_url = token_url
         self._client_user = None
         self.__oauth2_session = None
         self._api = None
@@ -259,9 +263,9 @@ class AsyncClient:
             self.__oauth2_session = AsyncOAuth2Client(
                 client_id=self._client_id,
                 client_secret=self._secret,
-                token_endpoint_auth_method=PrivateKeyJWT(SFAPI_TOKEN_URL),
+                token_endpoint_auth_method=PrivateKeyJWT(self._token_url),
                 grant_type="client_credentials",
-                token_endpoint=SFAPI_TOKEN_URL,
+                token_endpoint=self._token_url,
                 timeout=10.0,
             )
 
@@ -449,8 +453,9 @@ class AsyncClient:
         machine = Machine(machine)
         response = await self.get(f"status/{machine.value}")
 
-        compute = AsyncCompute.parse_obj(response.json())
-        compute.client = self
+        values = response.json()
+        values["client"] = self
+        compute = AsyncCompute.model_validate(values)
 
         return compute
 
@@ -500,3 +505,12 @@ class AsyncClient:
             self._resources = AsyncResources(self)
 
         return self._resources
+
+
+AsyncCompute.model_rebuild()
+AsyncGroup.model_rebuild()
+AsyncUser.model_rebuild()
+AsyncProject.model_rebuild()
+AsyncRemotePath.model_rebuild()
+AsyncRole.model_rebuild()
+AsyncGroupMember.model_rebuild()

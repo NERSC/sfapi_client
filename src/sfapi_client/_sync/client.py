@@ -21,25 +21,31 @@ from .._models import (
     AppRoutersStatusModelsStatus as Status,
 )
 from .._models.resources import Resource
-from .groups import Group
+from .groups import Group, GroupMember
 from .users import User
+from .projects import Project, Role
+from .paths import RemotePath
 
 SFAPI_TOKEN_URL = "https://oidc.nersc.gov/c2id/token"
 SFAPI_BASE_URL = "https://api.nersc.gov/api/v1.2"
 MAX_RETRY = 10
 
 
-# Retry on httpx.HTTPStatusError if status code is not 401 or 403
+# Retry on httpx.HTTPStatusError recoverable status codes
 class retry_if_http_status_error(tenacity.retry_if_exception):
     def __init__(self):
         super().__init__(self._retry)
 
     def _retry(self, e: Exception):
-        dont_retry_codes = [httpx.codes.FORBIDDEN, httpx.codes.UNAUTHORIZED]
+        retry_codes = [
+            httpx.codes.TOO_MANY_REQUESTS,
+            httpx.codes.BAD_GATEWAY,
+            httpx.codes.SERVICE_UNAVAILABLE,
+            httpx.codes.GATEWAY_TIMEOUT,
+        ]
         return (
             isinstance(e, httpx.HTTPStatusError)
-            and cast(httpx.HTTPStatusError, e).response.status_code
-            not in dont_retry_codes
+            and cast(httpx.HTTPStatusError, e).response.status_code in retry_codes
         )
 
 
@@ -62,7 +68,7 @@ class Api:
 
         json_response = r.json()
 
-        return [ChangelogItem.parse_obj(i) for i in json_response]
+        return [ChangelogItem.model_validate(i) for i in json_response]
 
     def config(self) -> Dict[str, str]:
         """
@@ -75,7 +81,7 @@ class Api:
 
         json_response = r.json()
 
-        config_items = [ConfItem.parse_obj(i) for i in json_response]
+        config_items = [ConfItem.model_validate(i) for i in json_response]
 
         config = {}
         for i in config_items:
@@ -128,9 +134,9 @@ class Resources:
         json_response = response.json()
 
         if resource_name:
-            outages = [Outage.parse_obj(o) for o in json_response]
+            outages = [Outage.model_validate(o) for o in json_response]
         else:
-            outages = [[Outage.parse_obj(o) for o in r] for r in json_response]
+            outages = [[Outage.model_validate(o) for o in r] for r in json_response]
             outages = self._list_to_resource_map(outages)
 
         return outages
@@ -150,9 +156,9 @@ class Resources:
         json_response = response.json()
 
         if resource_name:
-            outages = [Outage.parse_obj(o) for o in json_response]
+            outages = [Outage.model_validate(o) for o in json_response]
         else:
-            outages = [[Outage.parse_obj(o) for o in r] for r in json_response]
+            outages = [[Outage.model_validate(o) for o in r] for r in json_response]
             outages = self._list_to_resource_map(outages)
 
         return outages
@@ -172,9 +178,9 @@ class Resources:
         json_response = response.json()
 
         if resource_name:
-            notes = [Note.parse_obj(n) for n in json_response]
+            notes = [Note.model_validate(n) for n in json_response]
         else:
-            notes = [[Note.parse_obj(n) for n in r] for r in json_response]
+            notes = [[Note.model_validate(n) for n in r] for r in json_response]
             notes = self._list_to_resource_map(notes)
 
         return notes
@@ -195,9 +201,9 @@ class Resources:
         json_response = response.json()
 
         if resource_name:
-            status = Status.parse_obj(json_response)
+            status = Status.model_validate(json_response)
         else:
-            status = [Status.parse_obj(s) for s in json_response]
+            status = [Status.model_validate(s) for s in json_response]
             status = {s.name: s for s in status}
 
         return status
@@ -210,6 +216,7 @@ class Client:
         secret: Optional[str] = None,
         key: Optional[Union[str, Path]] = None,
         api_base_url: Optional[str] = SFAPI_BASE_URL,
+        token_url: Optional[str] = SFAPI_TOKEN_URL,
         wait_interval: int = 10,
     ):
         """
@@ -237,6 +244,7 @@ class Client:
             self._client_id = client_id
             self._secret = secret
         self._api_base_url = api_base_url
+        self._token_url = token_url
         self._client_user = None
         self.__oauth2_session = None
         self._api = None
@@ -255,9 +263,9 @@ class Client:
             self.__oauth2_session = OAuth2Client(
                 client_id=self._client_id,
                 client_secret=self._secret,
-                token_endpoint_auth_method=PrivateKeyJWT(SFAPI_TOKEN_URL),
+                token_endpoint_auth_method=PrivateKeyJWT(self._token_url),
                 grant_type="client_credentials",
-                token_endpoint=SFAPI_TOKEN_URL,
+                token_endpoint=self._token_url,
                 timeout=10.0,
             )
 
@@ -445,8 +453,9 @@ class Client:
         machine = Machine(machine)
         response = self.get(f"status/{machine.value}")
 
-        compute = Compute.parse_obj(response.json())
-        compute.client = self
+        values = response.json()
+        values["client"] = self
+        compute = Compute.model_validate(values)
 
         return compute
 
@@ -496,3 +505,12 @@ class Client:
             self._resources = Resources(self)
 
         return self._resources
+
+
+Compute.model_rebuild()
+Group.model_rebuild()
+User.model_rebuild()
+Project.model_rebuild()
+RemotePath.model_rebuild()
+Role.model_rebuild()
+GroupMember.model_rebuild()

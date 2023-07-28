@@ -1,22 +1,38 @@
+import pytest
 from sfapi_client import Client
 
 
-def test_group(client_id, client_secret, test_group, dev_api_url):
-    with Client(client_id, client_secret, api_base_url=dev_api_url) as client:
+@pytest.mark.api_dev
+def test_group(
+    dev_client_id, dev_client_secret, test_group, dev_api_url, dev_token_url
+):
+    with Client(
+        client_id=dev_client_id,
+        secret=dev_client_secret,
+        api_base_url=dev_api_url,
+        token_url=dev_token_url,
+    ) as client:
         group = client.group(test_group)
         assert group is not None
         assert group.name == test_group
 
 
+@pytest.mark.api_dev
 def test_create_group(
-    client_id,
-    client_secret,
+    dev_client_id,
+    dev_client_secret,
     test_project,
     test_random_group,
     test_username,
     dev_api_url,
+    dev_token_url,
 ):
-    with Client(client_id, client_secret, api_base_url=dev_api_url) as client:
+    with Client(
+        client_id=dev_client_id,
+        secret=dev_client_secret,
+        api_base_url=dev_api_url,
+        token_url=dev_token_url,
+    ) as client:
         user = client.user(test_username)
         projects = user.projects()
 
@@ -36,15 +52,22 @@ def test_create_group(
         assert group.name == test_random_group
 
 
+@pytest.mark.api_dev
 def test_add_user(
-    client_id,
-    client_secret,
+    dev_client_id,
+    dev_client_secret,
     test_project,
     test_random_group,
     test_username,
     dev_api_url,
+    dev_token_url,
 ):
-    with Client(client_id, client_secret, api_base_url=dev_api_url) as client:
+    with Client(
+        client_id=dev_client_id,
+        secret=dev_client_secret,
+        api_base_url=dev_api_url,
+        token_url=dev_token_url,
+    ) as client:
         user = client.user(test_username)
         projects = user.projects()
 
@@ -78,15 +101,22 @@ def test_add_user(
         assert is_member
 
 
+@pytest.mark.api_dev
 def test_remove_user(
-    client_id,
-    client_secret,
+    dev_client_id,
+    dev_client_secret,
     test_project,
     test_random_group,
     test_username,
     dev_api_url,
+    dev_token_url,
 ):
-    with Client(client_id, client_secret, api_base_url=dev_api_url) as client:
+    with Client(
+        client_id=dev_client_id,
+        secret=dev_client_secret,
+        api_base_url=dev_api_url,
+        token_url=dev_token_url,
+    ) as client:
         user = client.user(test_username)
         projects = user.projects()
 
@@ -125,15 +155,22 @@ def test_remove_user(
         assert group.members == []
 
 
+@pytest.mark.api_dev
 def test_groupmember_to_user(
-    client_id,
-    client_secret,
+    dev_client_id,
+    dev_client_secret,
     test_project,
     test_random_group,
     test_username,
     dev_api_url,
+    dev_token_url,
 ):
-    with Client(client_id, client_secret, api_base_url=dev_api_url) as client:
+    with Client(
+        client_id=dev_client_id,
+        secret=dev_client_secret,
+        api_base_url=dev_api_url,
+        token_url=dev_token_url,
+    ) as client:
         user = client.user(test_username)
         projects = user.projects()
 

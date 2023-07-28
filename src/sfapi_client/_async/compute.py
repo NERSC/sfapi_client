@@ -2,7 +2,7 @@ import asyncio
 from typing import Dict, List, Optional, Union, Callable
 import json
 from enum import Enum
-from pydantic import BaseModel, PrivateAttr
+from pydantic import BaseModel, PrivateAttr, ConfigDict
 from functools import wraps
 
 from ..exceptions import SfApiError
@@ -30,17 +30,22 @@ def check_auth(method: Callable):
     def wrapper(self, *args, **kwargs):
         if self.client._client_id is None:
             raise SfApiError(
-                f"Cannot call {self.__class__.__name__}.{method.__name__}() with an unauthenticated client.")
+                f"Cannot call {self.__class__.__name__}.{method.__name__}() with an unauthenticated client."
+            )
         elif self.status in [StatusValue.unavailable]:
             raise SfApiError(
-                f"Compute resource {self.name} is {self.status.name}, {self.notes}")
+                f"Compute resource {self.name} is {self.status.name}, {self.notes}"
+            )
         return method(self, *args, **kwargs)
+
     return wrapper
 
 
 class AsyncCompute(ComputeBase):
     client: Optional["AsyncClient"]
     _monitor: AsyncJobMonitor = PrivateAttr()
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -56,7 +61,7 @@ class AsyncCompute(ComputeBase):
             r = await self.client.get(f"tasks/{task_id}")
 
             json_response = r.json()
-            task = Task.parse_obj(json_response)
+            task = Task.model_validate(json_response)
 
             if task.status.lower() in ["error", "failed"]:
                 raise SfApiError(task.result)
@@ -87,9 +92,9 @@ class AsyncCompute(ComputeBase):
         else:
             # If we're given a path make sure it exists
             script_path = await self.ls(script)
-            if len(script_path) != 1 or not script_path[0].is_file():
-                raise SfApiError(
-                    f"Script path not present or is not a file, {script}")
+            is_file = await script_path[0].is_file()
+            if len(script_path) != 1 or not is_file:
+                raise SfApiError(f"Script path not present or is not a file, {script}")
 
         data = {"job": script, "isPath": is_path}
 
@@ -97,7 +102,7 @@ class AsyncCompute(ComputeBase):
         r.raise_for_status()
 
         json_response = r.json()
-        job_response = SubmitJobResponse.parse_obj(json_response)
+        job_response = SubmitJobResponse.model_validate(json_response)
 
         if job_response.status == SubmitJobResponseStatus.ERROR:
             raise SfApiError(job_response.error)
@@ -114,8 +119,7 @@ class AsyncCompute(ComputeBase):
         if jobid is None:
             raise SfApiError(f"Unable to extract jobid if for task: {task_id}")
 
-        job = AsyncJobSqueue(jobid=jobid)
-        job.compute = self
+        job = AsyncJobSqueue(jobid=jobid, compute=self)
 
         return job
 
@@ -161,13 +165,13 @@ class AsyncCompute(ComputeBase):
 
         r = await self.client.post(f"utilities/command/{self.name}", data=body)
         json_response = r.json()
-        run_response = RunCommandResponse.parse_obj(json_response)
+        run_response = RunCommandResponse.model_validate(json_response)
         if run_response.status == RunCommandResponseStatus.ERROR:
             raise SfApiError(run_response.error)
 
         task_id = run_response.task_id
         task_result = await self._wait_for_task(task_id)
-        command_result = CommandResult.parse_raw(task_result)
+        command_result = CommandResult.model_validate_json(task_result)
         if command_result.status == "error":
             raise SfApiError(command_result.error)
 

@@ -1,6 +1,6 @@
 from typing import Optional, Union, List, Any, Callable
 from functools import wraps
-from pydantic import ValidationError, Field, BaseModel, validator
+from pydantic import ValidationError, Field, BaseModel, ConfigDict
 from .._models import BatchGroupAction as GroupAction, UserStats as GroupMemberBase
 from ..exceptions import SfApiError
 from .users import AsyncUser
@@ -11,13 +11,17 @@ def check_auth(method: Callable):
     def wrapper(self, *args, **kwargs):
         if self._client_id is None:
             raise SfApiError(
-                f"Cannot call {self.__class__.__name__}.{method.__name__}() with an unauthenticated client.")
+                f"Cannot call {self.__class__.__name__}.{method.__name__}() with an unauthenticated client."
+            )
         return method(self, *args, **kwargs)
+
     return wrapper
 
 
 class AsyncGroupMember(GroupMemberBase):
     client: Optional["AsyncClient"]
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     async def user(self) -> "AsyncUser":
         """
@@ -31,10 +35,13 @@ class AsyncGroup(BaseModel):
     """
     A user group.
     """
+
     client: Optional["AsyncClient"]
     gid: Optional[int]
     name: Optional[str]
     users_: Optional[List[GroupMemberBase]] = Field(..., alias="users")
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     async def _group_action(
         self,
@@ -57,7 +64,9 @@ class AsyncGroup(BaseModel):
 
         # if successful will return group object
         try:
-            new_group = AsyncGroup.parse_obj(json_response)
+            new_group = AsyncGroup.model_validate(
+                dict(json_response, client=self.client)
+            )
             self._update(new_group)
         except ValidationError:
             # See if we have validation error raise it
@@ -87,7 +96,12 @@ class AsyncGroup(BaseModel):
         """
         The users in this group.
         """
-        members = [AsyncGroupMember.parse_obj(user_info) for user_info in self.users_]
+        members = [
+            AsyncGroupMember.model_validate(
+                dict(user_info.model_dump(), client=self.client)
+            )
+            for user_info in self.users_
+        ]
 
         def _set_client(m):
             m.client = self.client
@@ -102,10 +116,9 @@ class AsyncGroup(BaseModel):
     @check_auth
     async def _fetch_group(client: "AsyncClient", name):
         response = await client.get(f"account/groups/{name}")
-        json_response = response.json()
 
-        group = AsyncGroup.parse_obj(json_response)
-        group.client = client
+        json_response = response.json()
+        group = AsyncGroup.model_validate(dict(json_response, client=client))
 
         return group
 
@@ -117,7 +130,7 @@ class AsyncGroup(BaseModel):
         self._update(group_state)
 
     def _update(self, new_group_state: Any) -> "AsyncGroup":
-        for k in new_group_state.__fields_set__:
+        for k in new_group_state.model_fields_set:
             v = getattr(new_group_state, k)
             setattr(self, k, v)
 

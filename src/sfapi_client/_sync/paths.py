@@ -41,18 +41,12 @@ class RemotePath(PathBase):
             self.name = self._path.name
 
     def __truediv__(self, key):
-        remote_path = RemotePath(str(self._path / key))
-        # We have to set the compute field separately otherwise
-        # we run into ForwardRef issue because of circular deps
-        remote_path.compute = self.compute
+        remote_path = RemotePath(path=str(self._path / key), compute=self.compute)
 
         return remote_path
 
     def __rtruediv__(self, key):
-        remote_path = RemotePath(str(key / self._path))
-        # We have to set the compute field separately otherwise
-        # we run into ForwardRef issue because of circular deps
-        remote_path.compute = self.compute
+        remote_path = RemotePath(path=str(key / self._path), compute=self.compute)
 
         return remote_path
 
@@ -67,10 +61,7 @@ class RemotePath(PathBase):
         :return: the parent
 
         """
-        parent_path = RemotePath(str(self._path.parent))
-        # We have to set the compute field separately otherwise
-        # we run into ForwardRef issue because of circular deps
-        parent_path.compute = self.compute
+        parent_path = RemotePath(path=str(self._path.parent), compute=self.compute)
 
         return parent_path
 
@@ -81,15 +72,10 @@ class RemotePath(PathBase):
 
         :return: the parents
         """
-        parents = [RemotePath(str(p)) for p in self._path.parents]
-
-        # We have to set the compute field separately otherwise
-        # we run into ForwardRef issue because of circular deps
-        def _set_compute(p):
-            p.compute = self.compute
-            return p
-
-        parents = map(_set_compute, parents)
+        parents = [
+            RemotePath(path=str(p), compute=self.compute)
+            for p in self._path.parents
+        ]
 
         return parents
 
@@ -164,7 +150,7 @@ class RemotePath(PathBase):
             f"utilities/download/{self.compute.name}/{self._path}?binary={binary}"
         )
         json_response = r.json()
-        download_response = FileDownloadResponse.parse_obj(json_response)
+        download_response = FileDownloadResponse.model_validate(json_response)
 
         if download_response.status == FileDownloadResponseStatus.ERROR:
             raise SfApiError(download_response.error)
@@ -183,17 +169,18 @@ class RemotePath(PathBase):
         r = compute.client.get(f"utilities/ls/{compute.name}/{path}")
 
         json_response = r.json()
-        directory_listing_response = DirectoryListingResponse.parse_obj(json_response)
+        directory_listing_response = DirectoryListingResponse.model_validate(
+            json_response
+        )
         if directory_listing_response.status == DirectoryListingResponseStatus.ERROR:
             raise SfApiError(directory_listing_response.error)
 
         paths = []
 
         def _to_remote_path(path, entry):
-            kwargs = entry.dict()
-            kwargs.update(path=path)
+            kwargs = entry.model_dump()
+            kwargs.update(path=path, compute=compute)
             p = RemotePath(**kwargs)
-            p.compute = compute
 
             return p
 
@@ -249,7 +236,7 @@ class RemotePath(PathBase):
         self._update(new_state)
 
     def _update(self, new_file_state: "RemotePath") -> "RemotePath":
-        for k in new_file_state.__fields_set__:
+        for k in new_file_state.model_fields_set:
             v = getattr(new_file_state, k)
             setattr(self, k, v)
 
@@ -282,12 +269,11 @@ class RemotePath(PathBase):
         r = self.compute.client.put(url, files=files)
 
         json_response = r.json()
-        upload_response = UploadResponse.parse_obj(json_response)
+        upload_response = UploadResponse.model_validate(json_response)
         if upload_response.status == UploadResponseStatus.ERROR:
             raise SfApiError(upload_response.error)
 
-        remote_path = RemotePath(upload_path)
-        remote_path.compute = self.compute
+        remote_path = RemotePath(path=upload_path, compute=self.compute)
 
         return remote_path
 

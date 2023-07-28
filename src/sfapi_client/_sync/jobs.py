@@ -9,7 +9,7 @@ from .._models.job_status_response_sacct import OutputItem as JobSacctBase
 from .._models.job_status_response_squeue import OutputItem as JobSqueueBase
 from .._models import AppRoutersComputeModelsStatus as JobResponseStatus
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 from .._jobs import JobCommand
 from .._jobs import JobStateResponse
@@ -44,7 +44,7 @@ def _fetch_raw_state(
     r = compute.client.get(job_url, params)
 
     json_response = r.json()
-    job_state_response = JobStateResponse.parse_obj(json_response)
+    job_state_response = JobStateResponse.model_validate(json_response)
 
     if job_state_response == JobResponseStatus.ERROR:
         error = json_response.error
@@ -64,10 +64,9 @@ def _fetch_jobs(
         compute, jobids, user, partition, job_type._command == JobCommand.sacct
     )
 
-    jobs = [job_type.parse_obj(state) for state in job_states]
-
-    for job in jobs:
-        job.compute = compute
+    jobs = [
+        job_type.model_validate(dict(state, compute=compute)) for state in job_states
+    ]
 
     return jobs
 
@@ -78,10 +77,10 @@ class Job(BaseModel, ABC):
     """
 
     compute: Optional["Compute"] = None
-    state: Optional[JobState]
-    jobid: Optional[str]
+    state: Optional[JobState] = None
+    jobid: Optional[str] = None
 
-    @validator("state", pre=True, check_fields=False)
+    @field_validator("state", mode="before", check_fields=False)
     def state_validate(cls, v):
         # sacct return a state of the form "CANCELLED by XXXX" for the
         # cancelled state, coerce into value that will match a state
@@ -99,7 +98,7 @@ class Job(BaseModel, ABC):
         self._update(job_state)
 
     def _update(self, new_job_state: Any) -> Job:
-        for k in new_job_state.__fields_set__:
+        for k in new_job_state.model_fields_set:
             v = getattr(new_job_state, k)
             setattr(self, k, v)
 
@@ -213,6 +212,7 @@ class JobSqueue(Job, JobSqueueBase):
     Models a job running on a compute resource, the information is
     fetched using `squeue`.
     """
+
     _command: ClassVar[JobCommand] = JobCommand.squeue
 
     def _fetch_state(self):
