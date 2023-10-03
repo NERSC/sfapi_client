@@ -148,19 +148,19 @@ def test_file_open_invalid_mode(client_id, client_secret, test_machine, test_job
         [test_job_remote_path] = machine.ls(test_job_path)
 
         with pytest.raises(ValueError):
-            with test_job_remote_path.open("dse") as fp:
+            with test_job_remote_path.open("dse"):
                 pass
 
         with pytest.raises(ValueError):
-            with test_job_remote_path.open("rr") as fp:
+            with test_job_remote_path.open("rr"):
                 pass
 
         with pytest.raises(ValueError):
-            with test_job_remote_path.open("ww") as fp:
+            with test_job_remote_path.open("ww"):
                 pass
 
         with pytest.raises(ValueError):
-            with test_job_remote_path.open("wr") as fp:
+            with test_job_remote_path.open("wr"):
                 pass
 
 

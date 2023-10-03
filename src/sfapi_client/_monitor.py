@@ -15,9 +15,9 @@ from ._sync.jobs import _fetch_jobs, JobSacct, JobSqueue
 # Async monitor that batches request for job state into fewer request by
 # requesting that state of multiple jobs in a single request to the server.
 class AsyncJobMonitor:
-    def __init__(self, compute: "AsyncCompute"):
+    def __init__(self, compute: "AsyncCompute"):  # noqa: F821
         self._jobids: Dict[Type, Set[int]] = {}
-        self._compute: "AsyncCompute" = compute
+        self._compute: "AsyncCompute" = compute  # noqa: F821
         self._monitor_task: asyncio.Task = None
         self._futures: Dict[Type, Future] = {}
         self._last_job_type_fetched: Type = None
@@ -126,7 +126,7 @@ class JobRequest:
 # a time and aggregates the waiting requests.
 #
 class SyncJobMonitor:
-    def __init__(self, compute: "Compute"):
+    def __init__(self, compute: "Compute"):  # noqa: F821
         self._compute = compute
         self._requests: Dict[Type, Set[JobRequest]] = {}
         # Lock to protect access to self._requests

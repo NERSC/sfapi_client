@@ -16,7 +16,7 @@ def check_auth(method: Callable):
     def wrapper(self, *args, **kwargs):
         if self._client_id is None:
             raise SfApiError(
-                f"Cannot call {self.__class__.__name__}.{method.__name__}() with an unauthenticated client."
+                f"Cannot call {self.__class__.__name__}.{method.__name__}() with an unauthenticated client."  # noqa: E501
             )
         return method(self, *args, **kwargs)
 
@@ -24,13 +24,15 @@ def check_auth(method: Callable):
 
 
 class AsyncUser(UserBase):
-    client: Optional["AsyncClient"]
+    client: Optional["AsyncClient"]  # noqa: F821
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @staticmethod
     @check_auth
-    async def _fetch_user(client: "AsyncClient", username: Optional[str] = None):
+    async def _fetch_user(
+        client: "AsyncClient", username: Optional[str] = None  # noqa: F821
+    ):  # noqa: F821
         url = "account/"
         if username is not None:
             url = f"{url}?username={username}"
@@ -42,7 +44,7 @@ class AsyncUser(UserBase):
 
         return user
 
-    async def groups(self) -> List["AsyncGroup"]:
+    async def groups(self) -> List["AsyncGroup"]:  # noqa: F821
         """
         The groups that the user is a member of.
 
@@ -52,7 +54,7 @@ class AsyncUser(UserBase):
         from .groups import AsyncGroup
 
         if self.name != (await self.client._user()).name:
-            raise SfApiError(f"Can only fetch groups for authenticated user.")
+            raise SfApiError("Can only fetch groups for authenticated user.")
 
         r = await self.client.get("account/groups")
 
@@ -73,7 +75,7 @@ class AsyncUser(UserBase):
         :return: the projects
         """
         if self.name != (await self.client._user()).name:
-            raise SfApiError(f"Can only fetch projects for authenticated user.")
+            raise SfApiError("Can only fetch projects for authenticated user.")
 
         r = await self.client.get("account/projects")
 
@@ -93,7 +95,7 @@ class AsyncUser(UserBase):
         :return: the roles
         """
         if self.name != (await self.client._user()).name:
-            raise SfApiError(f"Can only fetch roles for authenticated user.")
+            raise SfApiError("Can only fetch roles for authenticated user.")
 
         r = await self.client.get("account/roles")
 

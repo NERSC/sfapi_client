@@ -1,4 +1,3 @@
-import pytest
 from pathlib import Path
 
 from sfapi_client import Client

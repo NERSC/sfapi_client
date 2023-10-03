@@ -28,7 +28,7 @@ class AsyncRemotePath(PathBase):
     pathlib and shares some of its interface.
     """
 
-    compute: Optional["AsyncCompute"]
+    compute: Optional["AsyncCompute"]  # noqa: F821
     # It would be nice to be able subclass PurePosixPath, however, this
     # require using private interfaces. So we derive by composition.
     _path: PurePosixPath = PrivateAttr()
@@ -54,7 +54,7 @@ class AsyncRemotePath(PathBase):
         return str(self._path)
 
     @property
-    def parent(self) -> "RemotePath":
+    def parent(self) -> "RemotePath":  # noqa: F821
         """
         The parent of the path.
 
@@ -66,7 +66,7 @@ class AsyncRemotePath(PathBase):
         return parent_path
 
     @property
-    def parents(self) -> List["RemotePath"]:
+    def parents(self) -> List["RemotePath"]:  # noqa: F821
         """
         The parents of the path.
 
@@ -139,7 +139,8 @@ class AsyncRemotePath(PathBase):
         """
         Download the file contents.
 
-        :param binary: indicate if the file should be treated as binary, defaults to False
+        :param binary: indicate if the file should be treated as binary, defaults
+        to False
         :raises IsADirectoryError: if path points to a directory.
         :raises SfApiError:
         """
@@ -164,8 +165,8 @@ class AsyncRemotePath(PathBase):
 
     @staticmethod
     async def _ls(
-        compute: "Compute", path, directory=False, filter_dots=True
-    ) -> List["RemotePath"]:
+        compute: "Compute", path, directory=False, filter_dots=True  # noqa: F821
+    ) -> List["RemotePath"]:  # noqa: F821
         r = await compute.client.get(f"utilities/ls/{compute.name}/{path}")
 
         json_response = r.json()
@@ -250,9 +251,9 @@ class AsyncRemotePath(PathBase):
                 upload_path = str(self._path)
         except SfApiError as ex:
             # Its a valid use case to add a upload a new file to an exiting directory.
-            # In this case the is_dir() will raise a SfApiError with "No such file or directory"
-            # So we check for that and then see if the parent directory exists, if
-            # it does we can just continue.
+            # In this case the is_dir() will raise a SfApiError with
+            # "No such file or directory" So we check for that and then see if the
+            # parent directory exists, if it does we can just continue.
             if not _is_no_such(ex):
                 raise
 
@@ -291,9 +292,9 @@ class AsyncRemotePath(PathBase):
                 raise IsADirectoryError()
         except SfApiError as ex:
             # Its a valid use case to add a open a new file to an exiting directory.
-            # In this case the is_dir() will raise a SfApiError with "No such file or directory"
-            # So we check for that and then see if the parent directory exists, if
-            # it does we can just continue.
+            # In this case the is_dir() will raise a SfApiError with
+            # "No such file or directory" So we check for that and then see if the
+            # parent directory exists, if it does we can just continue.
             if not _is_no_such(ex):
                 raise
 

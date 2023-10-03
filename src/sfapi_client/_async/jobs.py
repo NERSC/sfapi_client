@@ -2,14 +2,14 @@ from __future__ import annotations
 import sys
 import math
 from abc import ABC, abstractmethod
-from typing import Any, Optional, Dict, List, ClassVar
+from typing import Any, Optional, Dict, List, ClassVar, Union
 from .._utils import _ASYNC_SLEEP
 from ..exceptions import SfApiError
 from .._models.job_status_response_sacct import OutputItem as JobSacctBase
 from .._models.job_status_response_squeue import OutputItem as JobSqueueBase
 from .._models import AppRoutersComputeModelsStatus as JobResponseStatus
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, field_validator
 
 from .._jobs import JobCommand
 from .._jobs import JobStateResponse
@@ -18,7 +18,7 @@ from .._jobs import TERMINAL_STATES
 
 
 async def _fetch_raw_state(
-    compute: "AsyncCompute",
+    compute: "AsyncCompute",  # noqa: F821
     jobids: Optional[List[int]] = None,
     user: Optional[str] = None,
     partition: Optional[str] = None,
@@ -55,7 +55,7 @@ async def _fetch_raw_state(
 
 async def _fetch_jobs(
     job_type: Union["AsyncJobSacct", "AsyncJobSqueue"],
-    compute: "AsyncCompute",
+    compute: "AsyncCompute",  # noqa: F821
     jobids: Optional[List[int]] = None,
     user: Optional[str] = None,
     partition: Optional[str] = None,
@@ -76,7 +76,7 @@ class AsyncJob(BaseModel, ABC):
     Models a job submitted to run on a compute resource.
     """
 
-    compute: Optional["AsyncCompute"] = None
+    compute: Optional["AsyncCompute"] = None  # noqa: F821
     state: Optional[JobState] = None
     jobid: Optional[str] = None
 
@@ -97,7 +97,7 @@ class AsyncJob(BaseModel, ABC):
         job_state = await self._fetch_state()
         self._update(job_state)
 
-    def _update(self, new_job_state: Any) -> Job:
+    def _update(self, new_job_state: Any) -> Job:  # noqa: F821
         for k in new_job_state.model_fields_set:
             v = getattr(new_job_state, k)
             setattr(self, k, v)
@@ -129,8 +129,8 @@ class AsyncJob(BaseModel, ABC):
         """
         Wait for a job to move into a terminal state.
 
-        :param timeout: The maximum time to wait in seconds, the actually wait time will be in
-        10 second increments.
+        :param timeout: The maximum time to wait in seconds, the actually
+        wait time will be in 10 second increments.
         :raises TimeoutError: if timeout is reached
         """
         return await self._wait_until_complete(timeout)
@@ -139,8 +139,8 @@ class AsyncJob(BaseModel, ABC):
         """
         Wait for a job to move into running state.
 
-        :param timeout: The maximum time to wait in seconds, the actually wait time will be in
-        10 second increments.
+        :param timeout: The maximum time to wait in seconds, the actually wait
+        time will be in 10 second increments.
         :raises TimeoutError: if timeout if reached
         """
         state = await self._wait_until([JobState.RUNNING] + TERMINAL_STATES, timeout)
@@ -155,7 +155,8 @@ class AsyncJob(BaseModel, ABC):
         """
         Cancel a running job
 
-        :param wait: True, to wait for job be to cancel, otherwise returns when cancellation
+        :param wait: True, to wait for job be to cancel, otherwise returns when
+        cancellation
         has been submitted.
         :type wait: bool
 
@@ -199,7 +200,7 @@ class AsyncJobSacct(AsyncJob, JobSacctBase):
     @classmethod
     async def _fetch_jobs(
         cls,
-        compute: "AsyncCompute",
+        compute: "AsyncCompute",  # noqa: F821
         jobids: Optional[List[int]] = None,
         user: Optional[str] = None,
         partition: Optional[str] = None,
@@ -241,7 +242,7 @@ class AsyncJobSqueue(AsyncJob, JobSqueueBase):
     @classmethod
     async def _fetch_jobs(
         cls,
-        compute: "AsyncCompute",
+        compute: "AsyncCompute",  # noqa: F821
         jobids: Optional[List[int]] = None,
         user: Optional[str] = None,
         partition: Optional[str] = None,

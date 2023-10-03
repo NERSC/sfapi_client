@@ -1,2 +1,2 @@
-from ._async.users import AsyncUser
-from ._sync.users import User
+from ._async.users import AsyncUser  # noqa: F401
+from ._sync.users import User  # noqa: F401

@@ -1,5 +1,3 @@
-import pytest
-
 from sfapi_client import Client
 
 
