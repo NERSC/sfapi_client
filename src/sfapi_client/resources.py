@@ -1,1 +1,1 @@
-from ._models.resources import Resource
+from ._models.resources import Resource  # noqa: F401

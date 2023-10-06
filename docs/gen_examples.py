@@ -1,5 +1,4 @@
 from pathlib import Path
-import os
 import json
 
 replace = Path("examples_dev") / "replacement.json"

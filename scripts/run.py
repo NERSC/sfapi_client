@@ -1,17 +1,14 @@
-import os
 import re
 from pathlib import Path
 import json
 
 import typer
 import unasync
-from pathlib import Path
 from tempfile import TemporaryDirectory
 from urllib.parse import urlparse
 from typing import List, Optional
 
 from datamodel_code_generator import InputFileType, generate
-import typer
 
 
 cli = typer.Typer()
@@ -91,10 +88,10 @@ def run_unasync():
 # can't determine the type, so we have to patch things up, for now they are all
 # string based enums.
 def _to_str_enum(code: str) -> str:
-    pattern = re.compile(rf"(.*)\(Enum\)(.*)", re.DOTALL)
+    pattern = re.compile(r"(.*)\(Enum\)(.*)", re.DOTALL)
 
     while pattern.match(code):
-        code = re.sub(pattern, rf"\1(str, Enum)\2", code)
+        code = re.sub(pattern, r"\1(str, Enum)\2", code)
 
     return code
 
@@ -151,9 +148,9 @@ def _from_json(json: Path, class_name: str) -> str:
 
 
 #
-# Generate models using datamodel-codegen using OpenAPI spec and a sample JSON job status output.
-# Eventually is would be nice to move the job status model into SF API, so cold then just rely
-# only on the OpenAPI spec.
+# Generate models using datamodel-codegen using OpenAPI spec and a sample JSON job
+# status output. Eventually is would be nice to move the job status model into SF
+# API, so cold then just rely only on the OpenAPI spec.
 #
 @cli.command(name="codegen")
 def openapimodel_codegen(

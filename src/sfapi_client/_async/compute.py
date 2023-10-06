@@ -1,13 +1,11 @@
-import asyncio
 from typing import Dict, List, Optional, Union, Callable
 import json
-from enum import Enum
-from pydantic import BaseModel, PrivateAttr, ConfigDict
+from pydantic import PrivateAttr, ConfigDict
 from functools import wraps
 
 from ..exceptions import SfApiError
 from .._utils import _ASYNC_SLEEP
-from .jobs import AsyncJobSacct, AsyncJobSqueue, AsyncJobSqueue, JobCommand
+from .jobs import AsyncJobSacct, AsyncJobSqueue, JobCommand
 from .._models import (
     AppRoutersStatusModelsStatus as ComputeBase,
     Task,
@@ -30,7 +28,7 @@ def check_auth(method: Callable):
     def wrapper(self, *args, **kwargs):
         if self.client._client_id is None:
             raise SfApiError(
-                f"Cannot call {self.__class__.__name__}.{method.__name__}() with an unauthenticated client."
+                f"Cannot call {self.__class__.__name__}.{method.__name__}() with an unauthenticated client."  # noqa: E501
             )
         elif self.status in [StatusValue.unavailable]:
             raise SfApiError(
@@ -42,7 +40,7 @@ def check_auth(method: Callable):
 
 
 class AsyncCompute(ComputeBase):
-    client: Optional["AsyncClient"]
+    client: Optional["AsyncClient"]  # noqa: F821
     _monitor: AsyncJobMonitor = PrivateAttr()
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -76,8 +74,10 @@ class AsyncCompute(ComputeBase):
     async def submit_job(self, script: Union[str, AsyncRemotePath]) -> AsyncJobSqueue:
         """Submit a job to the compute resource
 
-        :param script: Path to file on the compute system, or script to run beginning with `#!`.
-        :return: Object containing information about the job, its job id, and status on the system.
+        :param script: Path to file on the compute system, or script to run beginning
+        with `#!`.
+        :return: Object containing information about the job, its job id, and status
+        on the system.
         """
 
         is_path: bool = True

@@ -6,18 +6,18 @@ from ..exceptions import SfApiError
 
 
 class AsyncRole(RoleBase):
-    client: Optional["AsyncClient"]
+    client: Optional["AsyncClient"]  # noqa: F821
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class AsyncProject(ProjectBase):
-    client: Optional["AsyncClient"]
+    client: Optional["AsyncClient"]  # noqa: F821
     name: str = Field(alias="repo_name")
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    async def create_group(self, name: str) -> "AsyncGroup":
+    async def create_group(self, name: str) -> "AsyncGroup":  # noqa: F821
         """
         Create a new project.
         :param name: The project name

@@ -5,7 +5,6 @@ import random
 import string
 
 from sfapi_client import AsyncClient
-from sfapi_client.paths import AsyncRemotePath
 
 
 @pytest.mark.asyncio
@@ -62,7 +61,6 @@ async def test_download_directory(
         machine = await client.compute(test_machine)
         test_job = Path(test_job_path)
         test_path = test_job.parent.parent
-        test_name = test_job.name
 
         paths = await machine.ls(test_path)
 
@@ -177,19 +175,19 @@ async def test_file_open_invalid_mode(
         [test_job_remote_path] = await machine.ls(test_job_path)
 
         with pytest.raises(ValueError):
-            async with test_job_remote_path.open("dse") as fp:
+            async with test_job_remote_path.open("dse"):
                 pass
 
         with pytest.raises(ValueError):
-            async with test_job_remote_path.open("rr") as fp:
+            async with test_job_remote_path.open("rr"):
                 pass
 
         with pytest.raises(ValueError):
-            async with test_job_remote_path.open("ww") as fp:
+            async with test_job_remote_path.open("ww"):
                 pass
 
         with pytest.raises(ValueError):
-            async with test_job_remote_path.open("wr") as fp:
+            async with test_job_remote_path.open("wr"):
                 pass
 
 
