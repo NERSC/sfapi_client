@@ -1,8 +1,6 @@
 from typing import Dict, List, Optional, Union, Callable
 import json
 from pydantic import PrivateAttr, ConfigDict
-from functools import update_wrapper
-
 from ..exceptions import SfApiError
 from .._utils import _SLEEP
 from .jobs import JobSacct, JobSqueue, JobCommand
@@ -24,7 +22,6 @@ Machine.__str__ = lambda self: self.value
 
 
 def check_auth(method: Callable):
-    @update_wrapper(method)
     def wrapper(self, *args, **kwargs):
         if self.client._client_id is None:
             raise SfApiError(
