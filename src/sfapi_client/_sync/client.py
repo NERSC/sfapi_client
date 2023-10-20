@@ -12,8 +12,6 @@ from authlib.jose import JsonWebKey
 from .compute import Machine, Compute
 from ..exceptions import SfApiError
 from .._models import (
-    JobOutput as JobStatusResponse,
-    AppRoutersComputeModelsStatus as JobStatus,
     Changelog as ChangelogItem,
     Config as ConfItem,
     Outage,
@@ -256,7 +254,7 @@ class Client:
 
     def _oauth2_session(self):
         if self._client_id is None:
-            raise SfApiError(f"No credentials have been provides")
+            raise SfApiError("No credentials have been provides")
 
         if self.__oauth2_session is None:
             # Create a new session if we haven't already
