@@ -1,13 +1,11 @@
-import asyncio
 from typing import Dict, List, Optional, Union, Callable
 import json
-from enum import Enum
-from pydantic import BaseModel, PrivateAttr, ConfigDict
-from functools import wraps
+from pydantic import PrivateAttr, ConfigDict
+from functools import update_wrapper
 
 from ..exceptions import SfApiError
 from .._utils import _SLEEP
-from .jobs import JobSacct, JobSqueue, JobSqueue, JobCommand
+from .jobs import JobSacct, JobSqueue, JobCommand
 from .._models import (
     AppRoutersStatusModelsStatus as ComputeBase,
     Task,
@@ -26,23 +24,22 @@ Machine.__str__ = lambda self: self.value
 
 
 def check_auth(method: Callable):
-    @wraps(method)
+    @update_wrapper(method)
     def wrapper(self, *args, **kwargs):
         if self.client._client_id is None:
             raise SfApiError(
-                f"Cannot call {self.__class__.__name__}.{method.__name__}() with an unauthenticated client."
+                f"Cannot call {self.__class__.__name__}.{method.__name__}() with an unauthenticated client."  # noqa: E501
             )
         elif self.status in [StatusValue.unavailable]:
             raise SfApiError(
                 f"Compute resource {self.name} is {self.status.name}, {self.notes}"
             )
         return method(self, *args, **kwargs)
-
     return wrapper
 
 
 class Compute(ComputeBase):
-    client: Optional["Client"]
+    client: Optional["Client"]  # noqa: F821
     _monitor: SyncJobMonitor = PrivateAttr()
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -131,7 +128,7 @@ class Compute(ComputeBase):
         Job = JobSacct if (command == JobCommand.sacct) else JobSqueue
         jobs = self._monitor.fetch_jobs(job_type=Job, jobids=[jobid])
         if len(jobs) == 0:
-            raise SfApiError(f"Job not found: ${jobid}")
+            raise SfApiError(f"Job not found: {jobid}")
 
         return jobs[0]
 

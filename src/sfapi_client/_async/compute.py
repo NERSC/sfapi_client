@@ -1,7 +1,7 @@
 from typing import Dict, List, Optional, Union, Callable
 import json
 from pydantic import PrivateAttr, ConfigDict
-from functools import wraps
+from functools import update_wrapper
 
 from ..exceptions import SfApiError
 from .._utils import _ASYNC_SLEEP
@@ -24,7 +24,7 @@ Machine.__str__ = lambda self: self.value
 
 
 def check_auth(method: Callable):
-    @wraps(method)
+    @update_wrapper(method)
     def wrapper(self, *args, **kwargs):
         if self.client._client_id is None:
             raise SfApiError(
@@ -35,7 +35,6 @@ def check_auth(method: Callable):
                 f"Compute resource {self.name} is {self.status.name}, {self.notes}"
             )
         return method(self, *args, **kwargs)
-
     return wrapper
 
 
@@ -74,10 +73,8 @@ class AsyncCompute(ComputeBase):
     async def submit_job(self, script: Union[str, AsyncRemotePath]) -> AsyncJobSqueue:
         """Submit a job to the compute resource
 
-        :param script: Path to file on the compute system, or script to run beginning
-        with `#!`.
-        :return: Object containing information about the job, its job id, and status
-        on the system.
+        :param script: Path to file on the compute system, or script to run beginning with `#!`.
+        :return: Object containing information about the job, its job id, and status on the system.
         """
 
         is_path: bool = True
@@ -131,7 +128,7 @@ class AsyncCompute(ComputeBase):
         Job = AsyncJobSacct if (command == JobCommand.sacct) else AsyncJobSqueue
         jobs = await self._monitor.fetch_jobs(job_type=Job, jobids=[jobid])
         if len(jobs) == 0:
-            raise SfApiError(f"Job not found: ${jobid}")
+            raise SfApiError(f"Job not found: {jobid}")
 
         return jobs[0]
 
