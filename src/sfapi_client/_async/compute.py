@@ -32,6 +32,7 @@ def check_auth(method: Callable):
                 f"Compute resource {self.name} is {self.status.name}, {self.notes}"
             )
         return method(self, *args, **kwargs)
+
     return wrapper
 
 
