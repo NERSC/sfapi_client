@@ -11,7 +11,7 @@ def check_auth(method: Callable):
     def wrapper(self, *args, **kwargs):
         if self._client_id is None:
             raise SfApiError(
-                f"Cannot call {self.__class__.__name__}.{method.__name__}() with an unauthenticated client."
+                f"Cannot call {self.__class__.__name__}.{method.__name__}() with an unauthenticated client."  # noqa: E501
             )
         return method(self, *args, **kwargs)
 
@@ -19,7 +19,7 @@ def check_auth(method: Callable):
 
 
 class GroupMember(GroupMemberBase):
-    client: Optional["Client"]
+    client: Optional["Client"]  # noqa: F821
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -30,13 +30,14 @@ class GroupMember(GroupMemberBase):
         return User._fetch_user(self.client, self.name)
 
 
-# Note: We can't use our generated model as we want user => members ( to avoid confusion with User model )
+# Note: We can't use our generated model as we want user => members ( to avoid
+# confusion with User model )
 class Group(BaseModel):
     """
     A user group.
     """
 
-    client: Optional["Client"]
+    client: Optional["Client"]  # noqa: F821
     gid: Optional[int]
     name: Optional[str]
     users_: Optional[List[GroupMemberBase]] = Field(..., alias="users")
@@ -114,7 +115,7 @@ class Group(BaseModel):
 
     @staticmethod
     @check_auth
-    def _fetch_group(client: "Client", name):
+    def _fetch_group(client: "Client", name):  # noqa: F821
         response = client.get(f"account/groups/{name}")
 
         json_response = response.json()

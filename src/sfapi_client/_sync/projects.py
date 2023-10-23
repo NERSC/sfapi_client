@@ -6,18 +6,18 @@ from ..exceptions import SfApiError
 
 
 class Role(RoleBase):
-    client: Optional["Client"]
+    client: Optional["Client"]  # noqa: F821
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class Project(ProjectBase):
-    client: Optional["Client"]
+    client: Optional["Client"]  # noqa: F821
     name: str = Field(alias="repo_name")
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    def create_group(self, name: str) -> "Group":
+    def create_group(self, name: str) -> "Group":  # noqa: F821
         """
         Create a new project.
         :param name: The project name

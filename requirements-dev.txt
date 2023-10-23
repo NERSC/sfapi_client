@@ -4,3 +4,4 @@ typer
 pytest
 pytest-asyncio
 mkdocs-jupyter
+datamodel-code-generator[http]
