@@ -31,7 +31,8 @@ class AsyncUser(UserBase):
     @staticmethod
     @check_auth
     async def _fetch_user(
-        client: "AsyncClient", username: Optional[str] = None  # noqa: F821
+        client: "AsyncClient",  # noqa: F821
+        username: Optional[str] = None,  # noqa: F821
     ):  # noqa: F821
         url = "account/"
         if username is not None:

@@ -165,7 +165,10 @@ class AsyncRemotePath(PathBase):
 
     @staticmethod
     async def _ls(
-        compute: "Compute", path, directory=False, filter_dots=True  # noqa: F821
+        compute: "AsyncCompute",  # noqa: F821
+        path,
+        directory=False,
+        filter_dots=True,  # noqa: F821
     ) -> List["RemotePath"]:  # noqa: F821
         r = await compute.client.get(f"utilities/ls/{compute.name}/{path}")
 
