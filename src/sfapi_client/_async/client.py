@@ -512,3 +512,9 @@ AsyncProject.model_rebuild()
 AsyncRemotePath.model_rebuild()
 AsyncRole.model_rebuild()
 AsyncGroupMember.model_rebuild()
+
+# Ensure that the job models are built, we need to import here to
+# avoid circular imports
+from .jobs import AsyncJobSacct, AsyncJobSqueue
+AsyncJobSqueue.model_rebuild()
+AsyncJobSacct.model_rebuild()

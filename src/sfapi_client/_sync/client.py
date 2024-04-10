@@ -512,3 +512,9 @@ Project.model_rebuild()
 RemotePath.model_rebuild()
 Role.model_rebuild()
 GroupMember.model_rebuild()
+
+# Ensure that the job models are built, we need to import here to
+# avoid circular imports
+from .jobs import JobSacct, JobSqueue
+JobSqueue.model_rebuild()
+JobSacct.model_rebuild()
