@@ -3,5 +3,6 @@ unasync
 typer
 pytest
 pytest-asyncio
+pytest-mock
 mkdocs-jupyter
 datamodel-code-generator[http]
