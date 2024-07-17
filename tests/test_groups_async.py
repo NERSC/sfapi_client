@@ -4,11 +4,8 @@ from sfapi_client import AsyncClient
 
 
 @pytest.mark.asyncio
-async def test_group(client_id, client_secret, test_group):
-    async with AsyncClient(
-        client_id=client_id,
-        secret=client_secret,
-    ) as client:
+async def test_group(async_authenticated_client, test_group):
+    async with async_authenticated_client as client:
         group = await client.group(test_group)
         assert group is not None
         assert group.name == test_group

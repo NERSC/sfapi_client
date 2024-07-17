@@ -1,10 +1,9 @@
 import pytest
-from sfapi_client import Client
 from sfapi_client import SfApiError
 
 
-def test_get_user(client_id, client_secret, test_username):
-    with Client(client_id, client_secret) as client:
+def test_get_user(authenticated_client, test_username):
+    with authenticated_client as client:
         user = client.user(test_username)
         assert user is not None
         assert user.name == test_username
@@ -14,15 +13,15 @@ def test_get_user(client_id, client_secret, test_username):
         assert user.name == test_username
 
 
-def test_get_another_user(client_id, client_secret, test_another_username):
-    with Client(client_id, client_secret) as client:
+def test_get_another_user(authenticated_client, test_another_username):
+    with authenticated_client as client:
         user = client.user(test_another_username)
         assert user is not None
         assert user.name == test_another_username
 
 
-def test_get_user_groups(client_id, client_secret, test_username):
-    with Client(client_id, client_secret) as client:
+def test_get_user_groups(authenticated_client, test_username):
+    with authenticated_client as client:
         user = client.user(test_username)
         assert user is not None
         assert user.name == test_username
@@ -32,10 +31,8 @@ def test_get_user_groups(client_id, client_secret, test_username):
         assert groups
 
 
-def test_get_user_groups_different_user(
-    client_id, client_secret, test_another_username
-):
-    with Client(client_id, client_secret) as client:
+def test_get_user_groups_different_user(authenticated_client, test_another_username):
+    with authenticated_client as client:
         user = client.user(test_another_username)
         assert user is not None
         assert user.name == test_another_username
@@ -44,8 +41,8 @@ def test_get_user_groups_different_user(
             user.groups()
 
 
-def test_get_user_projects(client_id, client_secret, test_username):
-    with Client(client_id, client_secret) as client:
+def test_get_user_projects(authenticated_client, test_username):
+    with authenticated_client as client:
         user = client.user(test_username)
         assert user is not None
         assert user.name == test_username
@@ -55,10 +52,8 @@ def test_get_user_projects(client_id, client_secret, test_username):
         assert projects
 
 
-def test_get_user_projects_different_user(
-    client_id, client_secret, test_another_username
-):
-    with Client(client_id, client_secret) as client:
+def test_get_user_projects_different_user(authenticated_client, test_another_username):
+    with authenticated_client as client:
         user = client.user(test_another_username)
         assert user is not None
         assert user.name == test_another_username

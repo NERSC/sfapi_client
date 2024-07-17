@@ -1,15 +1,12 @@
-from sfapi_client import Client
-
-
-def test_projects(client_id, client_secret):
-    with Client(client_id, client_secret) as client:
+def test_projects(authenticated_client):
+    with authenticated_client as client:
         user = client.user()
         projects = user.projects()
         assert projects
 
 
-def test_roles(client_id, client_secret):
-    with Client(client_id, client_secret) as client:
+def test_roles(authenticated_client):
+    with authenticated_client as client:
         user = client.user()
         roles = user.roles()
         assert roles

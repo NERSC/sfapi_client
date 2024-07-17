@@ -7,8 +7,8 @@ from sfapi_client.jobs import AsyncJobSqueue, AsyncJobSacct, JobState
 
 
 @pytest.mark.asyncio
-async def test_submit(client_id, client_secret, test_job_path, test_machine):
-    async with AsyncClient(client_id, client_secret) as client:
+async def test_submit(async_authenticated_client, test_job_path, test_machine):
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
         job = await machine.submit_job(test_job_path)
 
@@ -18,8 +18,8 @@ async def test_submit(client_id, client_secret, test_job_path, test_machine):
 
 
 @pytest.mark.asyncio
-async def test_cancel(client_id, client_secret, test_job_path, test_machine):
-    async with AsyncClient(client_id, client_secret) as client:
+async def test_cancel(async_authenticated_client, test_job_path, test_machine):
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
         job = await machine.submit_job(test_job_path)
 
@@ -28,9 +28,9 @@ async def test_cancel(client_id, client_secret, test_job_path, test_machine):
 
 @pytest.mark.asyncio
 async def test_cancel_wait_for_it(
-    client_id, client_secret, test_job_path, test_machine
+    async_authenticated_client, test_job_path, test_machine
 ):
-    async with AsyncClient(client_id, client_secret) as client:
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
         job = await machine.submit_job(test_job_path)
 
@@ -40,8 +40,8 @@ async def test_cancel_wait_for_it(
 
 
 @pytest.mark.asyncio
-async def test_running(client_id, client_secret, test_job_path, test_machine):
-    async with AsyncClient(client_id, client_secret, wait_interval=1) as client:
+async def test_running(async_authenticated_client, test_job_path, test_machine):
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
         job = await machine.submit_job(test_job_path)
 
@@ -51,8 +51,10 @@ async def test_running(client_id, client_secret, test_job_path, test_machine):
 
 
 @pytest.mark.asyncio
-async def test_complete_timeout(client_id, client_secret, test_job_path, test_machine):
-    async with AsyncClient(client_id, client_secret, wait_interval=1) as client:
+async def test_complete_timeout(
+    async_authenticated_client, test_job_path, test_machine
+):
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
         job = await machine.submit_job(test_job_path)
 
@@ -62,9 +64,9 @@ async def test_complete_timeout(client_id, client_secret, test_job_path, test_ma
 
 @pytest.mark.asyncio
 async def test_job_monitor_check_request(
-    mocker, client_id, client_secret, test_job_path, test_machine
+    async_authenticated_client, mocker, test_job_path, test_machine
 ):
-    async with AsyncClient(client_id, client_secret) as client:
+    async with async_authenticated_client as client:
         _fetch_jobs_async = mocker.patch("sfapi_client._monitor._fetch_jobs_async")
         machine = await client.compute(test_machine)
 
@@ -107,10 +109,8 @@ async def test_job_monitor_check_request(
 
 
 @pytest.mark.asyncio
-async def test_job_monitor_job_types(
-    mocker, client_id, client_secret, test_job_path, test_machine
-):
-    async with AsyncClient(client_id, client_secret) as client:
+async def test_job_monitor_job_types(async_authenticated_client, mocker, test_machine):
+    async with async_authenticated_client as client:
         _fetch_jobs_async = mocker.patch("sfapi_client._monitor._fetch_jobs_async")
         machine = await client.compute(test_machine)
 

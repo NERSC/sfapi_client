@@ -4,12 +4,10 @@ from io import BytesIO
 import random
 import string
 
-from sfapi_client import AsyncClient
-
 
 @pytest.mark.asyncio
-async def test_download_text(client_id, client_secret, test_machine, test_job_path):
-    async with AsyncClient(client_id, client_secret) as client:
+async def test_download_text(async_authenticated_client, test_machine, test_job_path):
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
         test_job = Path(test_job_path)
         test_path = test_job.parent
@@ -31,8 +29,8 @@ async def test_download_text(client_id, client_secret, test_machine, test_job_pa
 
 
 @pytest.mark.asyncio
-async def test_download_binary(client_id, client_secret, test_machine, test_job_path):
-    async with AsyncClient(client_id, client_secret) as client:
+async def test_download_binary(async_authenticated_client, test_machine, test_job_path):
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
         test_job = Path(test_job_path)
         test_path = test_job.parent
@@ -55,9 +53,9 @@ async def test_download_binary(client_id, client_secret, test_machine, test_job_
 
 @pytest.mark.asyncio
 async def test_download_directory(
-    client_id, client_secret, test_machine, test_job_path
+    async_authenticated_client, test_machine, test_job_path
 ):
-    async with AsyncClient(client_id, client_secret) as client:
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
         test_job = Path(test_job_path)
         test_path = test_job.parent.parent
@@ -76,9 +74,9 @@ async def test_download_directory(
 
 @pytest.mark.asyncio
 async def test_ls_dir(
-    client_id, client_secret, test_machine, test_job_path, test_username
+    async_authenticated_client, test_machine, test_job_path, test_username
 ):
-    async with AsyncClient(client_id, client_secret) as client:
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
         test_job = Path(test_job_path)
         test_job_directory_name = test_job.parent.name
@@ -107,8 +105,10 @@ async def test_ls_dir(
 
 
 @pytest.mark.asyncio
-async def test_ls_excludes_dots(client_id, client_secret, test_machine, test_job_path):
-    async with AsyncClient(client_id, client_secret) as client:
+async def test_ls_excludes_dots(
+    async_authenticated_client, test_machine, test_job_path
+):
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
         test_job = Path(test_job_path)
         test_job_directory = test_job.parent
@@ -126,9 +126,9 @@ async def test_ls_excludes_dots(client_id, client_secret, test_machine, test_job
 
 @pytest.mark.asyncio
 async def test_upload_file_to_directory(
-    client_id, client_secret, test_machine, test_tmp_dir
+    async_authenticated_client, test_machine, test_tmp_dir
 ):
-    async with AsyncClient(client_id, client_secret) as client:
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
 
         paths = await machine.ls(test_tmp_dir, directory=True)
@@ -145,9 +145,9 @@ async def test_upload_file_to_directory(
 
 @pytest.mark.asyncio
 async def test_upload_file_to_file(
-    client_id, client_secret, test_machine, test_tmp_dir
+    async_authenticated_client, test_machine, test_tmp_dir
 ):
-    async with AsyncClient(client_id, client_secret) as client:
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
 
         paths = await machine.ls(test_tmp_dir, directory=True)
@@ -168,9 +168,9 @@ async def test_upload_file_to_file(
 
 @pytest.mark.asyncio
 async def test_file_open_invalid_mode(
-    client_id, client_secret, test_machine, test_job_path
+    async_authenticated_client, test_machine, test_job_path
 ):
-    async with AsyncClient(client_id, client_secret) as client:
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
         [test_job_remote_path] = await machine.ls(test_job_path)
 
@@ -193,9 +193,9 @@ async def test_file_open_invalid_mode(
 
 @pytest.mark.asyncio
 async def test_file_open_read_text(
-    client_id, client_secret, test_machine, test_job_path
+    async_authenticated_client, test_machine, test_job_path
 ):
-    async with AsyncClient(client_id, client_secret) as client:
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
         test_job_remote_path = await machine.ls(test_job_path)
         assert len(test_job_remote_path) == 1
@@ -208,9 +208,9 @@ async def test_file_open_read_text(
 
 @pytest.mark.asyncio
 async def test_file_open_read_binary(
-    client_id, client_secret, test_machine, test_job_path
+    async_authenticated_client, test_machine, test_job_path
 ):
-    async with AsyncClient(client_id, client_secret) as client:
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
         test_job_remote_path = await machine.ls(test_job_path)
         assert len(test_job_remote_path) == 1
@@ -223,9 +223,9 @@ async def test_file_open_read_binary(
 
 @pytest.mark.asyncio
 async def test_file_open_write_text(
-    client_id, client_secret, test_machine, test_tmp_dir
+    async_authenticated_client, test_machine, test_tmp_dir
 ):
-    async with AsyncClient(client_id, client_secret) as client:
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
         remote_tmp_dir = await machine.ls(test_tmp_dir, directory=True)
         assert len(remote_tmp_dir) == 1
@@ -248,9 +248,9 @@ async def test_file_open_write_text(
 
 @pytest.mark.asyncio
 async def test_file_open_write_binary(
-    client_id, client_secret, test_machine, test_tmp_dir
+    async_authenticated_client, test_machine, test_tmp_dir
 ):
-    async with AsyncClient(client_id, client_secret) as client:
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
         remote_tmp_dir = await machine.ls(test_tmp_dir, directory=True)
         assert len(remote_tmp_dir) == 1
@@ -273,9 +273,9 @@ async def test_file_open_write_binary(
 
 @pytest.mark.asyncio
 async def test_file_open_write_new(
-    client_id, client_secret, test_machine, test_tmp_dir
+    async_authenticated_client, test_machine, test_tmp_dir
 ):
-    async with AsyncClient(client_id, client_secret) as client:
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
         remote_tmp_dir = await machine.ls(test_tmp_dir, directory=True)
         assert len(remote_tmp_dir) == 1

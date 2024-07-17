@@ -8,8 +8,8 @@ from sfapi_client.compute import Compute
 from sfapi_client.jobs import JobSqueue
 
 
-def test_submit(client_id, client_secret, test_job_path, test_machine):
-    with Client(client_id, client_secret) as client:
+def test_submit(authenticated_client, test_job_path, test_machine):
+    with authenticated_client as client:
         machine = client.compute(test_machine)
         job = machine.submit_job(test_job_path)
 
@@ -18,23 +18,23 @@ def test_submit(client_id, client_secret, test_job_path, test_machine):
         assert state == JobState.COMPLETED
 
 
-def test_cancel(client_id, client_secret, test_job_path, test_machine):
-    with Client(client_id, client_secret) as client:
+def test_cancel(authenticated_client, test_job_path, test_machine):
+    with authenticated_client as client:
         machine = client.compute(test_machine)
         job = machine.submit_job(test_job_path)
 
         job.cancel()
 
 
-def test_cancel_wait_for_it(client_id, client_secret, test_job_path, test_machine):
-    with Client(client_id, client_secret) as client:
+def test_cancel_wait_for_it(authenticated_client, test_job_path, test_machine):
+    with authenticated_client as client:
         machine = client.compute(test_machine)
         job = machine.submit_job(test_job_path)
         job.cancel(wait=True)
 
 
-def test_running(client_id, client_secret, test_job_path, test_machine):
-    with Client(client_id, client_secret, wait_interval=1) as client:
+def test_running(authenticated_client, test_job_path, test_machine):
+    with authenticated_client as client:
         machine = client.compute(test_machine)
         job = machine.submit_job(test_job_path)
 
@@ -43,8 +43,8 @@ def test_running(client_id, client_secret, test_job_path, test_machine):
         assert state == JobState.RUNNING
 
 
-def test_complete_timeout(client_id, client_secret, test_job_path, test_machine):
-    with Client(client_id, client_secret) as client:
+def test_complete_timeout(authenticated_client, test_job_path, test_machine):
+    with authenticated_client as client:
         machine = client.compute(test_machine)
         job = machine.submit_job(test_job_path)
 
