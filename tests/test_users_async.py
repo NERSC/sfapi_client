@@ -71,3 +71,20 @@ async def test_get_user_projects_different_user(
 
         with pytest.raises(SfApiError):
             await user.projects()
+
+
+@pytest.mark.asyncio
+async def test_user_api_clients(async_authenticated_client, client_id, test_username):
+    async with async_authenticated_client as client:
+        user = await client.user(test_username)
+        clients = await user.clients()
+
+        assert clients
+        # Check that we can at least find the current client
+        found_current_client = False
+        for c in clients:
+            if c.clientId == client_id:
+                found_current_client = True
+                break
+
+        assert found_current_client

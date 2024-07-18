@@ -6,6 +6,7 @@ from pydantic import ConfigDict
 from .._models import (
     UserInfo as UserBase,
     GroupList as GroupsResponse,
+    Client as APIClient,
 )
 from .projects import AsyncProject, AsyncRole
 from ..exceptions import SfApiError
@@ -107,3 +108,17 @@ class AsyncUser(UserBase):
         ]
 
         return roles
+
+    async def clients(self) -> List[APIClient]:
+        """
+        Get information about the authenticated user's SFAPI clients.
+
+        :return: the api clients
+        """
+        r = await self.client.get("account/clients")
+
+        json_response = r.json()
+
+        clients = [APIClient.model_validate(c) for c in json_response]
+
+        return clients
