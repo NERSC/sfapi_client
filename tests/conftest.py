@@ -8,12 +8,15 @@ from authlib.jose import JsonWebKey
 
 from sfapi_client.compute import Machine
 from sfapi_client import Resource
+from sfapi_client import Client, AsyncClient
 
 from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
+    API_BASE_URL: str = "https://api.nersc.gov/api/v1.2"
+    TOKEN_URL: str = "https://oidc.nersc.gov/c2id/token"
     SFAPI_CLIENT_ID: Optional[str] = None
     SFAPI_CLIENT_SECRET: Optional[Union[str, Dict]] = None
     SFAPI_DEV_CLIENT_ID: Optional[str] = None
@@ -125,3 +128,43 @@ def dev_api_url():
 @pytest.fixture
 def dev_token_url():
     return settings.DEV_TOKEN_URL
+
+
+@pytest.fixture
+def api_base_url():
+    return settings.API_BASE_URL
+
+
+@pytest.fixture
+def token_url():
+    return settings.TOKEN_URL
+
+
+@pytest.fixture
+def unauthenticated_client(api_base_url):
+    return Client(api_base_url=api_base_url)
+
+
+@pytest.fixture
+def async_unauthenticated_client(api_base_url):
+    return AsyncClient(api_base_url=api_base_url)
+
+
+@pytest.fixture
+def authenticated_client(api_base_url, token_url, client_id, client_secret):
+    return Client(
+        api_base_url=api_base_url,
+        token_url=token_url,
+        client_id=client_id,
+        secret=client_secret,
+    )
+
+
+@pytest.fixture
+def async_authenticated_client(api_base_url, token_url, client_id, client_secret):
+    return AsyncClient(
+        api_base_url=api_base_url,
+        token_url=token_url,
+        client_id=client_id,
+        secret=client_secret,
+    )

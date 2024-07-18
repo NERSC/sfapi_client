@@ -1,21 +1,20 @@
 import pytest
 from pathlib import Path
 
-from sfapi_client import AsyncClient
 from sfapi_client.jobs import JobState
 
 
 @pytest.mark.asyncio
-async def test_compute(client_id, client_secret, test_machine):
-    async with AsyncClient(client_id, client_secret) as client:
+async def test_compute(async_authenticated_client, test_machine):
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
         assert machine.status in ["active", "unavailable", "degraded", "other"]
         assert machine.name == test_machine.value
 
 
 @pytest.mark.asyncio
-async def test_job(client_id, client_secret, test_job_path, test_machine):
-    async with AsyncClient(client_id, client_secret) as client:
+async def test_job(async_authenticated_client, test_job_path, test_machine):
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
 
         job = await machine.submit_job(test_job_path)
@@ -28,15 +27,17 @@ async def test_job(client_id, client_secret, test_job_path, test_machine):
 
 
 @pytest.mark.asyncio
-async def test_fetch_jobs(client_id, client_secret, test_machine, test_username):
-    async with AsyncClient(client_id, client_secret) as client:
+async def test_fetch_jobs(async_authenticated_client, test_machine, test_username):
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
         await machine.jobs(user=test_username)
 
 
 @pytest.mark.asyncio
-async def test_list_dir_contents(client_id, client_secret, test_machine, test_job_path):
-    async with AsyncClient(client_id, client_secret) as client:
+async def test_list_dir_contents(
+    async_authenticated_client, test_machine, test_job_path
+):
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
         test_job = Path(test_job_path)
         test_path = test_job.parent
@@ -54,8 +55,8 @@ async def test_list_dir_contents(client_id, client_secret, test_machine, test_jo
 
 
 @pytest.mark.asyncio
-async def test_list_dir(client_id, client_secret, test_machine, test_job_path):
-    async with AsyncClient(client_id, client_secret) as client:
+async def test_list_dir(async_authenticated_client, test_machine, test_job_path):
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
         test_job = Path(test_job_path)
         test_path = test_job.parent
@@ -66,8 +67,8 @@ async def test_list_dir(client_id, client_secret, test_machine, test_job_path):
 
 
 @pytest.mark.asyncio
-async def test_list_file(client_id, client_secret, test_machine, test_job_path):
-    async with AsyncClient(client_id, client_secret) as client:
+async def test_list_file(async_authenticated_client, test_machine, test_job_path):
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
         test_job_filename = Path(test_job_path).name
         test_job_dir = Path(test_job_path).parent
@@ -84,8 +85,8 @@ async def test_list_file(client_id, client_secret, test_machine, test_job_path):
 
 
 @pytest.mark.asyncio
-async def test_run_arg_list(client_id, client_secret, test_machine, test_job_path):
-    async with AsyncClient(client_id, client_secret) as client:
+async def test_run_arg_list(async_authenticated_client, test_machine, test_job_path):
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
         output = await machine.run(["ls", test_job_path])
 
@@ -93,8 +94,8 @@ async def test_run_arg_list(client_id, client_secret, test_machine, test_job_pat
 
 
 @pytest.mark.asyncio
-async def test_run_arg_str(client_id, client_secret, test_machine, test_job_path):
-    async with AsyncClient(client_id, client_secret) as client:
+async def test_run_arg_str(async_authenticated_client, test_machine, test_job_path):
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
         output = await machine.run(f"ls {test_job_path}")
 
@@ -102,8 +103,8 @@ async def test_run_arg_str(client_id, client_secret, test_machine, test_job_path
 
 
 @pytest.mark.asyncio
-async def test_run_arg_path(client_id, client_secret, test_machine):
-    async with AsyncClient(client_id, client_secret) as client:
+async def test_run_arg_path(async_authenticated_client, test_machine):
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
         [remote_path] = await machine.ls("/usr/bin/hostname")
         output = await machine.run(remote_path)
@@ -112,8 +113,8 @@ async def test_run_arg_path(client_id, client_secret, test_machine):
 
 
 @pytest.mark.asyncio
-async def test_outages(client_id, client_secret, test_machine):
-    async with AsyncClient(client_id, client_secret) as client:
+async def test_outages(async_authenticated_client, test_machine):
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
         outages = await machine.outages()
 
@@ -121,8 +122,8 @@ async def test_outages(client_id, client_secret, test_machine):
 
 
 @pytest.mark.asyncio
-async def test_planned_outages(client_id, client_secret, test_machine):
-    async with AsyncClient(client_id, client_secret) as client:
+async def test_planned_outages(async_authenticated_client, test_machine):
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
         outages = await machine.planned_outages()
 

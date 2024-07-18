@@ -4,7 +4,6 @@ from io import BytesIO
 import random
 import string
 
-from sfapi_client import Client
 from sfapi_client.paths import RemotePath
 
 
@@ -33,8 +32,8 @@ def test_parent():
         assert isinstance(p, RemotePath)
 
 
-def test_download_text(client_id, client_secret, test_machine, test_job_path):
-    with Client(client_id, client_secret) as client:
+def test_download_text(authenticated_client, test_machine, test_job_path):
+    with authenticated_client as client:
         machine = client.compute(test_machine)
         test_job = Path(test_job_path)
         test_path = test_job.parent
@@ -55,8 +54,8 @@ def test_download_text(client_id, client_secret, test_machine, test_job_path):
         assert "#SBATCH" in contents
 
 
-def test_download_binary(client_id, client_secret, test_machine, test_job_path):
-    with Client(client_id, client_secret) as client:
+def test_download_binary(authenticated_client, test_machine, test_job_path):
+    with authenticated_client as client:
         machine = client.compute(test_machine)
         test_job = Path(test_job_path)
         test_path = test_job.parent
@@ -77,8 +76,8 @@ def test_download_binary(client_id, client_secret, test_machine, test_job_path):
         assert "#SBATCH" in bytes.decode()
 
 
-def test_ls_dir(client_id, client_secret, test_machine, test_job_path, test_username):
-    with Client(client_id, client_secret) as client:
+def test_ls_dir(authenticated_client, test_machine, test_job_path, test_username):
+    with authenticated_client as client:
         machine = client.compute(test_machine)
         test_job = Path(test_job_path)
         test_job_directory_name = test_job.parent.name
@@ -106,8 +105,8 @@ def test_ls_dir(client_id, client_secret, test_machine, test_job_path, test_user
         assert found
 
 
-def test_upload_file_to_directory(client_id, client_secret, test_machine, test_tmp_dir):
-    with Client(client_id, client_secret) as client:
+def test_upload_file_to_directory(authenticated_client, test_machine, test_tmp_dir):
+    with authenticated_client as client:
         machine = client.compute(test_machine)
 
         paths = machine.ls(test_tmp_dir, directory=True)
@@ -122,8 +121,8 @@ def test_upload_file_to_directory(client_id, client_secret, test_machine, test_t
         assert remote_file.download().read() == file_contents
 
 
-def test_upload_file_to_file(client_id, client_secret, test_machine, test_tmp_dir):
-    with Client(client_id, client_secret) as client:
+def test_upload_file_to_file(authenticated_client, test_machine, test_tmp_dir):
+    with authenticated_client as client:
         machine = client.compute(test_machine)
 
         paths = machine.ls(test_tmp_dir, directory=True)
@@ -142,8 +141,8 @@ def test_upload_file_to_file(client_id, client_secret, test_machine, test_tmp_di
         assert remote_file.download().read() == file_contents
 
 
-def test_file_open_invalid_mode(client_id, client_secret, test_machine, test_job_path):
-    with Client(client_id, client_secret) as client:
+def test_file_open_invalid_mode(authenticated_client, test_machine, test_job_path):
+    with authenticated_client as client:
         machine = client.compute(test_machine)
         [test_job_remote_path] = machine.ls(test_job_path)
 
@@ -164,8 +163,8 @@ def test_file_open_invalid_mode(client_id, client_secret, test_machine, test_job
                 pass
 
 
-def test_file_open_read_text(client_id, client_secret, test_machine, test_job_path):
-    with Client(client_id, client_secret) as client:
+def test_file_open_read_text(authenticated_client, test_machine, test_job_path):
+    with authenticated_client as client:
         machine = client.compute(test_machine)
         test_job_remote_path = machine.ls(test_job_path)
         assert len(test_job_remote_path) == 1
@@ -176,8 +175,8 @@ def test_file_open_read_text(client_id, client_secret, test_machine, test_job_pa
             assert "#SBATCH" in contents
 
 
-def test_file_open_read_binary(client_id, client_secret, test_machine, test_job_path):
-    with Client(client_id, client_secret) as client:
+def test_file_open_read_binary(authenticated_client, test_machine, test_job_path):
+    with authenticated_client as client:
         machine = client.compute(test_machine)
         test_job_remote_path = machine.ls(test_job_path)
         assert len(test_job_remote_path) == 1
@@ -188,8 +187,8 @@ def test_file_open_read_binary(client_id, client_secret, test_machine, test_job_
             assert "#SBATCH" in contents
 
 
-def test_file_open_write_text(client_id, client_secret, test_machine, test_tmp_dir):
-    with Client(client_id, client_secret) as client:
+def test_file_open_write_text(authenticated_client, test_machine, test_tmp_dir):
+    with authenticated_client as client:
         machine = client.compute(test_machine)
         remote_tmp_dir = machine.ls(test_tmp_dir, directory=True)
         assert len(remote_tmp_dir) == 1
@@ -210,8 +209,8 @@ def test_file_open_write_text(client_id, client_secret, test_machine, test_tmp_d
             assert file_contents in fp.read()
 
 
-def test_file_open_write_binary(client_id, client_secret, test_machine, test_tmp_dir):
-    with Client(client_id, client_secret) as client:
+def test_file_open_write_binary(authenticated_client, test_machine, test_tmp_dir):
+    with authenticated_client as client:
         machine = client.compute(test_machine)
         remote_tmp_dir = machine.ls(test_tmp_dir, directory=True)
         assert len(remote_tmp_dir) == 1
@@ -232,8 +231,8 @@ def test_file_open_write_binary(client_id, client_secret, test_machine, test_tmp
             assert file_contents in fp.read()
 
 
-def test_file_open_write_new(client_id, client_secret, test_machine, test_tmp_dir):
-    with Client(client_id, client_secret) as client:
+def test_file_open_write_new(authenticated_client, test_machine, test_tmp_dir):
+    with authenticated_client as client:
         machine = client.compute(test_machine)
         remote_tmp_dir = machine.ls(test_tmp_dir, directory=True)
         assert len(remote_tmp_dir) == 1
