@@ -60,3 +60,19 @@ def test_get_user_projects_different_user(authenticated_client, test_another_use
 
         with pytest.raises(SfApiError):
             user.projects()
+
+
+def test_user_api_clients(authenticated_client, client_id, test_username):
+    with authenticated_client as client:
+        user = client.user(test_username)
+        clients = user.clients()
+
+        assert clients
+        # Check that we can at least find the current client
+        found_current_client = False
+        for c in clients:
+            if c.clientId == client_id:
+                found_current_client = True
+                break
+
+        assert found_current_client

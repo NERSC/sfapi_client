@@ -6,6 +6,7 @@ from pydantic import ConfigDict
 from .._models import (
     UserInfo as UserBase,
     GroupList as GroupsResponse,
+    Client as APIClient,
 )
 from .projects import Project, Role
 from ..exceptions import SfApiError
@@ -31,7 +32,8 @@ class User(UserBase):
     @staticmethod
     @check_auth
     def _fetch_user(
-        client: "Client", username: Optional[str] = None  # noqa: F821
+        client: "Client",  # noqa: F821
+        username: Optional[str] = None,  # noqa: F821
     ):  # noqa: F821
         url = "account/"
         if username is not None:
@@ -106,3 +108,17 @@ class User(UserBase):
         ]
 
         return roles
+
+    def clients(self) -> List[APIClient]:
+        """
+        Get information about the authenticated user's SFAPI clients.
+
+        :return: the api clients
+        """
+        r = self.client.get("account/clients")
+
+        json_response = r.json()
+
+        clients = [APIClient.model_validate(c) for c in json_response]
+
+        return clients
