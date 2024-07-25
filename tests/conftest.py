@@ -31,6 +31,7 @@ class Settings(BaseSettings):
     TEST_GROUP: Optional[str] = None
     DEV_API_URL: str = "https://api-dev.nersc.gov/api/v1.2"
     DEV_TOKEN_URL: str = "https://oidc-dev.nersc.gov/c2id/token"
+    ACCESS_TOKEN: Optional[str] = None
 
     model_config = ConfigDict(case_sensitive=True, env_file=".env")
 
@@ -168,3 +169,8 @@ def async_authenticated_client(api_base_url, token_url, client_id, client_secret
         client_id=client_id,
         secret=client_secret,
     )
+
+
+@pytest.fixture
+def access_token():
+    return settings.ACCESS_TOKEN

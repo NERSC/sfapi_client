@@ -23,7 +23,7 @@ Machine.__str__ = lambda self: self.value
 
 def check_auth(method: Callable):
     def wrapper(self, *args, **kwargs):
-        if self.client._client_id is None:
+        if self.client._client_id is None and self.client._access_token is None:
             raise SfApiError(
                 f"Cannot call {self.__class__.__name__}.{method.__name__}() with an unauthenticated client."  # noqa: E501
             )
