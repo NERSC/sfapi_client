@@ -215,6 +215,7 @@ class Client:
         key: Optional[Union[str, Path]] = None,
         api_base_url: Optional[str] = SFAPI_BASE_URL,
         token_url: Optional[str] = SFAPI_TOKEN_URL,
+        access_token: Optional[str] = None,
         wait_interval: int = 10,
     ):
         """
@@ -230,6 +231,10 @@ class Client:
 
         :param client_id: The client ID
         :param secret: The client secret
+        :param key: The path to the client secret file
+        :param api_base_url: The API base URL
+        :param token_url: The token URL
+        :param access_token: An existing access token
 
         :return: The client instance
         :rtype: Client
@@ -244,36 +249,45 @@ class Client:
         self._api_base_url = api_base_url
         self._token_url = token_url
         self._client_user = None
-        self.__oauth2_session = None
+        self.__http_client = None
         self._api = None
         self._resources = None
         self._wait_interval = wait_interval
+        self._access_token = access_token
 
     def __enter__(self):
         return self
 
-    def _oauth2_session(self):
-        if self._client_id is None:
-            raise SfApiError("No credentials have been provides")
+    def _http_client(self):
+        headers = {"accept": "application/json"}
+        # If we have a client_id then we need to use OAuth2 client
+        if self._client_id is not None:
+            if self.__http_client is None:
+                # Create a new session if we haven't already
+                self.__http_client = OAuth2Client(
+                    client_id=self._client_id,
+                    client_secret=self._secret,
+                    token_endpoint_auth_method=PrivateKeyJWT(self._token_url),
+                    grant_type="client_credentials",
+                    token_endpoint=self._token_url,
+                    timeout=10.0,
+                    headers=headers,
+                )
 
-        if self.__oauth2_session is None:
-            # Create a new session if we haven't already
-            self.__oauth2_session = OAuth2Client(
-                client_id=self._client_id,
-                client_secret=self._secret,
-                token_endpoint_auth_method=PrivateKeyJWT(self._token_url),
-                grant_type="client_credentials",
-                token_endpoint=self._token_url,
-                timeout=10.0,
-            )
+                self.__http_client.fetch_token()
+            else:
+                # We have a session
+                # Make sure it's still active
+                self.__http_client.ensure_active_token(self.__http_client.token)
+        # Use regular client, but add the access token if we have one
+        elif self.__http_client is None:
+            # We already have an access token
+            if self._access_token is not None:
+                headers.update({"Authorization": f"Bearer {self._access_token}"})
 
-            self.__oauth2_session.fetch_token()
-        else:
-            # We have a session
-            # Make sure it's still active
-            self.__oauth2_session.ensure_active_token(self.__oauth2_session.token)
+            self.__http_client = httpx.Client(headers=headers)
 
-        return self.__oauth2_session
+        return self.__http_client
 
     @property
     def token(self) -> str:
@@ -281,16 +295,18 @@ class Client:
         Bearer token string which can be helpful for debugging through swagger UI.
         """
 
-        if self._client_id is not None:
-            oauth_session = self._oauth2_session()
-            return oauth_session.token["access_token"]
+        if self._access_token is not None:
+            return self._access_token
+        elif self._client_id is not None:
+            client = self._http_client()
+            return client.token["access_token"]
 
     def close(self):
         """
         Release resources associated with the client instance.
         """
-        if self.__oauth2_session is not None:
-            self.__oauth2_session.close()
+        if self.__http_client is not None:
+            self.__http_client.close()
 
     def __exit__(self, type, value, traceback):
         self.close()
@@ -345,29 +361,11 @@ class Client:
         stop=tenacity.stop_after_attempt(MAX_RETRY),
     )
     def get(self, url: str, params: Dict[str, Any] = {}) -> httpx.Response:
-        if self._client_id is not None:
-            oauth_session = self._oauth2_session()
-
-            r = oauth_session.get(
-                f"{self._api_base_url}/{url}",
-                headers={
-                    "Authorization": oauth_session.token["access_token"],
-                    "accept": "application/json",
-                },
-                params=params,
-            )
-        # Use regular client if we are hitting an endpoint that don't need
-        # auth.
-        else:
-            with httpx.Client() as client:
-                r = client.get(
-                    f"{self._api_base_url}/{url}",
-                    headers={
-                        "accept": "application/json",
-                    },
-                    params=params,
-                )
-
+        client = self._http_client()
+        r = client.get(
+            f"{self._api_base_url}/{url}",
+            params=params,
+        )
         r.raise_for_status()
 
         return r
@@ -380,14 +378,10 @@ class Client:
         stop=tenacity.stop_after_attempt(MAX_RETRY),
     )
     def post(self, url: str, data: Dict[str, Any]) -> httpx.Response:
-        oauth_session = self._oauth2_session()
+        client = self._http_client()
 
-        r = oauth_session.post(
+        r = client.post(
             f"{self._api_base_url}/{url}",
-            headers={
-                "Authorization": oauth_session.token["access_token"],
-                "accept": "application/json",
-            },
             data=data,
         )
         r.raise_for_status()
@@ -404,14 +398,10 @@ class Client:
     def put(
         self, url: str, data: Dict[str, Any] = None, files: Dict[str, Any] = None
     ) -> httpx.Response:
-        oauth_session = self._oauth2_session()
+        client = self._http_client()
 
-        r = oauth_session.put(
+        r = client.put(
             f"{self._api_base_url}/{url}",
-            headers={
-                "Authorization": oauth_session.token["access_token"],
-                "accept": "application/json",
-            },
             data=data,
             files=files,
         )
@@ -427,14 +417,10 @@ class Client:
         stop=tenacity.stop_after_attempt(MAX_RETRY),
     )
     def delete(self, url: str) -> httpx.Response:
-        oauth_session = self._oauth2_session()
+        client = self._http_client()
 
-        r = oauth_session.delete(
+        r = client.delete(
             f"{self._api_base_url}/{url}",
-            headers={
-                "Authorization": oauth_session.token["access_token"],
-                "accept": "application/json",
-            },
         )
         r.raise_for_status()
 
