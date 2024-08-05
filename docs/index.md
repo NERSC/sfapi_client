@@ -42,7 +42,7 @@ The sfapi_client project relies on these libraries:
 * `pydantic` - Data models.
 * `tenacity` - Retry.
 * `datamodel-code-generator` - Generating data models from the Open API specification.
-* `unasync` - Generating synchronous interface from asyn implementation.
+* `unasync` - Generating synchronous interface from async implementation.
 
 
 ## Installation
