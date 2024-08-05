@@ -29,7 +29,7 @@ Compute(name='perlmutter', full_name='Perlmutter', description='System Degraded'
 
 ## Documentation
 
-For the basics, head over to the [QuickStart](quickstart). We also have Jupyter Nodebook [examples](examples).
+For the basics, head over to the [QuickStart](quickstart). We also have Jupyter Notebook [examples](examples).
 
 More in depth developer documentation can be found in the [API reference](reference).
 
