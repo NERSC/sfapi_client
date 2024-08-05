@@ -31,7 +31,7 @@ Compute(name='perlmutter', full_name='Perlmutter', description='System Degraded'
 
 For the basics, head over to the [QuickStart](https://nersc.github.io/sfapi_client/quickstart/). We also have Jupyter Notebook [examples](https://nersc.github.io/sfapi_client/examples/).
 
-More in depth developer documentation can be found in the [API reference](https://nersc.github.io/sfapi_client/reference/async/client/).
+More in depth developer documentation can be found in the [API reference](https://nersc.github.io/sfapi_client).
 
 ## Dependencies
 
