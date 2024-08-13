@@ -312,9 +312,10 @@ class AsyncClient:
         await self.close()
 
     def _read_client_secret_from_file(self, name):
-        if name is not None and Path(name).exists():
+        _path = Path(name).expanduser()
+        if name is not None and _path.exists():
             # If the user gives a full path, then use it
-            key_path = Path(name)
+            key_path = _path
         else:
             # If not let's search in ~/.superfacility for the name or any key
             nickname = "" if name is None else name

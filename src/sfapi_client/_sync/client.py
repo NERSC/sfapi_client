@@ -260,7 +260,7 @@ class Client:
 
     def _http_client(self):
         headers = {"accept": "application/json"}
-        # If we have a client_id then we need to use OAuth2 client
+        # If we have a client_id then we need to use the OAuth2 client
         if self._client_id is not None:
             if self.__http_client is None:
                 # Create a new session if we haven't already
@@ -312,9 +312,10 @@ class Client:
         self.close()
 
     def _read_client_secret_from_file(self, name):
-        if name is not None and Path(name).exists():
+        _path = Path(name).expanduser()
+        if name is not None and _path.exists():
             # If the user gives a full path, then use it
-            key_path = Path(name)
+            key_path = _path
         else:
             # If not let's search in ~/.superfacility for the name or any key
             nickname = "" if name is None else name
@@ -501,6 +502,7 @@ GroupMember.model_rebuild()
 
 # Ensure that the job models are built, we need to import here to
 # avoid circular imports
-from .jobs import JobSacct, JobSqueue
+from .jobs import JobSacct, JobSqueue  # noqa: E402
+
 JobSqueue.model_rebuild()
 JobSacct.model_rebuild()
