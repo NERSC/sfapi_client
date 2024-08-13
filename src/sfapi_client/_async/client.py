@@ -311,9 +311,11 @@ class AsyncClient:
     async def __aexit__(self, type, value, traceback):
         await self.close()
 
-    def _read_client_secret_from_file(self, name):
-        _path = Path(name).expanduser()
-        if name is not None and _path.exists():
+    def _read_client_secret_from_file(self, name: Optional[Union[str, Path]]):
+        if name is None:
+            return
+        _path = Path(name).expanduser().resolve()
+        if _path.exists():
             # If the user gives a full path, then use it
             key_path = _path
         else:
@@ -327,7 +329,7 @@ class AsyncClient:
 
         # We have no credentials
         if key_path is None or key_path.is_dir():
-            return
+            raise SfApiError(f"no key found at key_path: {_path} or ~/.superfacility/{name}* but key given")
 
         # Check that key is read only in case it's not
         # 0o100600 means chmod 600
