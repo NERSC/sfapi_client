@@ -329,7 +329,9 @@ class AsyncClient:
 
         # We have no credentials
         if key_path is None or key_path.is_dir():
-            raise SfApiError(f"no key found at key_path: {_path} or ~/.superfacility/{name}* but key given")
+            raise SfApiError(
+                f"no key found at key_path: {_path} or in ~/.superfacility/{name}*"
+            )
 
         # Check that key is read only in case it's not
         # 0o100600 means chmod 600
