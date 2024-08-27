@@ -10,7 +10,7 @@ import tenacity
 from authlib.jose import JsonWebKey
 
 from .compute import Machine, AsyncCompute
-from ..exceptions import SfApiError
+from ..exceptions import ClientKeyError
 from .._models import (
     Changelog as ChangelogItem,
     Config as ConfItem,
@@ -231,7 +231,7 @@ class AsyncClient:
 
         :param client_id: The client ID
         :param secret: The client secret
-        :param key: The path to the client secret file
+        :param key: Full path to the client secret file, or path relative to `~` from the expanduser 
         :param api_base_url: The API base URL
         :param token_url: The token URL
         :param access_token: An existing access token
@@ -329,14 +329,14 @@ class AsyncClient:
 
         # We have no credentials
         if key_path is None or key_path.is_dir():
-            raise ValueError(
+            raise ClientKeyError(
                 f"no key found at key_path: {_path} or in ~/.superfacility/{name}*"
             )
 
         # Check that key is read only in case it's not
         # 0o100600 means chmod 600
         if key_path.stat().st_mode != 0o100600:
-            raise PermissionError(
+            raise ClientKeyError(
                 f"Incorrect permissions on the key. To fix run: chmod 600 {key_path}"
             )
 
@@ -356,7 +356,7 @@ class AsyncClient:
 
         # Validate we got a correct looking client_id
         if len(self._client_id) != 13:
-            raise ValueError(f"client_id not found in file {key_path}")
+            raise ClientKeyError(f"client_id not found in file {key_path}")
 
     @tenacity.retry(
         retry=tenacity.retry_if_exception_type(httpx.TimeoutException)
