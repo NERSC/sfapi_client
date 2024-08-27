@@ -2,6 +2,8 @@ import json
 import random
 import string
 from typing import Optional, Union, Dict
+from pathlib import Path
+from cryptography.hazmat.primitives.asymmetric import rsa
 
 import pytest
 from authlib.jose import JsonWebKey
@@ -174,3 +176,38 @@ def async_authenticated_client(api_base_url, token_url, client_id, client_secret
 @pytest.fixture
 def access_token():
     return settings.ACCESS_TOKEN
+
+
+@pytest.fixture
+def fake_key_file(tmp_path_factory):
+    tmp_path_factory._basetemp = Path().home()
+    key_path = tmp_path_factory.mktemp(".sfapi_test1", numbered=False) / "key.pem"
+
+    # Make a fake key for testing
+    key_path.write_text(f"""abcdefghijlmo
+-----BEGIN RSA PRIVATE KEY-----
+{rsa.generate_private_key(public_exponent=65537, key_size=2048)}
+-----END RSA PRIVATE KEY-----
+""")
+    key_path.chmod(0o100600)
+    yield key_path
+    # make sure to cleanup the test since we put a file in ~/.sfapi_test
+    temp_path = (Path().home() / ".sfapi_test1")
+    if temp_path.exists():
+        (temp_path / "key.pem").unlink(missing_ok=True)
+        temp_path.rmdir()
+
+
+@pytest.fixture
+def empty_key_file(tmp_path_factory):
+    tmp_path_factory._basetemp = Path().home()
+    key_path = tmp_path_factory.mktemp(".sfapi_test2", numbered=False) / "nokey.pem"
+    # Makes an empty key
+    key_path.write_text("")
+    key_path.chmod(0o100600)
+    yield key_path
+    # make sure to cleanup the test since we put a file in ~/.sfapi_test
+    temp_path = (Path().home() / ".sfapi_test2")
+    if temp_path.exists():
+        (temp_path / "nokey.pem").unlink(missing_ok=True)
+        temp_path.rmdir()
