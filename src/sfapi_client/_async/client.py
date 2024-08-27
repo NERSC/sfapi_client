@@ -231,7 +231,7 @@ class AsyncClient:
 
         :param client_id: The client ID
         :param secret: The client secret
-        :param key: Full path to the client secret file, or path relative to `~` from the expanduser 
+        :param key: Full path to the client secret file, or path relative to `~` from the expanduser
         :param api_base_url: The API base URL
         :param token_url: The token URL
         :param access_token: An existing access token
