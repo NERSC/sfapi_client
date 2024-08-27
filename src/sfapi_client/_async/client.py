@@ -329,14 +329,14 @@ class AsyncClient:
 
         # We have no credentials
         if key_path is None or key_path.is_dir():
-            raise SfApiError(
+            raise ValueError(
                 f"no key found at key_path: {_path} or in ~/.superfacility/{name}*"
             )
 
         # Check that key is read only in case it's not
         # 0o100600 means chmod 600
         if key_path.stat().st_mode != 0o100600:
-            raise SfApiError(
+            raise PermissionError(
                 f"Incorrect permissions on the key. To fix run: chmod 600 {key_path}"
             )
 
@@ -356,7 +356,7 @@ class AsyncClient:
 
         # Validate we got a correct looking client_id
         if len(self._client_id) != 13:
-            raise SfApiError(f"client_id not found in file {key_path}")
+            raise ValueError(f"client_id not found in file {key_path}")
 
     @tenacity.retry(
         retry=tenacity.retry_if_exception_type(httpx.TimeoutException)
