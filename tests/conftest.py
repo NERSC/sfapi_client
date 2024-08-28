@@ -192,12 +192,14 @@ def fake_key_file(tmp_path_factory):
 """
     )
     key_path.chmod(0o100600)
-    yield key_path
-    # make sure to cleanup the test since we put a file in ~/.sfapi_test
-    temp_path = Path().home() / ".sfapi_test1"
-    if temp_path.exists():
-        (temp_path / "key.pem").unlink(missing_ok=True)
-        temp_path.rmdir()
+    try:
+        yield key_path
+    finally:
+        # make sure to cleanup the test since we put a file in ~/.sfapi_test
+        temp_path = Path().home() / ".sfapi_test1"
+        if temp_path.exists():
+            (temp_path / "key.pem").unlink(missing_ok=True)
+            temp_path.rmdir()
 
 
 @pytest.fixture
@@ -207,9 +209,11 @@ def empty_key_file(tmp_path_factory):
     # Makes an empty key
     key_path.write_text("")
     key_path.chmod(0o100600)
-    yield key_path
-    # make sure to cleanup the test since we put a file in ~/.sfapi_test
-    temp_path = Path().home() / ".sfapi_test2"
-    if temp_path.exists():
-        (temp_path / "nokey.pem").unlink(missing_ok=True)
-        temp_path.rmdir()
+    try:
+        yield key_path
+    finally:
+        # make sure to cleanup the test since we put a file in ~/.sfapi_test
+        temp_path = Path().home() / ".sfapi_test2"
+        if temp_path.exists():
+            (temp_path / "nokey.pem").unlink(missing_ok=True)
+            temp_path.rmdir()
