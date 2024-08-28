@@ -180,19 +180,19 @@ def access_token():
 
 @pytest.fixture
 def fake_key_file(tmp_path_factory):
-    tmp_path_factory._basetemp = Path().home()
-    key_path = tmp_path_factory.mktemp(".sfapi_test1", numbered=False) / "key.pem"
-
-    # Make a fake key for testing
-    key_path.write_text(
-        f"""abcdefghijlmo
------BEGIN RSA PRIVATE KEY-----
-{rsa.generate_private_key(public_exponent=65537, key_size=2048)}
------END RSA PRIVATE KEY-----
-"""
-    )
-    key_path.chmod(0o100600)
     try:
+        tmp_path_factory._basetemp = Path().home()
+        key_path = tmp_path_factory.mktemp(".sfapi_test1", numbered=False) / "key.pem"
+
+        # Make a fake key for testing
+        key_path.write_text(
+            f"""abcdefghijlmo
+    -----BEGIN RSA PRIVATE KEY-----
+    {rsa.generate_private_key(public_exponent=65537, key_size=2048)}
+    -----END RSA PRIVATE KEY-----
+    """
+        )
+        key_path.chmod(0o100600)
         yield key_path
     finally:
         # make sure to cleanup the test since we put a file in ~/.sfapi_test
@@ -204,12 +204,12 @@ def fake_key_file(tmp_path_factory):
 
 @pytest.fixture
 def empty_key_file(tmp_path_factory):
-    tmp_path_factory._basetemp = Path().home()
-    key_path = tmp_path_factory.mktemp(".sfapi_test2", numbered=False) / "nokey.pem"
-    # Makes an empty key
-    key_path.write_text("")
-    key_path.chmod(0o100600)
     try:
+        tmp_path_factory._basetemp = Path().home()
+        key_path = tmp_path_factory.mktemp(".sfapi_test2", numbered=False) / "nokey.pem"
+        # Makes an empty key
+        key_path.write_text("")
+        key_path.chmod(0o100600)
         yield key_path
     finally:
         # make sure to cleanup the test since we put a file in ~/.sfapi_test
