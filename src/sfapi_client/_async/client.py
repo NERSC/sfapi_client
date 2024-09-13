@@ -382,12 +382,18 @@ class AsyncClient:
         wait=tenacity.wait_exponential(max=MAX_RETRY),
         stop=tenacity.stop_after_attempt(MAX_RETRY),
     )
-    async def post(self, url: str, data: Dict[str, Any]) -> httpx.Response:
+    async def post(
+        self,
+        url: str,
+        data: Dict[str, Any] = None,
+        json: Dict[str, Any] = None
+    ) -> httpx.Response:
         client = await self._http_client()
 
         r = await client.post(
             f"{self._api_base_url}/{url}",
             data=data,
+            json=json,
         )
         r.raise_for_status()
 
