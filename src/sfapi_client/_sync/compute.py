@@ -58,10 +58,11 @@ class Compute(ComputeBase):
             json_response = r.json()
             task = Task.model_validate(json_response)
 
-            if task.status.lower() in ["error", "failed"]:
+            status = task.status.lower()
+            if status in ["error", "failed"]:
                 raise SfApiError(task.result)
 
-            if task.result is None:
+            if status not in ["completed", "cancelled"]:
                 _SLEEP(1)
                 continue
 
