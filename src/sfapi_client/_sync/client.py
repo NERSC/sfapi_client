@@ -278,7 +278,7 @@ class Client:
                     token_endpoint=self._token_url,
                     timeout=10.0,
                     headers=headers,
-                    mounts=proxy_mounts
+                    mounts=proxy_mounts,
                 )
 
                 self.__http_client.fetch_token()
