@@ -383,10 +383,7 @@ class Client:
         stop=tenacity.stop_after_attempt(MAX_RETRY),
     )
     def post(
-        self,
-        url: str,
-        data: Dict[str, Any] = None,
-        json: Dict[str, Any] = None
+        self, url: str, data: Dict[str, Any] = None, json: Dict[str, Any] = None
     ) -> httpx.Response:
         client = self._http_client()
 

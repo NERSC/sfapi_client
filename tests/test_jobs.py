@@ -2,7 +2,6 @@ import pytest
 from concurrent.futures import ThreadPoolExecutor
 import time
 
-from sfapi_client import Client
 from sfapi_client.jobs import JobState
 from sfapi_client.compute import Compute
 from sfapi_client.jobs import JobSqueue
@@ -52,22 +51,13 @@ def test_complete_timeout(authenticated_client, test_job_path, test_machine):
             job.complete(timeout=10)
 
 
-@pytest.mark.api_dev
 def test_job_monitor_check_request(
     mocker,
-    dev_client_id,
-    dev_client_secret,
+    authenticated_client,
     test_job_path,
     test_machine,
-    dev_api_url,
-    dev_token_url,
 ):
-    with Client(
-        client_id=dev_client_id,
-        secret=dev_client_secret,
-        api_base_url=dev_api_url,
-        token_url=dev_token_url,
-    ) as client:
+    with authenticated_client as client:
         num_jobs = 10
         _fetch_jobs = mocker.patch("sfapi_client._monitor._fetch_jobs")
 
@@ -122,24 +112,14 @@ def test_job_monitor_check_request(
         assert len(ids) == num_jobs
 
 
-# We currently run this in api-dev as its a new feature deployed there
-@pytest.mark.api_dev
 def test_job_monitor_multiple_threads(
-    dev_client_id,
-    dev_client_secret,
+    authenticated_client,
     test_job_path,
     test_machine,
-    dev_api_url,
-    dev_token_url,
 ):
     num_jobs = 5
 
-    with Client(
-        client_id=dev_client_id,
-        secret=dev_client_secret,
-        api_base_url=dev_api_url,
-        token_url=dev_token_url,
-    ) as client:
+    with authenticated_client as client:
         machine = client.compute(test_machine)
 
         jobs = []
