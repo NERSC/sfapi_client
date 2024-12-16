@@ -1,7 +1,6 @@
 import pytest
 import asyncio
 
-from sfapi_client import AsyncClient
 from sfapi_client.compute import AsyncCompute
 from sfapi_client.jobs import AsyncJobSqueue, AsyncJobSacct, JobState
 
@@ -162,23 +161,11 @@ async def test_job_monitor_job_types(async_authenticated_client, mocker, test_ma
         assert kwargs["job_type"] == AsyncJobSacct
 
 
-# We currently run this in api-dev as its a new feature deployed there
-@pytest.mark.api_dev
 @pytest.mark.asyncio
 async def test_job_monitor_gather(
-    dev_client_id,
-    dev_client_secret,
-    test_job_path,
-    test_machine,
-    dev_api_url,
-    dev_token_url,
+    async_authenticated_client, test_job_path, test_machine
 ):
-    async with AsyncClient(
-        client_id=dev_client_id,
-        secret=dev_client_secret,
-        api_base_url=dev_api_url,
-        token_url=dev_token_url,
-    ) as client:
+    async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
 
         submit_tasks = []
