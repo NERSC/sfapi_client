@@ -24,7 +24,9 @@ def _fetch_raw_state(
     partition: Optional[str] = None,
     sacct: Optional[bool] = False,
 ):
-    params = {"sacct": sacct}
+    # For now we are pass cached=False to ensure we don't
+    # break compatibility
+    params = {"sacct": sacct, "cached": False}
 
     job_url = f"compute/jobs/{compute.name}"
 
