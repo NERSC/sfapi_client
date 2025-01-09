@@ -21,6 +21,7 @@ from .._models import (
 from .._models.resources import Resource
 from .groups import AsyncGroup, AsyncGroupMember
 from .users import AsyncUser
+from .storage import AsyncTransfer
 from .projects import AsyncProject, AsyncRole
 from .paths import AsyncRemotePath
 
@@ -498,6 +499,18 @@ class AsyncClient:
 
         return self._resources
 
+    async def globus_transfer(self, source_uuid, target_uuid, source_path, target_path, label="") -> AsyncTransfer:
+        """
+        start transfer
+        """
+        return await AsyncTransfer.globus_tranfser(self, source_uuid, target_uuid, source_path, target_path)
+
+    async def check_globus_transfer(self, transfer_uuid):
+        """
+        start transfer
+        """
+        return await AsyncTransfer.check_globus_tranfser(self, transfer_uuid)
+
 
 AsyncCompute.model_rebuild()
 AsyncGroup.model_rebuild()
@@ -506,6 +519,8 @@ AsyncProject.model_rebuild()
 AsyncRemotePath.model_rebuild()
 AsyncRole.model_rebuild()
 AsyncGroupMember.model_rebuild()
+AsyncTransfer.model_rebuild()
+
 
 # Ensure that the job models are built, we need to import here to
 # avoid circular imports

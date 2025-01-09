@@ -21,6 +21,7 @@ from .._models import (
 from .._models.resources import Resource
 from .groups import Group, GroupMember
 from .users import User
+from .storage import Transfer
 from .projects import Project, Role
 from .paths import RemotePath
 
@@ -383,10 +384,7 @@ class Client:
         stop=tenacity.stop_after_attempt(MAX_RETRY),
     )
     def post(
-        self,
-        url: str,
-        data: Dict[str, Any] = None,
-        json: Dict[str, Any] = None
+        self, url: str, data: Dict[str, Any] = None, json: Dict[str, Any] = None
     ) -> httpx.Response:
         client = self._http_client()
 
@@ -501,6 +499,18 @@ class Client:
 
         return self._resources
 
+    def globus_transfer(self, source_uuid, target_uuid, source_path, target_path, label="") -> Transfer:
+        """
+        start transfer
+        """
+        return Transfer.globus_tranfser(self, source_uuid, target_uuid, source_path, target_path)
+
+    def check_globus_transfer(self, transfer_uuid):
+        """
+        start transfer
+        """
+        return Transfer.check_globus_tranfser(self, transfer_uuid)
+
 
 Compute.model_rebuild()
 Group.model_rebuild()
@@ -509,6 +519,8 @@ Project.model_rebuild()
 RemotePath.model_rebuild()
 Role.model_rebuild()
 GroupMember.model_rebuild()
+Transfer.model_rebuild()
+
 
 # Ensure that the job models are built, we need to import here to
 # avoid circular imports
