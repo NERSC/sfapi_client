@@ -45,7 +45,6 @@ class Transfer(GlobusBase):
             "source_dir": source_dir,
             "target_dir": target_dir
         }
-        print(body)
         r = client.post("storage/globus", data=body)
         json_response = r.json()
         return GlobusTransfer.model_validate(json_response)
