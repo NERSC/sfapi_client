@@ -32,7 +32,7 @@ class Transfer(GlobusBase):
 
     @staticmethod
     @check_auth
-    def globus_tranfser(
+    def _start_globus_tranfser(
         client,
         source_uuid: str,
         target_uuid: str,
@@ -52,7 +52,7 @@ class Transfer(GlobusBase):
 
     @staticmethod
     @check_auth
-    def check_globus_tranfser(
+    def _check_globus_tranfser(
         client,
         transfer_uuid
     ):

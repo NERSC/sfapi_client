@@ -499,17 +499,18 @@ class AsyncClient:
 
         return self._resources
 
-    async def globus_transfer(self, source_uuid, target_uuid, source_path, target_path, label="") -> AsyncTransfer:
+    async def start_globus_transfer(
+            self, source_uuid, target_uuid, source_path, target_path, label="") -> AsyncTransfer:
         """
         start transfer
         """
-        return await AsyncTransfer.globus_tranfser(self, source_uuid, target_uuid, source_path, target_path)
+        return await AsyncTransfer._start_globus_tranfser(self, source_uuid, target_uuid, source_path, target_path)
 
     async def check_globus_transfer(self, transfer_uuid):
         """
         start transfer
         """
-        return await AsyncTransfer.check_globus_tranfser(self, transfer_uuid)
+        return await AsyncTransfer._check_globus_tranfser(self, transfer_uuid)
 
 
 AsyncCompute.model_rebuild()

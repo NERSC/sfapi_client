@@ -32,7 +32,7 @@ class AsyncTransfer(GlobusBase):
 
     @staticmethod
     @check_auth
-    async def globus_tranfser(
+    async def _start_globus_tranfser(
         client,
         source_uuid: str,
         target_uuid: str,
@@ -52,7 +52,7 @@ class AsyncTransfer(GlobusBase):
 
     @staticmethod
     @check_auth
-    async def check_globus_tranfser(
+    async def _check_globus_tranfser(
         client,
         transfer_uuid
     ):

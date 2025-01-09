@@ -499,17 +499,18 @@ class Client:
 
         return self._resources
 
-    def globus_transfer(self, source_uuid, target_uuid, source_path, target_path, label="") -> Transfer:
+    def start_globus_transfer(
+            self, source_uuid, target_uuid, source_path, target_path, label="") -> Transfer:
         """
         start transfer
         """
-        return Transfer.globus_tranfser(self, source_uuid, target_uuid, source_path, target_path)
+        return Transfer._start_globus_tranfser(self, source_uuid, target_uuid, source_path, target_path)
 
     def check_globus_transfer(self, transfer_uuid):
         """
         start transfer
         """
-        return Transfer.check_globus_tranfser(self, transfer_uuid)
+        return Transfer._check_globus_tranfser(self, transfer_uuid)
 
 
 Compute.model_rebuild()
