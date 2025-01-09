@@ -8,6 +8,7 @@ from ..exceptions import SfApiError
 
 from .._models import (
     BodyStartGlobusTransferStorageGlobusPost as GlobusBase,
+    GlobusTransfer, GlobusTransferResult
 
 )
 
@@ -47,7 +48,7 @@ class Transfer(GlobusBase):
         print(body)
         r = client.post("storage/globus", data=body)
         json_response = r.json()
-        return json_response
+        return GlobusTransfer.model_validate(json_response)
 
     @staticmethod
     @check_auth
@@ -57,4 +58,4 @@ class Transfer(GlobusBase):
     ):
         r = client.get(f"storage/globus/{transfer_uuid}")
         json_response = r.json()
-        return json_response
+        return GlobusTransferResult.model_validate(json_response)
