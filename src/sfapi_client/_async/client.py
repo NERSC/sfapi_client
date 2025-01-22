@@ -282,7 +282,9 @@ class AsyncClient:
                 else:
                     # We have a session
                     # Make sure it's still active
-                    await self.__http_client.ensure_active_token(self.__http_client.token)
+                    await self.__http_client.ensure_active_token(
+                        self.__http_client.token
+                    )
         # Use regular client, but add the access token if we have one
         elif self.__http_client is None:
             # We already have an access token

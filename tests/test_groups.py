@@ -3,9 +3,7 @@ from sfapi_client import Client
 
 
 @pytest.mark.api_dev
-def test_group(
-    authenticated_client, test_group
-):
+def test_group(authenticated_client, test_group):
     with authenticated_client as client:
         group = client.group(test_group)
         assert group is not None

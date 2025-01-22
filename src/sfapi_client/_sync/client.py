@@ -282,7 +282,9 @@ class Client:
                 else:
                     # We have a session
                     # Make sure it's still active
-                    self.__http_client.ensure_active_token(self.__http_client.token)
+                    self.__http_client.ensure_active_token(
+                        self.__http_client.token
+                    )
         # Use regular client, but add the access token if we have one
         elif self.__http_client is None:
             # We already have an access token
