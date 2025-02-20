@@ -510,6 +510,9 @@ class Client:
     def storage(self) -> Storage:
         """
         Storage related methods
+
+         - start_globus_tranfser
+         - check_globus_transfer
         """
 
         if self._trasnfers is None:
