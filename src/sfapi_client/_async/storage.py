@@ -28,17 +28,14 @@ class AsyncStroage:
 
     @check_auth
     async def start_globus_tranfser(
-        self,
-        source_uuid: str,
-        target_uuid: str,
-        source_dir: str,
-        target_dir: str,
+        self, source_uuid: str, target_uuid: str, source_dir: str, target_dir: str, label: str | None = None
     ) -> GlobusTransfer:
         body = {
             "source_uuid": source_uuid,
             "target_uuid": target_uuid,
             "source_dir": source_dir,
             "target_dir": target_dir,
+            "label": label,
         }
 
         r = await self._client.post("storage/globus/transfer", data=body)
