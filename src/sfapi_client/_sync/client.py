@@ -21,7 +21,7 @@ from .._models import (
 from .._models.resources import Resource
 from .groups import Group, GroupMember
 from .users import User
-from .storage import Transfer
+from .storage import Stroage
 from .projects import Project, Role
 from .paths import RemotePath
 
@@ -43,8 +43,7 @@ class retry_if_http_status_error(tenacity.retry_if_exception):
             httpx.codes.GATEWAY_TIMEOUT,
         ]
         return (
-            isinstance(e, httpx.HTTPStatusError)
-            and cast(httpx.HTTPStatusError, e).response.status_code in retry_codes
+            isinstance(e, httpx.HTTPStatusError) and cast(httpx.HTTPStatusError, e).response.status_code in retry_codes
         )
 
 
@@ -284,9 +283,7 @@ class Client:
                 else:
                     # We have a session
                     # Make sure it's still active
-                    self.__http_client.ensure_active_token(
-                        self.__http_client.token
-                    )
+                    self.__http_client.ensure_active_token(self.__http_client.token)
         # Use regular client, but add the access token if we have one
         elif self.__http_client is None:
             # We already have an access token
@@ -337,16 +334,12 @@ class Client:
 
         # We have no credentials
         if key_path is None or key_path.is_dir():
-            raise ClientKeyError(
-                f"no key found at key_path: {_path} or in ~/.superfacility/{name}*"
-            )
+            raise ClientKeyError(f"no key found at key_path: {_path} or in ~/.superfacility/{name}*")
 
         # Check that key is read only in case it's not
         # 0o100600 means chmod 600
         if key_path.stat().st_mode != 0o100600:
-            raise ClientKeyError(
-                f"Incorrect permissions on the key. To fix run: chmod 600 {key_path}"
-            )
+            raise ClientKeyError(f"Incorrect permissions on the key. To fix run: chmod 600 {key_path}")
 
         with Path(key_path).open() as secret:
             if key_path.suffix == ".json":
@@ -390,9 +383,7 @@ class Client:
         wait=tenacity.wait_exponential(max=MAX_RETRY),
         stop=tenacity.stop_after_attempt(MAX_RETRY),
     )
-    def post(
-        self, url: str, data: Dict[str, Any] = None, json: Dict[str, Any] = None
-    ) -> httpx.Response:
+    def post(self, url: str, data: Dict[str, Any] = None, json: Dict[str, Any] = None) -> httpx.Response:
         client = self._http_client()
 
         r = client.post(
@@ -411,9 +402,7 @@ class Client:
         wait=tenacity.wait_exponential(max=MAX_RETRY),
         stop=tenacity.stop_after_attempt(MAX_RETRY),
     )
-    def put(
-        self, url: str, data: Dict[str, Any] = None, files: Dict[str, Any] = None
-    ) -> httpx.Response:
+    def put(self, url: str, data: Dict[str, Any] = None, files: Dict[str, Any] = None) -> httpx.Response:
         client = self._http_client()
 
         r = client.put(
@@ -507,10 +496,13 @@ class Client:
         return self._resources
 
     @property
-    def transfer(self) -> Transfer:
+    def storage(self) -> Stroage:
+        """
+        Storage related methods
+        """
 
         if self._trasnfers is None:
-            self._trasnfers = Transfer(self)
+            self._trasnfers = Stroage(self)
 
         return self._trasnfers
 
@@ -522,7 +514,6 @@ Project.model_rebuild()
 RemotePath.model_rebuild()
 Role.model_rebuild()
 GroupMember.model_rebuild()
-Transfer.model_rebuild()
 
 
 # Ensure that the job models are built, we need to import here to
