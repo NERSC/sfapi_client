@@ -253,6 +253,7 @@ class Client:
         self.__http_client = None
         self._api = None
         self._resources = None
+        self._trasnfers = None
         self._wait_interval = wait_interval
         self._access_token = access_token
 
@@ -499,18 +500,13 @@ class Client:
 
         return self._resources
 
-    def start_globus_transfer(
-            self, source_uuid, target_uuid, source_path, target_path, label="") -> Transfer:
-        """
-        start transfer
-        """
-        return Transfer._start_globus_tranfser(self, source_uuid, target_uuid, source_path, target_path)
+    @property
+    def transfer(self) -> Transfer:
 
-    def check_globus_transfer(self, transfer_uuid):
-        """
-        start transfer
-        """
-        return Transfer._check_globus_tranfser(self, transfer_uuid)
+        if self._trasnfers is None:
+            self._trasnfers = Transfer(self)
+
+        return self._trasnfers
 
 
 Compute.model_rebuild()

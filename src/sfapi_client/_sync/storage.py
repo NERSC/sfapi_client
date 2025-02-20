@@ -1,4 +1,4 @@
-from typing import List, Optional, Callable
+from typing import Optional, Callable
 from functools import wraps
 
 from pydantic import ConfigDict
@@ -8,8 +8,8 @@ from ..exceptions import SfApiError
 
 from .._models import (
     BodyStartGlobusTransferStorageGlobusPost as GlobusBase,
-    GlobusTransfer, GlobusTransferResult
-
+    GlobusTransfer,
+    GlobusTransferResult
 )
 
 
@@ -26,14 +26,13 @@ def check_auth(method: Callable):
 
 
 class Transfer(GlobusBase):
-    client: Optional["Client"]  # noqa: F821
-
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    def __init__(self, client: "Client"):
+        self._client = client
 
     @staticmethod
     @check_auth
-    def _start_globus_tranfser(
-        client,
+    def start_globus_tranfser(
+        self,
         source_uuid: str,
         target_uuid: str,
         source_dir: str,
@@ -45,16 +44,16 @@ class Transfer(GlobusBase):
             "source_dir": source_dir,
             "target_dir": target_dir
         }
-        r = client.post("storage/globus", data=body)
+        r = self._client.post("storage/globus", data=body)
         json_response = r.json()
         return GlobusTransfer.model_validate(json_response)
 
     @staticmethod
     @check_auth
-    def _check_globus_tranfser(
-        client,
-        transfer_uuid
+    def check_globus_tranfser(
+        self,
+        transfer_uuid: str
     ):
-        r = client.get(f"storage/globus/{transfer_uuid}")
+        r = self._client.get(f"storage/globus/{transfer_uuid}")
         json_response = r.json()
         return GlobusTransferResult.model_validate(json_response)
