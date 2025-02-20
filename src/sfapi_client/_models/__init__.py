@@ -92,15 +92,12 @@ class Note(BaseModel):
     timestamp: Optional[datetime] = Field(None, title="Timestamp")
 
 
-class Outage(BaseModel):
-    name: str = Field(..., title="Name")
-    start_at: Optional[datetime] = Field(None, title="Start At")
-    end_at: Optional[datetime] = Field(None, title="End At")
-    description: Optional[str] = Field(None, title="Description")
-    notes: Optional[str] = Field(None, title="Notes")
-    status: Optional[str] = Field(None, title="Status")
-    swo: Optional[str] = Field(None, title="Swo")
-    update_at: Optional[datetime] = Field(None, title="Update At")
+class OutageStatusValue(str, Enum):
+    Active = "Active"
+    Cancelled = "Cancelled"
+    Completed = "Completed"
+    Extended = "Extended"
+    Planned = "Planned"
 
 
 class PublicHost(str, Enum):
@@ -133,14 +130,11 @@ class StorageStats(BaseModel):
     files_used: Optional[float] = Field(None, title="Files Used")
 
 
-class Task(BaseModel):
-    id: str = Field(..., title="Id")
-    status: Optional[str] = Field(..., title="Status")
-    result: Optional[str] = Field(..., title="Result")
-
-
-class Tasks(BaseModel):
-    tasks: Optional[List[Task]] = Field(None, title="Tasks")
+class TaskStatus(str, Enum):
+    new = "new"
+    completed = "completed"
+    cancelled = "cancelled"
+    failed = "failed"
 
 
 class UserInfo(BaseModel):
@@ -217,9 +211,7 @@ class GlobusTransferResult(BaseModel):
     globus_status: Optional[GlobusStatus] = None
     bytes_transferred: Optional[int] = Field(None, title="Bytes Transferred")
     completion_time: Optional[datetime] = Field(None, title="Completion Time")
-    effective_bytes_per_second: Optional[int] = Field(
-        None, title="Effective Bytes Per Second"
-    )
+    effective_bytes_per_second: Optional[int] = Field(None, title="Effective Bytes Per Second")
 
 
 class GroupStats(BaseModel):
@@ -238,6 +230,17 @@ class JobOutput(BaseModel):
     error: Optional[str] = Field(None, title="Error")
 
 
+class Outage(BaseModel):
+    name: str = Field(..., title="Name")
+    start_at: Optional[datetime] = Field(None, title="Start At")
+    end_at: Optional[datetime] = Field(None, title="End At")
+    description: Optional[str] = Field(None, title="Description")
+    notes: Optional[str] = Field(None, title="Notes")
+    status: Optional[OutageStatusValue] = None
+    swo: Optional[str] = Field(None, title="Swo")
+    update_at: Optional[datetime] = Field(None, title="Update At")
+
+
 class ProjectStats(BaseModel):
     id: int = Field(..., title="Id")
     description: str = Field(..., title="Description")
@@ -249,20 +252,12 @@ class ProjectStats(BaseModel):
     project_hours_used: Optional[float] = Field(None, title="Project Hours Used")
     cpu_hours_given: Optional[float] = Field(None, title="Cpu Hours Given")
     cpu_hours_used: Optional[float] = Field(None, title="Cpu Hours Used")
-    cpu_project_hours_given: Optional[float] = Field(
-        None, title="Cpu Project Hours Given"
-    )
-    cpu_project_hours_used: Optional[float] = Field(
-        None, title="Cpu Project Hours Used"
-    )
+    cpu_project_hours_given: Optional[float] = Field(None, title="Cpu Project Hours Given")
+    cpu_project_hours_used: Optional[float] = Field(None, title="Cpu Project Hours Used")
     gpu_hours_given: Optional[float] = Field(None, title="Gpu Hours Given")
     gpu_hours_used: Optional[float] = Field(None, title="Gpu Hours Used")
-    gpu_project_hours_given: Optional[float] = Field(
-        None, title="Gpu Project Hours Given"
-    )
-    gpu_project_hours_used: Optional[float] = Field(
-        None, title="Gpu Project Hours Used"
-    )
+    gpu_project_hours_given: Optional[float] = Field(None, title="Gpu Project Hours Given")
+    gpu_project_hours_used: Optional[float] = Field(None, title="Gpu Project Hours Used")
     projdir_usage: Optional[List[StorageStats]] = Field(None, title="Projdir Usage")
     project_projdir_usage: Optional[StorageStats] = None
     hpss_usage: Optional[List[StorageStats]] = Field(None, title="Hpss Usage")
