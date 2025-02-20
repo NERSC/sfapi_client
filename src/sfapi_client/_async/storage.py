@@ -3,7 +3,6 @@ from functools import wraps
 
 from ..exceptions import SfApiError
 
-
 from .._models import (
     GlobusTransfer,
     GlobusTransferResult,
@@ -22,13 +21,18 @@ def check_auth(method: Callable):
     return wrapper
 
 
-class AsyncStroage:
-    def __init__(self, client: "AsyncClient"):
+class AsyncStorage:
+    def __init__(self, client):
         self._client = client
 
     @check_auth
     async def start_globus_tranfser(
-        self, source_uuid: str, target_uuid: str, source_dir: str, target_dir: str, label: str | None = None
+        self,
+        source_uuid: str,
+        target_uuid: str,
+        source_dir: str,
+        target_dir: str,
+        label: str | None = None,
     ) -> GlobusTransfer:
         body = {
             "source_uuid": source_uuid,

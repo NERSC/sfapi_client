@@ -21,7 +21,7 @@ from .._models import (
 from .._models.resources import Resource
 from .groups import Group, GroupMember
 from .users import User
-from .storage import Stroage
+from .storage import Storage
 from .projects import Project, Role
 from .paths import RemotePath
 
@@ -496,13 +496,13 @@ class Client:
         return self._resources
 
     @property
-    def storage(self) -> Stroage:
+    def storage(self) -> Storage:
         """
         Storage related methods
         """
 
         if self._trasnfers is None:
-            self._trasnfers = Stroage(self)
+            self._trasnfers = Storage(self)
 
         return self._trasnfers
 

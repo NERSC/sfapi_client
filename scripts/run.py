@@ -34,7 +34,7 @@ def run_unasync():
         "AsyncJobSacct": "JobSacct",
         "AsyncJobSqueue": "JobSqueue",
         "AsyncOAuth2Client": "OAuth2Client",
-        "AsyncStroage": "Stroage",
+        "AsyncStorage": "Storage",
         "aclose": "close",
         "_ASYNC_SLEEP": "_SLEEP",
     }
@@ -49,7 +49,9 @@ def run_unasync():
     filepaths = []
     exclude = ["common.py"]
 
-    for p in (Path(__file__).parent.parent / "src" / "sfapi_client" / "_async").glob("**/*.py"):
+    for p in (Path(__file__).parent.parent / "src" / "sfapi_client" / "_async").glob(
+        "**/*.py"
+    ):
         if p.name not in exclude:
             filepaths.append(str(p))
 
@@ -62,7 +64,9 @@ def run_unasync():
         ("async ", ""),
     ]
 
-    for path in (Path(__file__).parent.parent / "src" / "sfapi_client" / "_sync").glob("**/*.py"):
+    for path in (Path(__file__).parent.parent / "src" / "sfapi_client" / "_sync").glob(
+        "**/*.py"
+    ):
         if path.name not in exclude:
             with path.open() as fp:
                 code = fp.read()
@@ -152,7 +156,11 @@ def _from_json(json: Path, class_name: str) -> str:
 @cli.command(name="codegen")
 def openapimodel_codegen(
     output: Path = typer.Option(
-        Path(__file__).parent.parent / "src" / "sfapi_client" / "_models" / "__init__.py",
+        Path(__file__).parent.parent
+        / "src"
+        / "sfapi_client"
+        / "_models"
+        / "__init__.py",
         dir_okay=False,
         writable=True,
     ),
@@ -164,7 +172,11 @@ def openapimodel_codegen(
 @cli.command(name="resources")
 def resources_codegen(
     output: Path = typer.Option(
-        Path(__file__).parent.parent / "src" / "sfapi_client" / "_models" / "resources.py",
+        Path(__file__).parent.parent
+        / "src"
+        / "sfapi_client"
+        / "_models"
+        / "resources.py",
         dir_okay=False,
         writable=True,
     ),
@@ -204,7 +216,9 @@ Resource.__str__ = lambda self: self.value
 
 @cli.command(name="datacodegen")
 def datamodel_codegen(
-    json_models: Optional[List[Path]] = typer.Option(None, dir_okay=True, writable=True),
+    json_models: Optional[List[Path]] = typer.Option(
+        None, dir_okay=True, writable=True
+    ),
 ):
     base_dir = Path(__file__).parent.parent / "src" / "sfapi_client" / "_models"
     for model in json_models:
@@ -220,7 +234,9 @@ def datamodel_codegen(
 
 @cli.command(name="examples")
 def work_on_examples(
-    replace: Optional[Path] = typer.Option((Path("examples_dev") / "replacement.json"), dir_okay=False),
+    replace: Optional[Path] = typer.Option(
+        (Path("examples_dev") / "replacement.json"), dir_okay=False
+    ),
 ):
     dev_dir = Path(__file__).parent.parent / "examples_dev"
     dev_dir.mkdir(exist_ok=True)

@@ -26,7 +26,11 @@ async def test_transfer_file(async_authenticated_client, test_machine, test_tmp_
 
         transfered_file = f"{test_tmp_dir}/output_{pytest_num}"
         result = await client.storage.start_globus_tranfser(
-            "dtn", "dtn", remote_file, transfered_file, f"pytest async client {pytest_num}"
+            "dtn",
+            "dtn",
+            remote_file,
+            transfered_file,
+            f"pytest async client {pytest_num}",
         )
         transfer_id = result.transfer_id
 

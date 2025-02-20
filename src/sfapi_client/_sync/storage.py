@@ -3,7 +3,6 @@ from functools import wraps
 
 from ..exceptions import SfApiError
 
-
 from .._models import (
     GlobusTransfer,
     GlobusTransferResult,
@@ -22,13 +21,18 @@ def check_auth(method: Callable):
     return wrapper
 
 
-class Stroage:
-    def __init__(self, client: "Client"):
+class Storage:
+    def __init__(self, client):
         self._client = client
 
     @check_auth
     def start_globus_tranfser(
-        self, source_uuid: str, target_uuid: str, source_dir: str, target_dir: str, label: str | None = None
+        self,
+        source_uuid: str,
+        target_uuid: str,
+        source_dir: str,
+        target_dir: str,
+        label: str | None = None,
     ) -> GlobusTransfer:
         body = {
             "source_uuid": source_uuid,
