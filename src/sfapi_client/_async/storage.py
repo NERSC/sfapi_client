@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Optional
 from functools import wraps
 
 from ..exceptions import SfApiError
@@ -32,7 +32,7 @@ class AsyncStorage:
         target_uuid: str,
         source_dir: str,
         target_dir: str,
-        label: str | None = None,
+        label: Optional[str] = None,
     ) -> GlobusTransfer:
         body = {
             "source_uuid": source_uuid,
