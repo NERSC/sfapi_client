@@ -63,7 +63,9 @@ class Globus:
 
         if None in [source_uuid, target_uuid, source_dir, target_dir]:
             # Check that all parametes are not none
-            raise ValueError("source_uuid, target_uuid, source_dir, and target_dir cannot be None")
+            raise ValueError(
+                "source_uuid, target_uuid, source_dir, and target_dir cannot be None"
+            )
 
         body = {
             "source_uuid": source_uuid,
