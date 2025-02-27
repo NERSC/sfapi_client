@@ -511,8 +511,8 @@ class Client:
         """
         Storage related methods
 
-         - start_globus_transfer
-         - check_globus_transfer
+         - globus.start_transfer
+         - globus.check_transfer
         """
 
         if self._transfers is None:
