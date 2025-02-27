@@ -25,7 +25,7 @@ async def test_transfer_file(async_authenticated_client, test_machine, test_tmp_
         remote_file = await remote_file.upload(BytesIO(file_contents.encode()))
 
         transfered_file = f"{test_tmp_dir}/output_{pytest_num}"
-        result = await client.storage.start_globus_tranfser(
+        result = await client.storage.globus.start_tranfser(
             "dtn",
             "dtn",
             remote_file,
@@ -36,7 +36,7 @@ async def test_transfer_file(async_authenticated_client, test_machine, test_tmp_
 
         # Wait for ~minute
         for _ in range(6):
-            out = await client.storage.check_globus_transfer(transfer_id)
+            out = await client.storage.globus.check_transfer(transfer_id)
             if out.globus_status == "SUCCEEDED":
                 break
             await asyncio.sleep(10)
