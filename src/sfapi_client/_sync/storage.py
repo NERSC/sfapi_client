@@ -1,5 +1,8 @@
-from typing import Callable, Optional
+from pathlib import Path
+from typing import Callable, Optional, Union
 from functools import wraps
+
+from ..paths import RemotePath
 
 from ..exceptions import SfApiError
 
@@ -21,17 +24,17 @@ def check_auth(method: Callable):
     return wrapper
 
 
-class Storage:
+class Globus(GlobusTransfer):
     def __init__(self, client):
         self._client = client
 
     @check_auth
-    def start_globus_transfer(
+    def start_transfer(
         self,
         source_uuid: str,
         target_uuid: str,
-        source_dir: str,
-        target_dir: str,
+        source_dir: Union[str, Path, RemotePath],
+        target_dir: Union[str, Path, RemotePath],
         label: Optional[str] = None,
     ) -> GlobusTransfer:
         """Start a Globus transfer throught the SuperFacility API
@@ -41,7 +44,7 @@ class Storage:
         ```python
         >>> from sfapi_client import Client
         >>> with Client(client_id, client_secret) as client:
-        >>>     res = client.storage.start_globus_tranfser(
+        >>>     res = client.storage.globus.start_tranfser(
                         "dtn",
                         "dtn",
                         "/pscratch/sd/u/user/globus",
@@ -57,6 +60,11 @@ class Storage:
         :param Optional[str] label: Label for the transfer, defaults to None
         :return GlobusTransfer
         """
+
+        if None in [source_uuid, target_uuid, source_dir, target_dir]:
+            # Check that all parametes are not none
+            raise ValueError("source_uuid, target_uuid, source_dir, and target_dir cannot be None")
+
         body = {
             "source_uuid": source_uuid,
             "target_uuid": target_uuid,
@@ -70,20 +78,43 @@ class Storage:
         return GlobusTransfer.model_validate(json_response)
 
     @check_auth
-    def check_globus_transfer(self, transfer_uuid: str) -> GlobusTransferResult:
+    def check_transfer(self, transfer_uuid: str) -> GlobusTransferResult:
         """Check on Globus transfer status
 
         - Must select the Globus option when creating the SuperFacility key
 
         >>> from sfapi_client import Client
         >>> with Client(client_id, client_secret) as client:
-        >>>     res = client.storage.check_globus_transfer(
+        >>>     res = client.storage.globus.check_transfer(
                         "globus-transfer-uuid"
                     )
 
         :param str transfer_uuid: Globus UUID for the transfer
         :return GlobusTransferResult
         """
+        if transfer_uuid is None:
+            raise ValueError("Must provide a transfer_uuid")
+
         r = self._client.get(f"storage/globus/transfer/{transfer_uuid}")
         json_response = r.json()
         return GlobusTransferResult.model_validate(json_response)
+
+
+class Storage:
+    def __init__(self, client):
+        self._client = client
+        self._globus = None
+
+    @property
+    def globus(self) -> Globus:
+        """
+        Storage related methods
+
+         - start_tranfser
+         - check_transfer
+        """
+
+        if self._globus is None:
+            self._globus = Globus(self._client)
+
+        return self._globus

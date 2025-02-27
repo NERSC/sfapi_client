@@ -1,5 +1,8 @@
-from typing import Callable, Optional
+from pathlib import Path
+from typing import Callable, Optional, Union
 from functools import wraps
+
+from ..paths import AsyncRemotePath
 
 from ..exceptions import SfApiError
 
@@ -21,17 +24,17 @@ def check_auth(method: Callable):
     return wrapper
 
 
-class AsyncStorage:
+class AsyncGlobus:
     def __init__(self, client):
         self._client = client
 
     @check_auth
-    async def start_globus_transfer(
+    async def start_transfer(
         self,
         source_uuid: str,
         target_uuid: str,
-        source_dir: str,
-        target_dir: str,
+        source_dir: Union[str, Path, AsyncRemotePath],
+        target_dir: Union[str, Path, AsyncRemotePath],
         label: Optional[str] = None,
     ) -> GlobusTransfer:
         """Start a Globus transfer throught the SuperFacility API
@@ -41,7 +44,7 @@ class AsyncStorage:
         ```python
         >>> from sfapi_client import AsyncClient
         >>> async with AsyncClient(client_id, client_secret) as client:
-        >>>     res = await client.storage.start_globus_tranfser(
+        >>>     res = await client.storage.globus.start_tranfser(
                         "dtn",
                         "dtn",
                         "/pscratch/sd/u/user/globus",
@@ -57,6 +60,11 @@ class AsyncStorage:
         :param Optional[str] label: Label for the transfer, defaults to None
         :return GlobusTransfer
         """
+
+        if None in [source_uuid, target_uuid, source_dir, target_dir]:
+            # Check that all parametes are not none
+            raise ValueError("source_uuid, target_uuid, source_dir, and target_dir cannot be None")
+
         body = {
             "source_uuid": source_uuid,
             "target_uuid": target_uuid,
@@ -70,20 +78,43 @@ class AsyncStorage:
         return GlobusTransfer.model_validate(json_response)
 
     @check_auth
-    async def check_globus_transfer(self, transfer_uuid: str) -> GlobusTransferResult:
+    async def check_transfer(self, transfer_uuid: str) -> GlobusTransferResult:
         """Check on Globus transfer status
 
         - Must select the Globus option when creating the SuperFacility key
 
         >>> from sfapi_client import AsyncClient
         >>> async with AsyncClient(client_id, client_secret) as client:
-        >>>     res = await client.storage.check_globus_transfer(
+        >>>     res = await client.storage.globus.check_transfer(
                         "globus-transfer-uuid"
                     )
 
         :param str transfer_uuid: Globus UUID for the transfer
         :return GlobusTransferResult
         """
+        if transfer_uuid is None:
+            raise ValueError("Must provide a transfer_uuid")
+
         r = await self._client.get(f"storage/globus/transfer/{transfer_uuid}")
         json_response = r.json()
         return GlobusTransferResult.model_validate(json_response)
+
+
+class AsyncStorage:
+    def __init__(self, client):
+        self._client = client
+        self._globus = None
+
+    @property
+    def globus(self) -> AsyncGlobus:
+        """
+        Storage related methods
+
+         - start_tranfser
+         - check_transfer
+        """
+
+        if self._globus is None:
+            self._globus = AsyncGlobus(self._client)
+
+        return self._globus
