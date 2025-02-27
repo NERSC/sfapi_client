@@ -44,7 +44,7 @@ class AsyncGlobus:
         ```python
         >>> from sfapi_client import AsyncClient
         >>> async with AsyncClient(client_id, client_secret) as client:
-        >>>     res = await client.storage.globus.start_tranfser(
+        >>>     res = await client.storage.globus.start_transfer(
                         "dtn",
                         "dtn",
                         "/pscratch/sd/u/user/globus",
@@ -112,7 +112,7 @@ class AsyncStorage:
         """
         Storage related methods
 
-         - start_tranfser
+         - start_transfer
          - check_transfer
         """
 

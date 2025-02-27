@@ -511,7 +511,7 @@ class Client:
         """
         Storage related methods
 
-         - start_globus_tranfser
+         - start_globus_transfer
          - check_globus_transfer
         """
 

@@ -44,7 +44,7 @@ class Globus:
         ```python
         >>> from sfapi_client import Client
         >>> with Client(client_id, client_secret) as client:
-        >>>     res = client.storage.globus.start_tranfser(
+        >>>     res = client.storage.globus.start_transfer(
                         "dtn",
                         "dtn",
                         "/pscratch/sd/u/user/globus",
@@ -112,7 +112,7 @@ class Storage:
         """
         Storage related methods
 
-         - start_tranfser
+         - start_transfer
          - check_transfer
         """
 
