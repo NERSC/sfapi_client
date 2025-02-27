@@ -23,14 +23,14 @@ def test_transfer_file(authenticated_client, test_machine, test_tmp_dir):
         remote_file = remote_file.upload(BytesIO(file_contents.encode()))
 
         transfered_file = f"{test_tmp_dir}/output_{pytest_num}"
-        result = client.storage.start_globus_tranfser(
+        result = client.storage.globus.start_transfer(
             "dtn", "dtn", remote_file, transfered_file, f"pytest client {pytest_num}"
         )
         transfer_id = result.transfer_id
 
         # Wait for ~minute
         for _ in range(6):
-            out = client.storage.check_globus_transfer(transfer_id)
+            out = client.storage.globus.check_transfer(transfer_id)
             if out.globus_status == "SUCCEEDED":
                 break
             sleep(10)

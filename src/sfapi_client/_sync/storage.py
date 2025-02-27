@@ -24,7 +24,7 @@ def check_auth(method: Callable):
     return wrapper
 
 
-class Globus(GlobusTransfer):
+class Globus:
     def __init__(self, client):
         self._client = client
 
