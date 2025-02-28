@@ -5,6 +5,7 @@ from io import StringIO, BytesIO
 from base64 import b64decode
 from contextlib import asynccontextmanager
 import tempfile
+import re
 
 from .._models import (
     DirectoryEntry as PathBase,
@@ -20,6 +21,9 @@ from ..exceptions import SfApiError
 
 def _is_no_such(error: SfApiError):
     return "No such file or directory" in error.message
+
+
+SYMLINK_REGEX = r"^(\/.*) ->"
 
 
 class AsyncRemotePath(PathBase):
@@ -133,7 +137,16 @@ class AsyncRemotePath(PathBase):
         """
         :return: Returns True if path is a file, False otherwise.
         """
-        return not await self.is_dir()
+        if self.perms is None:
+            await self.update()
+
+        return self.perms[0] == "-"
+
+    async def is_symlink(self) -> bool:
+        if self.perms is None:
+            await self.update()
+
+        return self.perms[0] == "l"
 
     async def download(self, binary=False) -> IO[AnyStr]:
         """
@@ -188,15 +201,22 @@ class AsyncRemotePath(PathBase):
 
             return p
 
-        # Special case for listing file
+        # Special case for listing file or symlink
         if len(directory_listing_response.entries) == 1:
             entry = directory_listing_response.entries[0]
-            # The API can add an extra /
-            path = entry.name
-            if entry.name.startswith("//"):
-                path = path[1:]
-            filename = PurePosixPath(path).name
-            entry.name = filename
+            # symlink
+            if entry.perms[0] == "l":
+                if match := re.search(SYMLINK_REGEX, entry.name):
+                    entry.name = match.group(1)
+            # file
+            else:
+                # The API can add an extra /
+                path = entry.name
+                if entry.name.startswith("//"):
+                    path = path[1:]
+                filename = PurePosixPath(path).name
+                entry.name = filename
+
             paths.append(_to_remote_path(path, entry))
         else:
             for entry in directory_listing_response.entries:
@@ -209,6 +229,10 @@ class AsyncRemotePath(PathBase):
                 elif directory and entry.name == ".":
                     entry.name = PurePosixPath(path).name
                     return [_to_remote_path(path, entry)]
+                # Special case for symlink
+                elif entry.perms[0] == "l":
+                    if match := re.search(SYMLINK_REGEX, entry.name):
+                        entry.name = match.group(1)
 
                 paths.append(_to_remote_path(f"{path}/{entry.name}", entry))
 
@@ -260,9 +284,9 @@ class AsyncRemotePath(PathBase):
             if not _is_no_such(ex):
                 raise
 
-            # Check if the parent is a directory ( as in we are creating a new file ),
+            # Check if the parent is a directory or symlink ( as in we are creating a new file ),
             # if not re raise the original exception
-            if not await self.parent.is_dir():
+            if not (await self.parent.is_dir() or await self.parent.is_symlink()):
                 raise
             else:
                 upload_path = str(self._path)
@@ -301,9 +325,9 @@ class AsyncRemotePath(PathBase):
             if not _is_no_such(ex):
                 raise
 
-            # Check if the parent is a directory ( as in we are creating a new file ),
+            # Check if the parent is a directory or symlink ( as in we are creating a new file ),
             # if not re raise the original exception
-            if not await self.parent.is_dir():
+            if not (await self.parent.is_dir() or await self.parent.is_symlink()):
                 raise
 
         valid_modes_chars = set("rwb")

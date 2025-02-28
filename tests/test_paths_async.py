@@ -295,3 +295,54 @@ async def test_file_open_write_new(
         # Now check that the content has changed
         async with remote_file.open("r") as fp:
             assert file_contents in fp.read()
+
+
+@pytest.mark.asyncio
+async def test_ls_symlink(
+    async_authenticated_client, test_machine, test_job_path, test_tmp_dir
+):
+    async with async_authenticated_client as client:
+        test_job = Path(test_job_path)
+        test_job_directory = test_job.parent
+        machine = await client.compute(test_machine)
+        link_path = Path(test_tmp_dir) / "link"
+        try:
+            await machine.run(f"ln -s {test_job_directory} {link_path}")
+            [path] = await machine.ls(link_path, directory=True)
+            assert str(path) == str(link_path)
+            assert await path.is_symlink()
+        finally:
+            await machine.run(f"rm -f {link_path}")
+
+
+@pytest.mark.asyncio
+async def test_ls_symlink_upload(
+    async_authenticated_client, test_machine, test_job_path, test_tmp_dir
+):
+    async with async_authenticated_client as client:
+        test_job = Path(test_job_path)
+        test_job_directory = test_job.parent
+        machine = await client.compute(test_machine)
+        link_path = Path(test_tmp_dir) / "link"
+        try:
+            await machine.run(f"ln -s {test_job_directory} {link_path}")
+            [path] = await machine.ls(link_path, directory=True)
+            assert str(path) == str(link_path)
+            assert await path.is_symlink()
+
+            # Create empty file
+            random_name = "".join(
+                random.choices(string.ascii_lowercase + string.digits, k=10)
+            )
+            remote_file = path / f"{random_name}.txt"
+
+            # Now write to the file
+            file_contents = "symlink"
+            async with remote_file.open("wb") as fp:
+                fp.write(file_contents.encode())
+
+            # Now check that the content has changed
+            async with remote_file.open("r") as fp:
+                assert file_contents in fp.read()
+        finally:
+            await machine.run(f"rm -rf {link_path}")
