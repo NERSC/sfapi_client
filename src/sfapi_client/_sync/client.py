@@ -21,6 +21,7 @@ from .._models import (
 from .._models.resources import Resource
 from .groups import Group, GroupMember
 from .users import User
+from .storage import Storage
 from .projects import Project, Role
 from .paths import RemotePath
 
@@ -252,6 +253,7 @@ class Client:
         self.__http_client = None
         self._api = None
         self._resources = None
+        self._transfers = None
         self._wait_interval = wait_interval
         self._access_token = access_token
 
@@ -504,6 +506,20 @@ class Client:
 
         return self._resources
 
+    @property
+    def storage(self) -> Storage:
+        """
+        Storage related methods
+
+         - globus.start_transfer
+         - globus.check_transfer
+        """
+
+        if self._transfers is None:
+            self._transfers = Storage(self)
+
+        return self._transfers
+
 
 Compute.model_rebuild()
 Group.model_rebuild()
@@ -512,6 +528,7 @@ Project.model_rebuild()
 RemotePath.model_rebuild()
 Role.model_rebuild()
 GroupMember.model_rebuild()
+
 
 # Ensure that the job models are built, we need to import here to
 # avoid circular imports

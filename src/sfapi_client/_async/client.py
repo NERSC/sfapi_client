@@ -21,6 +21,7 @@ from .._models import (
 from .._models.resources import Resource
 from .groups import AsyncGroup, AsyncGroupMember
 from .users import AsyncUser
+from .storage import AsyncStorage
 from .projects import AsyncProject, AsyncRole
 from .paths import AsyncRemotePath
 
@@ -252,6 +253,7 @@ class AsyncClient:
         self.__http_client = None
         self._api = None
         self._resources = None
+        self._transfers = None
         self._wait_interval = wait_interval
         self._access_token = access_token
 
@@ -504,6 +506,20 @@ class AsyncClient:
 
         return self._resources
 
+    @property
+    def storage(self) -> AsyncStorage:
+        """
+        Storage related methods
+
+         - globus.start_transfer
+         - globus.check_transfer
+        """
+
+        if self._transfers is None:
+            self._transfers = AsyncStorage(self)
+
+        return self._transfers
+
 
 AsyncCompute.model_rebuild()
 AsyncGroup.model_rebuild()
@@ -512,6 +528,7 @@ AsyncProject.model_rebuild()
 AsyncRemotePath.model_rebuild()
 AsyncRole.model_rebuild()
 AsyncGroupMember.model_rebuild()
+
 
 # Ensure that the job models are built, we need to import here to
 # avoid circular imports
