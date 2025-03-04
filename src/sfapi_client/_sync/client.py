@@ -6,6 +6,7 @@ import json
 from authlib.integrations.httpx_client.oauth2_client import OAuth2Client
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
 import httpx
+import urllib
 import tenacity
 from authlib.jose import JsonWebKey
 
@@ -260,6 +261,11 @@ class Client:
 
     def _http_client(self):
         headers = {"accept": "application/json"}
+        # Get the users http/https proxies to use for the client
+        proxy_mounts = {
+            f"{_type}://": httpx.HTTPTransport(proxy=_proxy)
+            for _type, _proxy in urllib.request.getproxies().items()
+        }
         # If we have a client_id then we need to use the OAuth2 client
         if self._client_id is not None:
             if self.__http_client is None:
@@ -272,6 +278,7 @@ class Client:
                     token_endpoint=self._token_url,
                     timeout=10.0,
                     headers=headers,
+                    mounts=proxy_mounts,
                 )
 
                 self.__http_client.fetch_token()
@@ -291,7 +298,7 @@ class Client:
             if self._access_token is not None:
                 headers.update({"Authorization": f"Bearer {self._access_token}"})
 
-            self.__http_client = httpx.Client(headers=headers)
+            self.__http_client = httpx.Client(headers=headers, mounts=proxy_mounts)
 
         return self.__http_client
 
