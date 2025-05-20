@@ -1,7 +1,6 @@
 import pytest
 from io import BytesIO
 import random
-import asyncio
 
 
 @pytest.mark.asyncio
@@ -25,21 +24,20 @@ async def test_transfer_file(async_authenticated_client, test_machine, test_tmp_
         remote_file = await remote_file.upload(BytesIO(file_contents.encode()))
 
         transfered_file = f"{test_tmp_dir}/output_{pytest_num}"
-        result = await client.storage.globus.start_transfer(
-            "dtn",
-            "dtn",
+        globus_client = await client.storage.globus(test_machine, test_machine)
+
+        globus_resp = await globus_client.start_transfer(
             remote_file,
             transfered_file,
             f"pytest async client {pytest_num}",
         )
-        transfer_id = result.transfer_id
 
-        # Wait for ~minute
-        for _ in range(6):
-            out = await client.storage.globus.check_transfer(transfer_id)
-            if out.globus_status == "SUCCEEDED":
-                break
-            await asyncio.sleep(10)
+        await globus_resp.complete()
+
+        globus_check_back = await globus_client.transfer(globus_resp.transfer_id)
+
+        assert globus_check_back.transfer_id == globus_resp.transfer_id
+        assert globus_check_back.globus_status == "SUCCEEDED"
 
         # Download the transfered file and check it made it there
         [transfered_file] = await machine.ls(transfered_file)
