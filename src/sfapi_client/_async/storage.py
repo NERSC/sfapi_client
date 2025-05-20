@@ -37,6 +37,25 @@ def check_auth(method: Callable):
     return wrapper
 
 
+class AsyncStorage:
+    def __init__(self, client: "AsyncClient"):
+        self.client = client
+
+    async def globus(
+        self,
+        source_machine: Union[Machine, str, None] = None,
+        target_machine: Union[Machine, str, None] = None,
+    ):
+        response = await self.client.get("status/globus")
+        values = response.json()
+        values["client"] = self.client
+        values["source_machine"] = source_machine
+        values["target_machine"] = target_machine
+        _globus = AsyncGlobus.model_validate(values)
+
+        return _globus
+
+
 class AsyncGlobusTransfer(GlobusTransferResult, ABC):
     globus: Optional["AsyncGlobus"]  # noqa: F821
     transfer_id: str
@@ -94,11 +113,6 @@ class AsyncGlobus(StorageBase):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
-    def dict(self, *args, **kwargs) -> Dict:
-        if "exclude" not in kwargs:
-            kwargs["exclude"] = {"client"}
-        return super().model_dump(*args, **kwargs)
 
     @check_auth
     async def start_transfer(

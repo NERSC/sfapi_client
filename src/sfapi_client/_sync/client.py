@@ -21,7 +21,7 @@ from .._models import (
 from .._models.resources import Resource
 from .groups import Group, GroupMember
 from .users import User
-from .storage import Globus
+from .storage import Globus, Storage
 from .projects import Project, Role
 from .paths import RemotePath
 
@@ -253,7 +253,7 @@ class Client:
         self.__http_client = None
         self._api = None
         self._resources = None
-        self._transfers = None
+        self._storage = None
         self._wait_interval = wait_interval
         self._access_token = access_token
 
@@ -459,21 +459,6 @@ class Client:
 
         return compute
 
-    def globus(
-        self,
-        source_machine: Union[Machine, str, None] = None,
-        target_machine: Union[Machine, str, None] = None,
-    ) -> Globus:
-        # Uses the status of Globus
-        response = self.get("status/globus")
-        values = response.json()
-        values["client"] = self
-        values["source_machine"] = source_machine
-        values["target_machine"] = target_machine
-        globus = Globus.model_validate(values)
-
-        return globus
-
     # Get the user associated with the credentials
     def _user(self):
         if self._client_user is None:
@@ -520,6 +505,12 @@ class Client:
             self._resources = Resources(self)
 
         return self._resources
+
+    @property
+    def storage(self) -> Storage:
+        if self._storage is None:
+            self._storage = Storage(self)
+        return self._storage
 
 
 Compute.model_rebuild()

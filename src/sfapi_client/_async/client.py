@@ -21,7 +21,7 @@ from .._models import (
 from .._models.resources import Resource
 from .groups import AsyncGroup, AsyncGroupMember
 from .users import AsyncUser
-from .storage import AsyncGlobus
+from .storage import AsyncGlobus, AsyncStorage
 from .projects import AsyncProject, AsyncRole
 from .paths import AsyncRemotePath
 
@@ -253,7 +253,7 @@ class AsyncClient:
         self.__http_client = None
         self._api = None
         self._resources = None
-        self._transfers = None
+        self._storage = None
         self._wait_interval = wait_interval
         self._access_token = access_token
 
@@ -459,21 +459,6 @@ class AsyncClient:
 
         return compute
 
-    async def globus(
-        self,
-        source_machine: Union[Machine, str, None] = None,
-        target_machine: Union[Machine, str, None] = None,
-    ) -> AsyncGlobus:
-        # Uses the status of Globus
-        response = await self.get("status/globus")
-        values = response.json()
-        values["client"] = self
-        values["source_machine"] = source_machine
-        values["target_machine"] = target_machine
-        globus = AsyncGlobus.model_validate(values)
-
-        return globus
-
     # Get the user associated with the credentials
     async def _user(self):
         if self._client_user is None:
@@ -520,6 +505,12 @@ class AsyncClient:
             self._resources = AsyncResources(self)
 
         return self._resources
+
+    @property
+    def storage(self) -> AsyncStorage:
+        if self._storage is None:
+            self._storage = AsyncStorage(self)
+        return self._storage
 
 
 AsyncCompute.model_rebuild()
