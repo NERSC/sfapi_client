@@ -1,10 +1,11 @@
 from pathlib import Path
-from typing import Callable, Optional, Union, Dict, List, Any
+from typing import Callable, Optional, Union, List, Any
 from functools import wraps
 from pydantic import ConfigDict
 from abc import ABC
 import sys
 import math
+
 from .._utils import _ASYNC_SLEEP
 from ..paths import AsyncRemotePath
 
@@ -38,7 +39,7 @@ def check_auth(method: Callable):
 
 
 class AsyncStorage:
-    def __init__(self, client: "AsyncClient"):
+    def __init__(self, client: "AsyncClient"):  # noqa: F821
         self.client = client
 
     async def globus(
