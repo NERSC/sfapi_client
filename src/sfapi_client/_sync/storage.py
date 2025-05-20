@@ -47,6 +47,20 @@ class Storage:
         source_machine: Union[Machine, str, None] = None,
         target_machine: Union[Machine, str, None] = None,
     ):
+        """Create a globus transfer object to start and monitor transfers
+
+        - Must select the Globus option when creating the SuperFacility key
+
+        ```python
+        >>> from sfapi_client import Client
+        >>> with Client(client_id, client_secret) as client:
+        >>>     globus = client.storage.globus(Machine.dtns, Machine.dtns)
+        ```
+
+        :param Union[Machine, str, None] source_machine: Source collecton name or Globus UUID, defaults to None
+        :param Union[Machine, str, None] target_machine: Destincation collection name or Globus UUID, defaults to None
+        :return Globus: Globus object to start and monitor transfers
+        """
         response = self.client.get("status/globus")
         values = response.json()
         values["client"] = self.client
@@ -63,6 +77,7 @@ class SyncGlobusTransfer(GlobusTransferResult, ABC):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def update(self):
+        """Updates the status of the transfer"""
         job_state = self._fetch_state()
         self._update(job_state)
 
@@ -95,6 +110,18 @@ class SyncGlobusTransfer(GlobusTransferResult, ABC):
         return self._wait_until_complete().__await__()
 
     def complete(self, timeout: int = sys.maxsize):
+        """Wait for the transfer to complete
+
+        >>> from sfapi_client import Client
+        >>> with Client(client_id, client_secret) as client:
+        >>>     globus = client.storage.globus()
+        >>>     res = globus.transfer(
+                        "globus-transfer-uuid"
+                )
+
+        :param int timeout: time to wait for the transfer to complete, defaults to sys.maxsize
+        :return GlobusStart: Gives the file status for the transfer
+        """
         return self._wait_until_complete(timeout)
 
     def _fetch_state(self):
@@ -129,7 +156,7 @@ class Globus(StorageBase):
         ```python
         >>> from sfapi_client import Client
         >>> with Client(client_id, client_secret) as client:
-        >>>     globus = client.globus(Machine.dtns, Machine.dtns)
+        >>>     globus = client.storage.globus(Machine.dtns, Machine.dtns)
         >>>     res = globus.start_transfer(
                         "/pscratch/sd/u/user/globus",
                         "/global/cfs/cdirs/m0000/globus"
@@ -185,8 +212,8 @@ class Globus(StorageBase):
 
         >>> from sfapi_client import Client
         >>> with Client(client_id, client_secret) as client:
-        >>>     globus = client.globus()
-        >>>     res = globus.check_transfer(
+        >>>     globus = client.storage.globus()
+        >>>     res = globus.transfer(
                         "globus-transfer-uuid"
                 )
 

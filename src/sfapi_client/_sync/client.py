@@ -508,6 +508,10 @@ class Client:
 
     @property
     def storage(self) -> Storage:
+        """Stroage related objects and methods
+
+        :return Storage: Object with storage related objects and methods
+        """
         if self._storage is None:
             self._storage = Storage(self)
         return self._storage

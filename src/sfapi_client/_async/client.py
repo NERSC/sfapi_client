@@ -508,6 +508,10 @@ class AsyncClient:
 
     @property
     def storage(self) -> AsyncStorage:
+        """Stroage related objects and methods
+
+        :return AsyncStorage: Object with storage related objects and methods
+        """
         if self._storage is None:
             self._storage = AsyncStorage(self)
         return self._storage
