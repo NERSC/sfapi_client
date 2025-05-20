@@ -39,7 +39,7 @@ def check_auth(method: Callable):
 
 
 class Storage:
-    def __init__(self, client: "Client"):
+    def __init__(self, client: "Client"):  # noqa: F821
         self.client = client
 
     def globus(
@@ -178,7 +178,7 @@ class Globus(StorageBase):
         return transfer
 
     @check_auth
-    def check_transfer(self, transfer_id: str) -> GlobusTransferResult:
+    def transfer(self, transfer_id: str) -> GlobusTransferResult:
         """Check on Globus transfer status
 
         - Must select the Globus option when creating the SuperFacility key

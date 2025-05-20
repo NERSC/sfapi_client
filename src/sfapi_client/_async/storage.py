@@ -178,7 +178,7 @@ class AsyncGlobus(StorageBase):
         return transfer
 
     @check_auth
-    async def check_transfer(self, transfer_id: str) -> GlobusTransferResult:
+    async def transfer(self, transfer_id: str) -> GlobusTransferResult:
         """Check on Globus transfer status
 
         - Must select the Globus option when creating the SuperFacility key
