@@ -508,7 +508,7 @@ class Client:
 
     @property
     def storage(self) -> Storage:
-        """Stroage related objects and methods
+        """Storage related objects and methods
 
         :return Storage: Object with storage related objects and methods
         """

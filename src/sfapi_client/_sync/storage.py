@@ -118,6 +118,7 @@ class SyncGlobusTransfer(GlobusTransferResult, ABC):
         >>>     res = globus.transfer(
                         "globus-transfer-uuid"
                 )
+        >>>     res.complete()
 
         :param int timeout: time to wait for the transfer to complete, defaults to sys.maxsize
         :return GlobusStart: Gives the file status for the transfer
