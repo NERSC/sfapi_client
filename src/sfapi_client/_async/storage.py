@@ -1,6 +1,5 @@
 from pathlib import Path
-from typing import Callable, Optional, Union, List, Any
-from functools import wraps
+from typing import Optional, Union, List, Any
 from pydantic import ConfigDict
 from abc import ABC
 import sys
@@ -8,8 +7,7 @@ import math
 
 from .._utils import _ASYNC_SLEEP
 from ..paths import AsyncRemotePath
-
-from ..exceptions import SfApiError
+from .._utils import check_auth
 
 from .compute import Machine
 from .._models import (
@@ -25,18 +23,6 @@ GLOBUS_TERMINAL_STATES = [
     GlobusStatus.FAILED,
     GlobusStatus.SUCCEEDED,
 ]
-
-
-def check_auth(method: Callable):
-    @wraps(method)
-    def wrapper(self, *args, **kwargs):
-        if self.client is None:
-            raise SfApiError(
-                f"Cannot call {self.__class__.__name__}.{method.__name__}() with an unauthenticated client."  # noqa: E501
-            )
-        return method(self, *args, **kwargs)
-
-    return wrapper
 
 
 class AsyncStorage:

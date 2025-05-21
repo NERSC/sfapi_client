@@ -10,18 +10,6 @@ _SLEEP = time.sleep
 _ASYNC_SLEEP = asyncio.sleep
 
 
-# def check_auth(method: Callable):
-#     @wraps(method)
-#     def wrapper(self, *args, **kwargs):
-#         if self.client is None:
-#             raise SfApiError(
-#                 f"Cannot call {self.__class__.__name__}.{method.__name__}() with an unauthenticated client."  # noqa: E501
-#             )
-#         return method(self, *args, **kwargs)
-
-#     return wrapper
-
-
 def check_auth(method: Callable):
     @wraps(method)
     def wrapper(self, *args, **kwargs):
