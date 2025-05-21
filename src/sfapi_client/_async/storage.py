@@ -15,6 +15,7 @@ from .compute import Machine
 from .._models import (
     AppRoutersStatusModelsStatus as StorageBase,
     GlobusTransfer as GlobusTransferModel,
+    BodyStartGlobusTransferStorageGlobusTransferPost as GlobusBodyPost,
     GlobusTransferResult,
     GlobusStatus,
 )
@@ -44,8 +45,6 @@ class AsyncStorage:
 
     async def globus(
         self,
-        source_machine: Union[Machine, str, None] = None,
-        target_machine: Union[Machine, str, None] = None,
     ):
         """Create a globus transfer object to start and monitor transfers
 
@@ -64,8 +63,6 @@ class AsyncStorage:
         response = await self.client.get("status/globus")
         values = response.json()
         values["client"] = self.client
-        values["source_machine"] = source_machine
-        values["target_machine"] = target_machine
         _globus = AsyncGlobusStorage.model_validate(values)
 
         return _globus
@@ -136,8 +133,6 @@ class AsyncGlobusTransfer(GlobusTransferResult, ABC):
 
 class AsyncGlobusStorage(StorageBase):
     client: Optional["AsyncClient"]  # noqa: F821
-    source_machine: Optional[Union[Machine, str, None]]
-    target_machine: Optional[Union[Machine, str, None]]
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def __init__(self, **kwargs):
@@ -146,6 +141,8 @@ class AsyncGlobusStorage(StorageBase):
     @check_auth
     async def start_transfer(
         self,
+        source_machine: Union[Machine, str],
+        target_machine: Union[Machine, str],
         source_dir: Union[str, Path, AsyncRemotePath],
         target_dir: Union[str, Path, AsyncRemotePath],
         label: Optional[str] = None,
@@ -159,7 +156,9 @@ class AsyncGlobusStorage(StorageBase):
         >>> async with AsyncClient(client_id, client_secret) as client:
         >>>     globus = client.storage.globus(Machine.dtns, Machine.dtns)
         >>>     res = await globus.start_transfer(
+                        Machine.Perlmutter,
                         "/pscratch/sd/u/user/globus",
+                        Machine.dtns,
                         "/global/cfs/cdirs/m0000/globus"
                     )
         ```
@@ -171,31 +170,27 @@ class AsyncGlobusStorage(StorageBase):
         :return AsyncGlobusTransfer
         """
 
-        if None in [source_dir, target_dir]:
+        if None in [source_machine, source_dir, target_machine, target_dir]:
             # Check that all parametes are not none
-            raise ValueError("source_dir, and target_dir cannot be None")
+            raise ValueError("sources, and targets cannot be None")
 
         # Make machine names match those in the API endpoint
         source_name = (
-            "dtn"
-            if self.source_machine in [Machine.dtns, Machine.dtn01]
-            else self.source_machine
+            "dtn" if source_machine in [Machine.dtns, Machine.dtn01] else source_machine
         )
         target_name = (
-            "dtn"
-            if self.target_machine in [Machine.dtns, Machine.dtn01]
-            else self.target_machine
+            "dtn" if target_machine in [Machine.dtns, Machine.dtn01] else target_machine
         )
 
-        body = {
-            "source_uuid": source_name,
-            "target_uuid": target_name,
-            "source_dir": source_dir,
-            "target_dir": target_dir,
-            "label": label,
-        }
+        body = GlobusBodyPost(
+            source_uuid=source_name,
+            target_uuid=target_name,
+            source_dir=str(source_dir),
+            target_dir=str(target_dir),
+            label=label,
+        )
 
-        r = await self.client.post("storage/globus/transfer", data=body)
+        r = await self.client.post("storage/globus/transfer", data=body.model_dump())
         new_transfer = GlobusTransferModel.model_validate(r.json())
         transfer_id = new_transfer.transfer_id
         r = await self.client.get(f"storage/globus/transfer/{transfer_id}")

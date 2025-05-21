@@ -24,9 +24,11 @@ async def test_transfer_file(async_authenticated_client, test_machine, test_tmp_
         remote_file = await remote_file.upload(BytesIO(file_contents.encode()))
 
         transfered_file = f"{test_tmp_dir}/output_{pytest_num}"
-        globus_client = await client.storage.globus(test_machine, test_machine)
+        globus_client = await client.storage.globus()
 
         globus_resp = await globus_client.start_transfer(
+            test_machine,
+            test_machine,
             remote_file,
             transfered_file,
             f"pytest async client {pytest_num}",

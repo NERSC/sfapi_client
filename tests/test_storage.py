@@ -22,9 +22,11 @@ def test_transfer_file(authenticated_client, test_machine, test_tmp_dir):
         remote_file = remote_file.upload(BytesIO(file_contents.encode()))
 
         transfered_file = f"{test_tmp_dir}/output_{pytest_num}"
-        globus_client = client.storage.globus(test_machine, test_machine)
+        globus_client = client.storage.globus()
 
         globus_resp = globus_client.start_transfer(
+            test_machine,
+            test_machine,
             remote_file,
             transfered_file,
             f"pytest sync client {pytest_num}",
