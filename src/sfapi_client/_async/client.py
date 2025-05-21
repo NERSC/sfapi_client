@@ -21,7 +21,7 @@ from .._models import (
 from .._models.resources import Resource
 from .groups import AsyncGroup, AsyncGroupMember
 from .users import AsyncUser
-from .storage import AsyncGlobus, AsyncStorage
+from .storage import AsyncGlobusStorage, AsyncStorage
 from .projects import AsyncProject, AsyncRole
 from .paths import AsyncRemotePath
 
@@ -518,7 +518,7 @@ class AsyncClient:
 
 
 AsyncCompute.model_rebuild()
-AsyncGlobus.model_rebuild()
+AsyncGlobusStorage.model_rebuild()
 AsyncGroup.model_rebuild()
 AsyncUser.model_rebuild()
 AsyncProject.model_rebuild()

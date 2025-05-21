@@ -59,7 +59,7 @@ class Storage:
 
         :param Union[Machine, str, None] source_machine: Source collecton name or Globus UUID, defaults to None
         :param Union[Machine, str, None] target_machine: Destincation collection name or Globus UUID, defaults to None
-        :return Globus: Globus object to start and monitor transfers
+        :return GlobusStorage: Globus object to start and monitor transfers
         """
         response = self.client.get("status/globus")
         values = response.json()

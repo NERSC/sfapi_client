@@ -59,20 +59,20 @@ class AsyncStorage:
 
         :param Union[Machine, str, None] source_machine: Source collecton name or Globus UUID, defaults to None
         :param Union[Machine, str, None] target_machine: Destincation collection name or Globus UUID, defaults to None
-        :return AsyncGlobus: Globus object to start and monitor transfers
+        :return AsyncGlobusStorage: Globus object to start and monitor transfers
         """
         response = await self.client.get("status/globus")
         values = response.json()
         values["client"] = self.client
         values["source_machine"] = source_machine
         values["target_machine"] = target_machine
-        _globus = AsyncGlobus.model_validate(values)
+        _globus = AsyncGlobusStorage.model_validate(values)
 
         return _globus
 
 
 class AsyncGlobusTransfer(GlobusTransferResult, ABC):
-    globus: Optional["AsyncGlobus"]  # noqa: F821
+    globus: Optional["AsyncGlobusStorage"]  # noqa: F821
     transfer_id: str
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -134,7 +134,7 @@ class AsyncGlobusTransfer(GlobusTransferResult, ABC):
         return transfer
 
 
-class AsyncGlobus(StorageBase):
+class AsyncGlobusStorage(StorageBase):
     client: Optional["AsyncClient"]  # noqa: F821
     source_machine: Optional[Union[Machine, str, None]]
     target_machine: Optional[Union[Machine, str, None]]
