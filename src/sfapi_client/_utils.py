@@ -13,11 +13,16 @@ _ASYNC_SLEEP = asyncio.sleep
 def check_auth(method: Callable):
     @wraps(method)
     def wrapper(self, *args, **kwargs):
-        if self.client._client_id is None and self.client._access_token is None:
+        if hasattr(self, "client"):
+            _client = self.client
+        else:
+            _client = self
+
+        if _client._client_id is None and _client._access_token is None:
             raise SfApiError(
                 f"Cannot call {self.__class__.__name__}.{method.__name__}() with an unauthenticated client."  # noqa: E501
             )
-        elif self.status in [StatusValue.unavailable]:
+        elif hasattr(_client, "status") and _client.status in [StatusValue.unavailable]:
             raise SfApiError(
                 f"Resource {self.name} is {self.status.name}, {self.notes}"
             )
