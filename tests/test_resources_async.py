@@ -24,6 +24,7 @@ async def test_planned_outages_by_resource(
         if len(outages) > 0:
             assert outages[0].name == test_machine
 
+
 # 09-18-2025 Commented out because API not attached to right DB
 # @pytest.mark.public
 # @pytest.mark.asyncio
@@ -66,6 +67,7 @@ async def test_planned_outages(async_unauthenticated_client, test_machine):
             test_machine_outages = outages[test_machine.value]
             assert len(test_machine_outages) > 0
             assert test_machine_outages[0].name == test_machine
+
 
 # 09-18-2025 Commented out because API not attached to right DB
 # @pytest.mark.public
