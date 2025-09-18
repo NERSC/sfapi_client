@@ -54,7 +54,7 @@ class Storage:
         return _globus
 
 
-class SyncGlobusTransfer(GlobusTransferResult, ABC):
+class SyncGlobusTransfer(GlobusTransferResult):
     globus: Optional["Globus"]  # noqa: F821
     transfer_id: str
     model_config = ConfigDict(arbitrary_types_allowed=True)

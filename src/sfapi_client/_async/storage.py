@@ -54,7 +54,7 @@ class AsyncStorage:
         return _globus
 
 
-class AsyncGlobusTransfer(GlobusTransferResult, ABC):
+class AsyncGlobusTransfer(GlobusTransferResult):
     globus: Optional["AsyncGlobusStorage"]  # noqa: F821
     transfer_id: str
     model_config = ConfigDict(arbitrary_types_allowed=True)
