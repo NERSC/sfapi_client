@@ -1,7 +1,6 @@
 from pathlib import Path
 from typing import Optional, Union, List, Any
 from pydantic import ConfigDict
-from abc import ABC
 import sys
 import math
 
@@ -39,11 +38,9 @@ class Storage:
         ```python
         >>> from sfapi_client import Client
         >>> with Client(client_id, client_secret) as client:
-        >>>     globus = client.storage.globus(Machine.dtns, Machine.dtns)
+        >>>     globus = client.storage.globus()
         ```
 
-        :param Union[Machine, str, None] source_machine: Source collecton name or Globus UUID, defaults to None
-        :param Union[Machine, str, None] target_machine: Destincation collection name or Globus UUID, defaults to None
         :return GlobusStorage: Globus object to start and monitor transfers
         """
         response = self.client.get("status/globus")
@@ -140,8 +137,8 @@ class Globus(StorageBase):
         ```python
         >>> from sfapi_client import Client
         >>> with Client(client_id, client_secret) as client:
-        >>>     globus = client.storage.globus(Machine.dtns, Machine.dtns)
-        >>>     res = globus.start_transfer(
+        >>>     globus_client = client.storage.globus()
+        >>>     res = globus_client.start_transfer(
                         Machine.Perlmutter,
                         "/pscratch/sd/u/user/globus",
                         Machine.dtns,

@@ -38,11 +38,9 @@ class AsyncStorage:
         ```python
         >>> from sfapi_client import AsyncClient
         >>> async with AsyncClient(client_id, client_secret) as client:
-        >>>     globus = client.storage.globus(Machine.dtns, Machine.dtns)
+        >>>     globus = client.storage.globus()
         ```
 
-        :param Union[Machine, str, None] source_machine: Source collecton name or Globus UUID, defaults to None
-        :param Union[Machine, str, None] target_machine: Destincation collection name or Globus UUID, defaults to None
         :return AsyncGlobusStorage: Globus object to start and monitor transfers
         """
         response = await self.client.get("status/globus")
@@ -139,8 +137,8 @@ class AsyncGlobusStorage(StorageBase):
         ```python
         >>> from sfapi_client import AsyncClient
         >>> async with AsyncClient(client_id, client_secret) as client:
-        >>>     globus = client.storage.globus(Machine.dtns, Machine.dtns)
-        >>>     res = await globus.start_transfer(
+        >>>     globus_client = client.storage.globus()
+        >>>     res = await globus_client.start_transfer(
                         Machine.Perlmutter,
                         "/pscratch/sd/u/user/globus",
                         Machine.dtns,
