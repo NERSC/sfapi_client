@@ -35,7 +35,7 @@ def run_unasync():
         "AsyncJobSqueue": "JobSqueue",
         "AsyncOAuth2Client": "OAuth2Client",
         "AsyncStorage": "Storage",
-        "AsyncGlobus": "Globus",
+        "AsyncGlobusStorage": "Globus",
         "aclose": "close",
         "_ASYNC_SLEEP": "_SLEEP",
     }
@@ -102,7 +102,7 @@ def _to_str_enum(code: str) -> str:
 def _fix_date_import(code: str) -> str:
     replacements = {
         "import date": "import date as date_",
-        "date: Optional\[date\]": "date: Optional[date_]",
+        "date: Optional\\[date\\]": "date: Optional[date_]",
     }
 
     for target, replacement in replacements.items():
@@ -195,7 +195,7 @@ def resources_codegen(
         name = name if name != "int" else f"_{name}"
         name = name.replace("-", "_")
         names.append(f'    {name} = "{value}"')
-        names.append(f"    \"\"\" {s['system_type']}: {s['full_name']}\"\"\"")
+        names.append(f'    """ {s["system_type"]}: {s["full_name"]}"""')
 
     resources = "\n".join(names)
     now = datetime.datetime.now()
