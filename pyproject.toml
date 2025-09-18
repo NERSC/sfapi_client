@@ -14,7 +14,7 @@ authors = [
 ]
 description = "Python client for NERSC SF API"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.8"
 dependencies = [
   "authlib",
   "httpx",
