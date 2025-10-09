@@ -35,7 +35,8 @@ def run_unasync():
         "AsyncJobSqueue": "JobSqueue",
         "AsyncOAuth2Client": "OAuth2Client",
         "AsyncStorage": "Storage",
-        "AsyncGlobusStorage": "Globus",
+        "AsyncGlobusStorage": "GlobusStorage",
+        "AsyncGlobusTransfer": "GlobusTransfer",
         "aclose": "close",
         "_ASYNC_SLEEP": "_SLEEP",
     }

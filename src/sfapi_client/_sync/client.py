@@ -21,7 +21,7 @@ from .._models import (
 from .._models.resources import Resource
 from .groups import Group, GroupMember
 from .users import User
-from .storage import Globus, Storage
+from .storage import GlobusStorage, Storage
 from .projects import Project, Role
 from .paths import RemotePath
 
@@ -518,7 +518,7 @@ class Client:
 
 
 Compute.model_rebuild()
-Globus.model_rebuild()
+GlobusStorage.model_rebuild()
 Group.model_rebuild()
 User.model_rebuild()
 Project.model_rebuild()

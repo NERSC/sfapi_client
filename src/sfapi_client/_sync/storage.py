@@ -46,13 +46,13 @@ class Storage:
         response = self.client.get("status/globus")
         values = response.json()
         values["client"] = self.client
-        _globus = Globus.model_validate(values)
+        _globus = GlobusStorage.model_validate(values)
 
         return _globus
 
 
-class SyncGlobusTransfer(GlobusTransferResult):
-    globus: Optional["Globus"]  # noqa: F821
+class GlobusTransfer(GlobusTransferResult):
+    globus: Optional["GlobusStorage"]  # noqa: F821
     transfer_id: str
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -110,11 +110,11 @@ class SyncGlobusTransfer(GlobusTransferResult):
         json_response = r.json()
         json_response["transfer_id"] = self.transfer_id
         json_response["globus"] = self.globus
-        transfer = SyncGlobusTransfer.model_validate(json_response)
+        transfer = GlobusTransfer.model_validate(json_response)
         return transfer
 
 
-class Globus(StorageBase):
+class GlobusStorage(StorageBase):
     client: Optional["Client"]  # noqa: F821
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -129,7 +129,7 @@ class Globus(StorageBase):
         source_dir: Union[str, Path, RemotePath],
         target_dir: Union[str, Path, RemotePath],
         label: Optional[str] = None,
-    ) -> SyncGlobusTransfer:
+    ) -> GlobusTransfer:
         """Start a Globus transfer throught the SuperFacility API
 
         - Must select the Globus option when creating the SuperFacility key
@@ -180,7 +180,7 @@ class Globus(StorageBase):
         json_response = r.json()
         json_response["transfer_id"] = transfer_id
         json_response["globus"] = self
-        transfer = SyncGlobusTransfer.model_validate(json_response)
+        transfer = GlobusTransfer.model_validate(json_response)
         return transfer
 
     @check_auth
@@ -206,5 +206,5 @@ class Globus(StorageBase):
         json_response = r.json()
         json_response["transfer_id"] = transfer_id
         json_response["globus"] = self
-        transfer = SyncGlobusTransfer.model_validate(json_response)
+        transfer = GlobusTransfer.model_validate(json_response)
         return transfer
