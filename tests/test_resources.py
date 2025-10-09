@@ -20,14 +20,12 @@ def test_planned_outages_by_resource(unauthenticated_client, test_machine):
             assert outages[0].name == test_machine
 
 
-# 09-18-2025 Commented out because API not attached to right DB
-# @pytest.mark.public
-# def test_notes_by_resource(unauthenticated_client, test_machine):
-#     with unauthenticated_client as client:
-#         notes = client.resources.notes(test_machine)
+@pytest.mark.public
+def test_notes_by_resource(unauthenticated_client, test_machine):
+    with unauthenticated_client as client:
+        notes = client.resources.notes(test_machine)
 
-#         assert len(notes) > 0
-#         assert notes[0].name == test_machine
+        assert isinstance(notes, list)
 
 
 @pytest.mark.public
@@ -60,16 +58,12 @@ def test_planned_outages(unauthenticated_client, test_machine):
             assert test_machine_outages[0].name == test_machine
 
 
-# 09-18-2025 Commented out because API not attached to right DB
-# @pytest.mark.public
-# def test_notes(unauthenticated_client, test_machine):
-#     with unauthenticated_client as client:
-#         notes = client.resources.notes()
+@pytest.mark.public
+def test_notes(unauthenticated_client, test_machine):
+    with unauthenticated_client as client:
+        notes = client.resources.notes()
 
-#         assert test_machine.value in notes
-#         test_machine_notes = notes[test_machine.value]
-#         assert len(test_machine_notes) > 0
-#         assert test_machine_notes[0].name == test_machine
+        assert isinstance(notes, dict)
 
 
 @pytest.mark.public
