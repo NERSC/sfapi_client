@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Union, Callable
+from typing import Dict, List, Optional, Union
 import json
 from pydantic import PrivateAttr, ConfigDict
 from ..exceptions import SfApiError
@@ -7,7 +7,6 @@ from .jobs import JobSacct, JobSqueue, JobCommand
 from .._models import (
     AppRoutersStatusModelsStatus as ComputeBase,
     Task,
-    StatusValue,
     PublicHost as Machine,
     BodyRunCommandUtilitiesCommandMachinePost as RunCommandBody,
     AppRoutersComputeModelsCommandOutput as RunCommandResponse,
@@ -16,24 +15,10 @@ from .._models import (
 from .paths import RemotePath
 from .._monitor import SyncJobMonitor
 from .._compute import CommandResult, SubmitJobResponse, SubmitJobResponseStatus
+from .._utils import check_auth
 
 # Patch to return str names from Enum of py3.11
 Machine.__str__ = lambda self: self.value
-
-
-def check_auth(method: Callable):
-    def wrapper(self, *args, **kwargs):
-        if self.client._client_id is None and self.client._access_token is None:
-            raise SfApiError(
-                f"Cannot call {self.__class__.__name__}.{method.__name__}() with an unauthenticated client."  # noqa: E501
-            )
-        elif self.status in [StatusValue.unavailable]:
-            raise SfApiError(
-                f"Compute resource {self.name} is {self.status.name}, {self.notes}"
-            )
-        return method(self, *args, **kwargs)
-
-    return wrapper
 
 
 class Compute(ComputeBase):
