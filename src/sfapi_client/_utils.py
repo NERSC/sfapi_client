@@ -5,7 +5,6 @@ from functools import wraps
 from .exceptions import SfApiError
 from ._models import StatusValue
 
-
 _SLEEP = time.sleep
 _ASYNC_SLEEP = asyncio.sleep
 

@@ -10,7 +10,6 @@ from typing import List, Optional
 
 from datamodel_code_generator import InputFileType, generate
 
-
 cli = typer.Typer()
 
 
