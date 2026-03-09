@@ -185,13 +185,11 @@ def fake_key_file(tmp_path_factory):
         key_path = tmp_path_factory.mktemp(".sfapi_test1", numbered=False) / "key.pem"
 
         # Make a fake key for testing
-        key_path.write_text(
-            f"""abcdefghijlmo
+        key_path.write_text(f"""abcdefghijlmo
     -----BEGIN RSA PRIVATE KEY-----
     {rsa.generate_private_key(public_exponent=65537, key_size=2048)}
     -----END RSA PRIVATE KEY-----
-    """
-        )
+    """)
         key_path.chmod(0o100600)
         yield key_path
     finally:
