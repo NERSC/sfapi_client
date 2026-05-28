@@ -95,13 +95,12 @@ export SFAPI_SECRET='{"kty": "RSA", "n": ...}'
     ```pycon
     >>> from sfapi_client import AsyncClient
     >>> from sfapi_client.compute import Machine
-    >>> from authlib.jose import JsonWebKey
     >>> import json
     >>> import os
     >>>
     >>> client_id = os.getenv("SFAPI_CLIENT_ID")
     >>> sfapi_secret = os.getenv("SFAPI_SECRET")
-    >>> client_secret = JsonWebKey.import_key(json.loads(sfapi_secret))
+    >>> client_secret = json.loads(sfapi_secret)
     >>>
     >>> async with AsyncClient(client_id, client_secret) as client:
     ...     perlmutter = await client.compute(Machine.perlmutter)
@@ -110,13 +109,12 @@ export SFAPI_SECRET='{"kty": "RSA", "n": ...}'
     ```pycon
     >>> from sfapi_client import Client
     >>> from sfapi_client.compute import Machine
-    >>> from authlib.jose import JsonWebKey
     >>> import json
     >>> import os
     >>>
     >>> client_id = os.getenv("SFAPI_CLIENT_ID")
     >>> sfapi_secret = os.getenv("SFAPI_SECRET")
-    >>> client_secret = JsonWebKey.import_key(json.loads(sfapi_secret))
+    >>> client_secret = json.loads(sfapi_secret)
     >>>
     >>> with Client(client_id, client_secret) as client:
     ...     perlmutter = client.compute(Machine.perlmutter)
