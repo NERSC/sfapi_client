@@ -24,10 +24,12 @@ class AsyncUser(UserBase):
         username: Optional[str] = None,  # noqa: F821
     ):  # noqa: F821
         url = "account/"
-        if username is not None:
-            url = f"{url}?username={username}"
+        params = {}
 
-        response = await client.get(url)
+        if username is not None:
+            params["username"] = username
+
+        response = await client.get(url, params=params)
         json_response = response.json()
 
         user = AsyncUser.model_validate(dict(json_response, client=client))

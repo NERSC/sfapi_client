@@ -24,10 +24,12 @@ class User(UserBase):
         username: Optional[str] = None,  # noqa: F821
     ):  # noqa: F821
         url = "account/"
-        if username is not None:
-            url = f"{url}?username={username}"
+        params = {}
 
-        response = client.get(url)
+        if username is not None:
+            params["username"] = username
+
+        response = client.get(url, params=params)
         json_response = response.json()
 
         user = User.model_validate(dict(json_response, client=client))
