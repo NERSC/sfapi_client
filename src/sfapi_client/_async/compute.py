@@ -1,12 +1,11 @@
 from typing import Dict, List, Optional, Union
-import json
-from pydantic import PrivateAttr, ConfigDict
+from pydantic import PrivateAttr, ConfigDict, BaseModel
 from ..exceptions import SfApiError
 from .._utils import _ASYNC_SLEEP
 from .jobs import AsyncJobSacct, AsyncJobSqueue, JobCommand
 from .._models import (
     AppRoutersStatusModelsStatus as ComputeBase,
-    Task,
+    Task as TaskResponse,
     PublicHost as Machine,
     BodyRunCommandUtilitiesCommandMachinePost as RunCommandBody,
     AppRoutersComputeModelsCommandOutput as RunCommandResponse,
@@ -14,11 +13,85 @@ from .._models import (
 )
 from .paths import AsyncRemotePath
 from .._monitor import AsyncJobMonitor
-from .._compute import CommandResult, SubmitJobResponse, SubmitJobResponseStatus
+from .._compute import SubmitJobResponse, SubmitJobResponseStatus, TaskStatus
 from .._utils import check_auth
 
 # Patch to return str names from Enum of py3.11
 Machine.__str__ = lambda self: self.value
+
+
+class AsyncCommandTaskResult(BaseModel):
+    """
+    Result data returned by a command execution task.
+    """
+
+    model_config = ConfigDict(extra="allow")
+
+    status: Optional[str] = None
+    output: Optional[str] = None
+    error: Optional[str] = None
+    exit_code: Optional[int] = None
+
+
+class AsyncCommandTask(BaseModel):
+    """
+    Models an asynchronous command execution task.
+    """
+
+    compute: "AsyncCompute"
+    id: str
+    status: Optional[TaskStatus] = None
+    result: Optional[AsyncCommandTaskResult] = None
+
+    async def _fetch(self) -> TaskResponse:
+        """
+        Fetch the latest task state from the API.
+
+        :return: The raw task response returned by the API.
+        """
+        r = await self.compute.client.get(f"tasks/{self.id}")
+        json_response = r.json()
+
+        return TaskResponse.model_validate(json_response)
+
+    async def update(self):
+        """
+        Refresh the task state.
+
+        :return: The updated task instance.
+        """
+        task = await self._fetch()
+        if task.status is not None:
+            # Map the status return by the API (lowercase string) to our TaskStatus enum ( uppercase )
+            # We do this for consistency as all our enums are uppercase
+            self.status = TaskStatus[task.status.upper()]
+
+        if task.result is not None:
+            self.result = AsyncCommandTaskResult.model_validate_json(task.result)
+
+        return self
+
+    async def _wait(self):
+        while True:
+            await self.update()
+
+            if self.status in [
+                TaskStatus.COMPLETED,
+                TaskStatus.CANCELLED,
+                TaskStatus.FAILED,
+            ]:
+                return self
+
+            await _ASYNC_SLEEP(1)
+
+    def __await__(self):
+        return self._wait().__await__()
+
+    async def cancel(self):
+        """
+        Cancel the running task.
+        """
+        await self.compute.client.delete(f"tasks/{self.id}")
 
 
 class AsyncCompute(ComputeBase):
@@ -36,18 +109,17 @@ class AsyncCompute(ComputeBase):
             kwargs["exclude"] = {"client"}
         return super().dict(*args, **kwargs)
 
-    async def _wait_for_task(self, task_id) -> str:
+    async def _wait_for_task(self, task_id) -> AsyncCommandTaskResult:
+
+        task = AsyncCommandTask(compute=self, id=task_id)
+
         while True:
-            r = await self.client.get(f"tasks/{task_id}")
+            await task.update()
 
-            json_response = r.json()
-            task = Task.model_validate(json_response)
-
-            status = task.status.lower()
-            if status in ["error", "failed"]:
+            if task.status is TaskStatus.FAILED:
                 raise SfApiError(task.result)
 
-            if status not in ["completed", "cancelled"]:
+            if task.status not in [TaskStatus.COMPLETED, TaskStatus.CANCELLED]:
                 await _ASYNC_SLEEP(1)
                 continue
 
@@ -92,11 +164,11 @@ class AsyncCompute(ComputeBase):
 
         # We now need waiting for the task to complete!
         task_result = await self._wait_for_task(task_id)
-        result = json.loads(task_result)
-        if result.get("status") == "error":
-            raise SfApiError(result["error"])
+        if task_result.status == "error":
+            raise SfApiError(task_result.error)
 
-        jobid = result.get("jobid")
+        # Get the jobid from the extra fields of the result
+        jobid = task_result.__pydantic_extra__.get("jobid")
         if jobid is None:
             raise SfApiError(f"Unable to extract jobid if for task: {task_id}")
 
@@ -140,6 +212,17 @@ class AsyncCompute(ComputeBase):
 
     @check_auth
     async def run(self, args: Union[str, AsyncRemotePath, List[str]]):
+        task = await self._run_task(args)
+        await task._wait()
+
+        if task.result.error:
+            raise SfApiError(task.result.error)
+
+        return task.result.output
+
+    async def _run_task(
+        self, args: Union[str, AsyncRemotePath, List[str]]
+    ) -> AsyncCommandTask:
         body: RunCommandBody = {
             "executable": args if not isinstance(args, list) else " ".join(args)
         }
@@ -150,13 +233,19 @@ class AsyncCompute(ComputeBase):
         if run_response.status == RunCommandResponseStatus.ERROR:
             raise SfApiError(run_response.error)
 
-        task_id = run_response.task_id
-        task_result = await self._wait_for_task(task_id)
-        command_result = CommandResult.model_validate_json(task_result)
-        if command_result.status == "error":
-            raise SfApiError(command_result.error)
+        return AsyncCommandTask(compute=self, id=run_response.task_id)
 
-        return command_result.output
+    @check_auth
+    async def run_task(
+        self, args: Union[str, AsyncRemotePath, List[str]]
+    ) -> AsyncCommandTask:
+        """
+        Submit a command to the compute resource and return a task.
+
+        :param args: Command to execute.
+        :return: Task object that can be awaited ( async version ), updated, or cancelled.
+        """
+        return await self._run_task(args)
 
     async def outages(self):
         return await self.client.resources.outages(self.name)
