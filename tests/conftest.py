@@ -6,7 +6,6 @@ from pathlib import Path
 from cryptography.hazmat.primitives.asymmetric import rsa
 
 import pytest
-from authlib.jose import JsonWebKey
 
 from sfapi_client.compute import Machine
 from sfapi_client import Resource
@@ -53,7 +52,7 @@ def client_secret():
     if isinstance(json_web_key, str):
         json_web_key = json.loads(json_web_key)
 
-    return JsonWebKey.import_key(json_web_key)
+    return json_web_key
 
 
 @pytest.fixture
@@ -68,7 +67,7 @@ def dev_client_secret():
     if isinstance(json_web_key, str):
         json_web_key = json.loads(json_web_key)
 
-    return JsonWebKey.import_key(json_web_key)
+    return json_web_key
 
 
 @pytest.fixture

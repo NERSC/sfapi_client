@@ -7,7 +7,6 @@ from authlib.integrations.httpx_client.oauth2_client import AsyncOAuth2Client
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
 import httpx
 import tenacity
-from authlib.jose import JsonWebKey
 
 from .compute import Machine, AsyncCompute
 from ..exceptions import ClientKeyError
@@ -352,7 +351,7 @@ class AsyncClient:
             if key_path.suffix == ".json":
                 # Json file in the format {"client_id": "", "secret": ""}
                 json_web_key = json.loads(secret.read())
-                self._secret = JsonWebKey.import_key(json_web_key["secret"])
+                self._secret = json_web_key["secret"]
                 self._client_id = json_web_key["client_id"]
             else:
                 self._secret = secret.read()
