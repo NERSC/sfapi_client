@@ -18,3 +18,10 @@ class CommandResult(BaseModel):
     status: str
     output: Optional[str]
     error: Optional[str]
+
+
+class TaskStatus(str, Enum):
+    NEW = "NEW"
+    COMPLETED = "COMPLETED"
+    CANCELLED = "CANCELLED"
+    FAILED = "FAILED"

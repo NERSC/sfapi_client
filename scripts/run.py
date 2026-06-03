@@ -23,6 +23,8 @@ def run_unasync():
         "AsyncApi": "Api",
         "AsyncResources": "Resources",
         "AsyncCompute": "Compute",
+        "AsyncCommandTask": "CommandTask",
+        "AsyncCommandTaskResult": "CommandTaskResult",
         "AsyncGroup": "Group",
         "AsyncGroupMember": "GroupMember",
         "AsyncRemotePath": "RemotePath",

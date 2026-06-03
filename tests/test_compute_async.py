@@ -1,7 +1,35 @@
+import asyncio
+
 import pytest
 from pathlib import Path
 
+from sfapi_client.compute import AsyncCommandTask, TaskStatus
 from sfapi_client.jobs import JobState
+
+
+def _periodic_command():
+    return "bash -lc 'i=0; while [ $i -lt 30 ]; do echo tick-$i; i=$((i+1)); sleep 1; done'"
+
+
+def _failing_command():
+    return "bash -lc 'echo failing >&2; exit 1'"
+
+
+async def _poll_task(task, predicate, timeout=60, pause=1):
+    loop = asyncio.get_running_loop()
+    deadline = loop.time() + timeout
+
+    while True:
+        await task.update()
+        if predicate(task):
+            return task
+
+        if loop.time() >= deadline:
+            raise AssertionError(
+                f"task did not reach the expected state within {timeout}s"
+            )
+
+        await asyncio.sleep(pause)
 
 
 @pytest.mark.asyncio
@@ -110,6 +138,82 @@ async def test_run_arg_path(async_authenticated_client, test_machine):
         output = await machine.run(remote_path)
 
         assert output
+
+
+@pytest.mark.asyncio
+async def test_run_task(async_authenticated_client, test_machine):
+    async with async_authenticated_client as client:
+        machine = await client.compute(test_machine)
+
+        task = await machine.run_task("echo hello")
+
+        assert isinstance(task, AsyncCommandTask)
+        assert task.id
+        assert task.status is None
+        assert task.result is None
+
+
+@pytest.mark.asyncio
+async def test_run_task_await(async_authenticated_client, test_machine):
+    async with async_authenticated_client as client:
+        machine = await client.compute(test_machine)
+
+        task = await machine.run_task("echo hello")
+        awaited = await task
+
+        assert awaited is task
+        assert task.status is TaskStatus.COMPLETED
+        assert task.result is not None
+        assert task.result.output == "hello\n"
+        assert task.result.error == ""
+
+
+@pytest.mark.asyncio
+async def test_run_task_update(async_authenticated_client, test_machine):
+    async with async_authenticated_client as client:
+        machine = await client.compute(test_machine)
+        task = await machine.run_task(_periodic_command())
+
+        updated = await _poll_task(
+            task,
+            lambda t: (
+                t.result is not None
+                and t.result.output is not None
+                and t.status is TaskStatus.COMPLETED
+            ),
+        )
+
+        assert updated is task
+
+
+@pytest.mark.asyncio
+async def test_run_task_cancel(async_authenticated_client, test_machine):
+    async with async_authenticated_client as client:
+        machine = await client.compute(test_machine)
+
+        task = await machine.run_task(_periodic_command())
+        await asyncio.sleep(2)
+        await task.cancel()
+
+        await _poll_task(task, lambda t: t.status == TaskStatus.CANCELLED, timeout=90)
+
+        assert task.status == TaskStatus.CANCELLED
+
+
+@pytest.mark.asyncio
+async def test_run_task_error(async_authenticated_client, test_machine):
+    async with async_authenticated_client as client:
+        machine = await client.compute(test_machine)
+
+        task = await machine.run_task(_failing_command())
+        await task
+
+        assert task.status is TaskStatus.COMPLETED
+        assert task.result is not None
+        assert task.result.error == "failing\n"
+        assert task.result.output == ""
+        assert task.result.exit_code == 1
+        assert task.result.status == "error"
 
 
 @pytest.mark.asyncio
