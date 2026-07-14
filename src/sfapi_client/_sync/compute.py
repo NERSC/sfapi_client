@@ -153,6 +153,8 @@ class Compute(ComputeBase):
 
         data = {"job": script, "isPath": is_path}
         if args is not None:
+            if not is_path:
+                raise ValueError("Command line arguments cannot be passed when the script is not a file.")
             data["args"] = args
 
         r = self.client.post(f"compute/jobs/{self.name}", data)
