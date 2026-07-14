@@ -127,10 +127,11 @@ class Compute(ComputeBase):
             return task.result
 
     @check_auth
-    def submit_job(self, script: Union[str, RemotePath]) -> JobSqueue:
+    def submit_job(self, script: Union[str, RemotePath], args: Optional[List[str]] = None) -> JobSqueue:
         """Submit a job to the compute resource
 
         :param script: Path to file on the compute system, or script to run beginning with `#!`.
+        :param args: An optional list of command line arguments to pass to the script.
         :return: Object containing information about the job, its job id, and status on the system.
         """
 
@@ -151,6 +152,8 @@ class Compute(ComputeBase):
                 raise SfApiError(f"Script path not present or is not a file, {script}")
 
         data = {"job": script, "isPath": is_path}
+        if args is not None:
+            data["args"] = args
 
         r = self.client.post(f"compute/jobs/{self.name}", data)
         r.raise_for_status()
