@@ -34,9 +34,7 @@ async def test_submit_with_args(
 
             assert state == JobState.COMPLETED
 
-            [output_path] = await machine.ls(
-                f"{test_tmp_dir}/slurm-{job.jobid}.out"
-            )
+            [output_path] = await machine.ls(f"{test_tmp_dir}/slurm-{job.jobid}.out")
             output = (await output_path.download()).read()
             assert "1 2 3" in output
         finally:

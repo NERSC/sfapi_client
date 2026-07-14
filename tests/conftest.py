@@ -225,8 +225,7 @@ def empty_key_file(tmp_path_factory):
 
 @pytest.fixture
 def test_arg_job_script(test_job_account, test_tmp_dir):
-    script = BytesIO(
-        f"""#!/usr/bin/env bash
+    script = BytesIO(f"""#!/usr/bin/env bash
 #SBATCH --nodes=1
 #SBATCH --constraint=cpu
 #SBATCH --account={test_job_account}
@@ -237,7 +236,6 @@ def test_arg_job_script(test_job_account, test_tmp_dir):
 set -euo pipefail
 
 echo "$@"
-""".encode()
-    )
+""".encode())
     script.filename = "echo-args.sh"
     return script

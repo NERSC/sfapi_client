@@ -126,7 +126,9 @@ class AsyncCompute(ComputeBase):
             return task.result
 
     @check_auth
-    async def submit_job(self, script: Union[str, AsyncRemotePath], args: Optional[List[str]] = None) -> AsyncJobSqueue:
+    async def submit_job(
+        self, script: Union[str, AsyncRemotePath], args: Optional[List[str]] = None
+    ) -> AsyncJobSqueue:
         """Submit a job to the compute resource
 
         :param script: Path to file on the compute system, or script to run beginning with `#!`.
@@ -153,7 +155,9 @@ class AsyncCompute(ComputeBase):
         data = {"job": script, "isPath": is_path}
         if args is not None:
             if not is_path:
-                raise ValueError("Command line arguments cannot be passed when the script is not a file.")
+                raise ValueError(
+                    "Command line arguments cannot be passed when the script is not a file."
+                )
             data["args"] = args
 
         r = await self.client.post(f"compute/jobs/{self.name}", data)
