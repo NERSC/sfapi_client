@@ -17,6 +17,30 @@ def test_submit(authenticated_client, test_job_path, test_machine):
         assert state == JobState.COMPLETED
 
 
+def test_submit_with_args(
+    authenticated_client, test_machine, test_tmp_dir, test_arg_job_script
+):
+    with authenticated_client as client:
+        machine = client.compute(test_machine)
+
+        [remote_dir] = machine.ls(test_tmp_dir, directory=True)
+        remote_script = remote_dir.upload(test_arg_job_script)
+        try:
+            args = ["1", "2", "3"]
+
+            job = machine.submit_job(remote_script, args)
+
+            state = job.complete()
+
+            assert state == JobState.COMPLETED
+
+            [output_path] = machine.ls(f"{test_tmp_dir}/slurm-{job.jobid}.out")
+            output = output_path.download().read()
+            assert "1 2 3" in output
+        finally:
+            machine.run(["rm", "-f", str(remote_script)])
+
+
 def test_cancel(authenticated_client, test_job_path, test_machine):
     with authenticated_client as client:
         machine = client.compute(test_machine)

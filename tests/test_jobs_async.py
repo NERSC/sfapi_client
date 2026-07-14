@@ -17,6 +17,31 @@ async def test_submit(async_authenticated_client, test_job_path, test_machine):
 
 
 @pytest.mark.asyncio
+async def test_submit_with_args(
+    async_authenticated_client, test_machine, test_tmp_dir, test_arg_job_script
+):
+    async with async_authenticated_client as client:
+        machine = await client.compute(test_machine)
+
+        [remote_dir] = await machine.ls(test_tmp_dir, directory=True)
+        remote_script = await remote_dir.upload(test_arg_job_script)
+        try:
+            args = ["1", "2", "3"]
+
+            job = await machine.submit_job(remote_script, args)
+
+            state = await job.complete()
+
+            assert state == JobState.COMPLETED
+
+            [output_path] = await machine.ls(f"{test_tmp_dir}/slurm-{job.jobid}.out")
+            output = (await output_path.download()).read()
+            assert "1 2 3" in output
+        finally:
+            await machine.run(["rm", "-f", str(remote_script)])
+
+
+@pytest.mark.asyncio
 async def test_cancel(async_authenticated_client, test_job_path, test_machine):
     async with async_authenticated_client as client:
         machine = await client.compute(test_machine)
