@@ -1,6 +1,7 @@
 import json
 import random
 import string
+from io import BytesIO
 from typing import Optional, Union, Dict
 from pathlib import Path
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -23,6 +24,7 @@ class Settings(BaseSettings):
     SFAPI_DEV_CLIENT_ID: Optional[str] = None
     SFAPI_DEV_CLIENT_SECRET: Optional[Union[str, Dict]] = None
     TEST_JOB_PATH: Optional[str] = None
+    TEST_JOB_ACCOUNT: Optional[str] = None
     TEST_MACHINE: Machine = Machine.perlmutter
     TEST_RESOURCE: Resource = Resource.spin
     TEST_USERNAME: Optional[str] = None
@@ -73,6 +75,11 @@ def dev_client_secret():
 @pytest.fixture
 def test_job_path():
     return settings.TEST_JOB_PATH
+
+
+@pytest.fixture
+def test_job_account():
+    return settings.TEST_JOB_ACCOUNT
 
 
 @pytest.fixture
@@ -214,3 +221,23 @@ def empty_key_file(tmp_path_factory):
         if temp_path.exists():
             (temp_path / "nokey.pem").unlink(missing_ok=True)
             temp_path.rmdir()
+
+
+@pytest.fixture
+def test_arg_job_script(test_job_account, test_tmp_dir):
+    script = BytesIO(
+        f"""#!/usr/bin/env bash
+#SBATCH --nodes=1
+#SBATCH --constraint=cpu
+#SBATCH --account={test_job_account}
+#SBATCH --qos=debug
+#SBATCH --time=00:01:00
+#SBATCH --output={test_tmp_dir}/slurm-%j.out
+
+set -euo pipefail
+
+echo "$@"
+""".encode()
+    )
+    script.filename = "echo-args.sh"
+    return script
