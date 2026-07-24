@@ -37,8 +37,6 @@ plugins:
         - https://docs.python.org/3/objects.inv
         options:
           docstring_style: sphinx
-          docstring_options:
-            ignore_init_summary: yes
           merge_init_into_class: yes
           show_submodules: no
 
