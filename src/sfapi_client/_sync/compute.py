@@ -1,5 +1,4 @@
 from typing import Dict, List, Optional, Union
-import json
 from pydantic import PrivateAttr, ConfigDict, BaseModel
 from ..exceptions import SfApiError
 from .._utils import _SLEEP
@@ -127,7 +126,9 @@ class Compute(ComputeBase):
             return task.result
 
     @check_auth
-    def submit_job(self, script: Union[str, RemotePath], args: Optional[List[str]] = None) -> JobSqueue:
+    def submit_job(
+        self, script: Union[str, RemotePath], args: Optional[List[str]] = None
+    ) -> JobSqueue:
         """Submit a job to the compute resource
 
         :param script: Path to file on the compute system, or script to run beginning with `#!`.
@@ -154,7 +155,9 @@ class Compute(ComputeBase):
         data = {"job": script, "isPath": is_path}
         if args is not None:
             if not is_path:
-                raise ValueError("Command line arguments cannot be passed when the script is not a file.")
+                raise ValueError(
+                    "Command line arguments cannot be passed when the script is not a file."
+                )
             data["args"] = args
 
         r = self.client.post(f"compute/jobs/{self.name}", data)
@@ -221,7 +224,17 @@ class Compute(ComputeBase):
         task = self._run_task(args)
         task._wait()
 
-        if task.result.error:
+        # A non-empty `error` (stderr) alone doesn't mean the command failed - many commands
+        # write non-fatal warnings to stderr while still exiting zero. `exit_code` is the
+        # authoritative success/failure signal when the API provides it; only fall back to
+        # treating a non-empty `error` as fatal if `exit_code` is unavailable.
+        if task.result.exit_code is not None:
+            if task.result.exit_code != 0:
+                raise SfApiError(
+                    task.result.error
+                    or f"Command exited with code {task.result.exit_code}"
+                )
+        elif task.result.error:
             raise SfApiError(task.result.error)
 
         return task.result.output

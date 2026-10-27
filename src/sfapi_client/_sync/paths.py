@@ -162,7 +162,7 @@ class RemotePath(PathBase):
 
         r = self.compute.client.get(
             f"utilities/download/{self.compute.name}/{self._path}",
-            params={"binary": binary}
+            params={"binary": binary},
         )
         json_response = r.json()
         download_response = FileDownloadResponse.model_validate(json_response)
