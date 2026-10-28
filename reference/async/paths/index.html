@@ -1,0 +1,3598 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../jobs/">
+      
+      
+        <link rel="next" href="../projects/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+    
+    
+      
+        <title>paths - sfapi_client</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.57a0d79d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#asyncremotepath" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="sfapi_client" class="md-header__button md-logo" aria-label="sfapi_client" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            sfapi_client
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              paths
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="sfapi_client" class="md-nav__button md-logo" aria-label="sfapi_client" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    sfapi_client
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Usage
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    QuickStart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../examples/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/check_current_and_past_jobs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Check current and past jobs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/getting_bearer_token/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting bearer token
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/run_job_and_check_status/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Run job and check status
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Async
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Async
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../client/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    client
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../compute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    compute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exceptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    exceptions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../groups/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    groups
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../jobs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    jobs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    paths
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    paths
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#asyncremotepath" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AsyncRemotePath
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.DirectoryEntry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DirectoryEntry
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.DirectoryEntry.date" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        date
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.DirectoryEntry.group" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        group
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.DirectoryEntry.hardlinks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        hardlinks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.DirectoryEntry.name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        name
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.DirectoryEntry.perms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        perms
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.DirectoryEntry.size" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        size
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.DirectoryEntry.user" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        user
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AsyncRemotePath
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.compute" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compute
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.date" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        date
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.group" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        group
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.hardlinks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        hardlinks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        name
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.parent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        parent
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.parents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        parents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.parts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        parts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.perms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        perms
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.size" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        size
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.stem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        stem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.suffix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        suffix
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.suffixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        suffixes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.user" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        user
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.dict" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dict
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.download" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        download
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.is_dir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        is_dir
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.is_file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        is_file
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.is_symlink" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        is_symlink
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.ls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ls
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        open
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.update" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        update
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.upload" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        upload
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../projects/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    projects
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../users/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    users
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../resources/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    resources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sync
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Sync
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sync/client/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    client
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sync/compute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    compute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sync/exceptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    exceptions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sync/groups/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    groups
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sync/jobs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    jobs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sync/paths/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    paths
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sync/projects/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    projects
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sync/users/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    users
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sync/resources/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    resources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Community
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Community
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#asyncremotepath" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AsyncRemotePath
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.DirectoryEntry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DirectoryEntry
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.DirectoryEntry.date" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        date
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.DirectoryEntry.group" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        group
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.DirectoryEntry.hardlinks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        hardlinks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.DirectoryEntry.name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        name
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.DirectoryEntry.perms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        perms
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.DirectoryEntry.size" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        size
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.DirectoryEntry.user" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        user
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AsyncRemotePath
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.compute" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compute
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.date" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        date
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.group" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        group
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.hardlinks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        hardlinks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        name
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.parent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        parent
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.parents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        parents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.parts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        parts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.perms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        perms
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.size" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        size
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.stem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        stem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.suffix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        suffix
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.suffixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        suffixes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.user" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        user
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.dict" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dict
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.download" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        download
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.is_dir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        is_dir
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.is_file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        is_file
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.is_symlink" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        is_symlink
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.ls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ls
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        open
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.update" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        update
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.paths.AsyncRemotePath.upload" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        upload
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>paths</h1>
+
+<h2 id="asyncremotepath"><code>AsyncRemotePath</code></h2>
+<p>RemotePath is used to model a remote path, it takes inspiration from <code>pathlib</code> and shares some of its interface.</p>
+<!-- mkdocsstring doesn't display inherited pydantic members, so we fake
+by include the parent explicitly. -->
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<a id="sfapi_client._models.DirectoryEntry"></a>
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client._models.DirectoryEntry.date" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">date</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Date'</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client._models.DirectoryEntry.group" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">group</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Group'</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client._models.DirectoryEntry.hardlinks" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">hardlinks</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Hardlinks'</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client._models.DirectoryEntry.name" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">name</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Name'</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client._models.DirectoryEntry.perms" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">perms</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Perms'</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client._models.DirectoryEntry.size" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">size</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Size'</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client._models.DirectoryEntry.user" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">user</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'User'</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<a id="sfapi_client.paths.AsyncRemotePath"></a>
+    <div class="doc doc-contents first">
+
+
+
+        <p>RemotePath is used to model a remote path, it takes inspiration from
+pathlib and shares some of its interface.</p>
+
+
+
+
+
+
+
+
+                  <details class="mkdocstrings-source">
+                    <summary>Source code in <code>sfapi_client/_async/paths.py</code></summary>
+                    <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath--source--__codelineno-0-40">40</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath--source--__codelineno-0-41">41</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath--source--__codelineno-0-42">42</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath--source--__codelineno-0-43">43</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath--source--__codelineno-0-44">44</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath--source--__codelineno-0-45">45</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="sfapi_client.paths.AsyncRemotePath--source--__span-0-40"><a id="sfapi_client.paths.AsyncRemotePath--source--__codelineno-0-40" name="sfapi_client.paths.AsyncRemotePath--source--__codelineno-0-40"></a><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath--source--__span-0-41"><a id="sfapi_client.paths.AsyncRemotePath--source--__codelineno-0-41" name="sfapi_client.paths.AsyncRemotePath--source--__codelineno-0-41"></a>    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath--source--__span-0-42"><a id="sfapi_client.paths.AsyncRemotePath--source--__codelineno-0-42" name="sfapi_client.paths.AsyncRemotePath--source--__codelineno-0-42"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">=</span> <span class="n">PurePosixPath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath--source--__span-0-43"><a id="sfapi_client.paths.AsyncRemotePath--source--__codelineno-0-43" name="sfapi_client.paths.AsyncRemotePath--source--__codelineno-0-43"></a>
+</span><span id="sfapi_client.paths.AsyncRemotePath--source--__span-0-44"><a id="sfapi_client.paths.AsyncRemotePath--source--__codelineno-0-44" name="sfapi_client.paths.AsyncRemotePath--source--__codelineno-0-44"></a>    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath--source--__span-0-45"><a id="sfapi_client.paths.AsyncRemotePath--source--__codelineno-0-45" name="sfapi_client.paths.AsyncRemotePath--source--__codelineno-0-45"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="o">.</span><span class="n">name</span>
+</span></code></pre></div></td></tr></table></div>
+                  </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client.paths.AsyncRemotePath.compute" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">compute</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client.paths.AsyncRemotePath.date" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">date</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Date'</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client.paths.AsyncRemotePath.group" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">group</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Group'</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client.paths.AsyncRemotePath.hardlinks" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">hardlinks</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Hardlinks'</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client.paths.AsyncRemotePath.name" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="o">.</span><span class="n">name</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client.paths.AsyncRemotePath.parent" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">parent</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>The parent of the path.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="RemotePath">RemotePath</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the parent</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client.paths.AsyncRemotePath.parents" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">parents</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>The parents of the path.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="typing.List">List</span>[<span title="RemotePath">RemotePath</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the parents</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client.paths.AsyncRemotePath.parts" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">parts</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>The paths components as a tuple.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="typing.Tuple">Tuple</span>[<span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the path components</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client.paths.AsyncRemotePath.perms" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">perms</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Perms'</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client.paths.AsyncRemotePath.size" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">size</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Size'</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client.paths.AsyncRemotePath.stem" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">stem</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>The final path component, without its suffix.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the path stem</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client.paths.AsyncRemotePath.suffix" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">suffix</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>The path extension.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the path extension</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client.paths.AsyncRemotePath.suffixes" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">suffixes</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>A list of the path extensions.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="typing.List">List</span>[<span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the path extensions</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client.paths.AsyncRemotePath.user" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">user</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'User'</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="sfapi_client.paths.AsyncRemotePath.dict" class="doc doc-heading">
+            <code class="highlight language-python"><span class="nb">dict</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>sfapi_client/_async/paths.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.dict--source--__codelineno-0-122">122</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.dict--source--__codelineno-0-123">123</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.dict--source--__codelineno-0-124">124</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.dict--source--__codelineno-0-125">125</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="sfapi_client.paths.AsyncRemotePath.dict--source--__span-0-122"><a id="sfapi_client.paths.AsyncRemotePath.dict--source--__codelineno-0-122" name="sfapi_client.paths.AsyncRemotePath.dict--source--__codelineno-0-122"></a><span class="k">def</span><span class="w"> </span><span class="nf">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.dict--source--__span-0-123"><a id="sfapi_client.paths.AsyncRemotePath.dict--source--__codelineno-0-123" name="sfapi_client.paths.AsyncRemotePath.dict--source--__codelineno-0-123"></a>    <span class="k">if</span> <span class="s2">"exclude"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.dict--source--__span-0-124"><a id="sfapi_client.paths.AsyncRemotePath.dict--source--__codelineno-0-124" name="sfapi_client.paths.AsyncRemotePath.dict--source--__codelineno-0-124"></a>        <span class="n">kwargs</span><span class="p">[</span><span class="s2">"exclude"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"compute"</span><span class="p">}</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.dict--source--__span-0-125"><a id="sfapi_client.paths.AsyncRemotePath.dict--source--__codelineno-0-125" name="sfapi_client.paths.AsyncRemotePath.dict--source--__codelineno-0-125"></a>    <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">dict</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</span></code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="sfapi_client.paths.AsyncRemotePath.download" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">download</span><span class="p">(</span><span class="n">binary</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Download the file contents.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>binary</code>
+            </td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>indicate if the file should be treated as binary, defaults
+to False</p>
+              </div>
+            </td>
+            <td>
+                  <code>False</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>IsADirectoryError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>if path points to a directory.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>SfApiError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>sfapi_client/_async/paths.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-151">151</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-152">152</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-153">153</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-154">154</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-155">155</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-156">156</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-157">157</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-158">158</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-159">159</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-160">160</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-161">161</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-162">162</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-163">163</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-164">164</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-165">165</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-166">166</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-167">167</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-168">168</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-169">169</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-170">170</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-171">171</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-172">172</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-173">173</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-174">174</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-175">175</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-176">176</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-177">177</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-178">178</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="sfapi_client.paths.AsyncRemotePath.download--source--__span-0-151"><a id="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-151" name="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-151"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">binary</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IO</span><span class="p">[</span><span class="n">AnyStr</span><span class="p">]:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.download--source--__span-0-152"><a id="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-152" name="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-152"></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.download--source--__span-0-153"><a id="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-153" name="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-153"></a><span class="sd">    Download the file contents.</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.download--source--__span-0-154"><a id="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-154" name="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-154"></a>
+</span><span id="sfapi_client.paths.AsyncRemotePath.download--source--__span-0-155"><a id="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-155" name="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-155"></a><span class="sd">    :param binary: indicate if the file should be treated as binary, defaults</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.download--source--__span-0-156"><a id="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-156" name="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-156"></a><span class="sd">    to False</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.download--source--__span-0-157"><a id="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-157" name="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-157"></a><span class="sd">    :raises IsADirectoryError: if path points to a directory.</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.download--source--__span-0-158"><a id="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-158" name="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-158"></a><span class="sd">    :raises SfApiError:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.download--source--__span-0-159"><a id="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-159" name="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-159"></a><span class="sd">    """</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.download--source--__span-0-160"><a id="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-160" name="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-160"></a>    <span class="k">if</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.download--source--__span-0-161"><a id="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-161" name="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-161"></a>        <span class="k">raise</span> <span class="ne">IsADirectoryError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">)</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.download--source--__span-0-162"><a id="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-162" name="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-162"></a>
+</span><span id="sfapi_client.paths.AsyncRemotePath.download--source--__span-0-163"><a id="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-163" name="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-163"></a>    <span class="n">r</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.download--source--__span-0-164"><a id="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-164" name="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-164"></a>        <span class="sa">f</span><span class="s2">"utilities/download/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">compute</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.download--source--__span-0-165"><a id="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-165" name="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-165"></a>        <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">"binary"</span><span class="p">:</span> <span class="n">binary</span><span class="p">},</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.download--source--__span-0-166"><a id="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-166" name="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-166"></a>    <span class="p">)</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.download--source--__span-0-167"><a id="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-167" name="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-167"></a>    <span class="n">json_response</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.download--source--__span-0-168"><a id="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-168" name="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-168"></a>    <span class="n">download_response</span> <span class="o">=</span> <span class="n">FileDownloadResponse</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">json_response</span><span class="p">)</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.download--source--__span-0-169"><a id="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-169" name="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-169"></a>
+</span><span id="sfapi_client.paths.AsyncRemotePath.download--source--__span-0-170"><a id="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-170" name="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-170"></a>    <span class="k">if</span> <span class="n">download_response</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">FileDownloadResponseStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.download--source--__span-0-171"><a id="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-171" name="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-171"></a>        <span class="k">raise</span> <span class="n">SfApiError</span><span class="p">(</span><span class="n">download_response</span><span class="o">.</span><span class="n">error</span><span class="p">)</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.download--source--__span-0-172"><a id="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-172" name="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-172"></a>
+</span><span id="sfapi_client.paths.AsyncRemotePath.download--source--__span-0-173"><a id="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-173" name="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-173"></a>    <span class="n">file_data</span> <span class="o">=</span> <span class="n">download_response</span><span class="o">.</span><span class="n">file</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.download--source--__span-0-174"><a id="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-174" name="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-174"></a>    <span class="k">if</span> <span class="n">download_response</span><span class="o">.</span><span class="n">is_binary</span><span class="p">:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.download--source--__span-0-175"><a id="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-175" name="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-175"></a>        <span class="n">binary_file_data</span> <span class="o">=</span> <span class="n">b64decode</span><span class="p">(</span><span class="n">file_data</span><span class="p">)</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.download--source--__span-0-176"><a id="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-176" name="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-176"></a>        <span class="k">return</span> <span class="n">BytesIO</span><span class="p">(</span><span class="n">binary_file_data</span><span class="p">)</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.download--source--__span-0-177"><a id="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-177" name="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-177"></a>    <span class="k">else</span><span class="p">:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.download--source--__span-0-178"><a id="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-178" name="sfapi_client.paths.AsyncRemotePath.download--source--__codelineno-0-178"></a>        <span class="k">return</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">file_data</span><span class="p">)</span>
+</span></code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="sfapi_client.paths.AsyncRemotePath.is_dir" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">is_dir</span><span class="p">()</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Returns True if path is a directory, False otherwise.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>sfapi_client/_async/paths.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.is_dir--source--__codelineno-0-127">127</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.is_dir--source--__codelineno-0-128">128</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.is_dir--source--__codelineno-0-129">129</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.is_dir--source--__codelineno-0-130">130</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.is_dir--source--__codelineno-0-131">131</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.is_dir--source--__codelineno-0-132">132</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.is_dir--source--__codelineno-0-133">133</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.is_dir--source--__codelineno-0-134">134</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="sfapi_client.paths.AsyncRemotePath.is_dir--source--__span-0-127"><a id="sfapi_client.paths.AsyncRemotePath.is_dir--source--__codelineno-0-127" name="sfapi_client.paths.AsyncRemotePath.is_dir--source--__codelineno-0-127"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">is_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.is_dir--source--__span-0-128"><a id="sfapi_client.paths.AsyncRemotePath.is_dir--source--__codelineno-0-128" name="sfapi_client.paths.AsyncRemotePath.is_dir--source--__codelineno-0-128"></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.is_dir--source--__span-0-129"><a id="sfapi_client.paths.AsyncRemotePath.is_dir--source--__codelineno-0-129" name="sfapi_client.paths.AsyncRemotePath.is_dir--source--__codelineno-0-129"></a><span class="sd">    :return: Returns True if path is a directory, False otherwise.</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.is_dir--source--__span-0-130"><a id="sfapi_client.paths.AsyncRemotePath.is_dir--source--__codelineno-0-130" name="sfapi_client.paths.AsyncRemotePath.is_dir--source--__codelineno-0-130"></a><span class="sd">    """</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.is_dir--source--__span-0-131"><a id="sfapi_client.paths.AsyncRemotePath.is_dir--source--__codelineno-0-131" name="sfapi_client.paths.AsyncRemotePath.is_dir--source--__codelineno-0-131"></a>    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">perms</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.is_dir--source--__span-0-132"><a id="sfapi_client.paths.AsyncRemotePath.is_dir--source--__codelineno-0-132" name="sfapi_client.paths.AsyncRemotePath.is_dir--source--__codelineno-0-132"></a>        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.is_dir--source--__span-0-133"><a id="sfapi_client.paths.AsyncRemotePath.is_dir--source--__codelineno-0-133" name="sfapi_client.paths.AsyncRemotePath.is_dir--source--__codelineno-0-133"></a>
+</span><span id="sfapi_client.paths.AsyncRemotePath.is_dir--source--__span-0-134"><a id="sfapi_client.paths.AsyncRemotePath.is_dir--source--__codelineno-0-134" name="sfapi_client.paths.AsyncRemotePath.is_dir--source--__codelineno-0-134"></a>    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">perms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"d"</span>
+</span></code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="sfapi_client.paths.AsyncRemotePath.is_file" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">is_file</span><span class="p">()</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Returns True if path is a file, False otherwise.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>sfapi_client/_async/paths.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.is_file--source--__codelineno-0-136">136</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.is_file--source--__codelineno-0-137">137</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.is_file--source--__codelineno-0-138">138</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.is_file--source--__codelineno-0-139">139</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.is_file--source--__codelineno-0-140">140</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.is_file--source--__codelineno-0-141">141</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.is_file--source--__codelineno-0-142">142</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.is_file--source--__codelineno-0-143">143</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="sfapi_client.paths.AsyncRemotePath.is_file--source--__span-0-136"><a id="sfapi_client.paths.AsyncRemotePath.is_file--source--__codelineno-0-136" name="sfapi_client.paths.AsyncRemotePath.is_file--source--__codelineno-0-136"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">is_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.is_file--source--__span-0-137"><a id="sfapi_client.paths.AsyncRemotePath.is_file--source--__codelineno-0-137" name="sfapi_client.paths.AsyncRemotePath.is_file--source--__codelineno-0-137"></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.is_file--source--__span-0-138"><a id="sfapi_client.paths.AsyncRemotePath.is_file--source--__codelineno-0-138" name="sfapi_client.paths.AsyncRemotePath.is_file--source--__codelineno-0-138"></a><span class="sd">    :return: Returns True if path is a file, False otherwise.</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.is_file--source--__span-0-139"><a id="sfapi_client.paths.AsyncRemotePath.is_file--source--__codelineno-0-139" name="sfapi_client.paths.AsyncRemotePath.is_file--source--__codelineno-0-139"></a><span class="sd">    """</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.is_file--source--__span-0-140"><a id="sfapi_client.paths.AsyncRemotePath.is_file--source--__codelineno-0-140" name="sfapi_client.paths.AsyncRemotePath.is_file--source--__codelineno-0-140"></a>    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">perms</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.is_file--source--__span-0-141"><a id="sfapi_client.paths.AsyncRemotePath.is_file--source--__codelineno-0-141" name="sfapi_client.paths.AsyncRemotePath.is_file--source--__codelineno-0-141"></a>        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.is_file--source--__span-0-142"><a id="sfapi_client.paths.AsyncRemotePath.is_file--source--__codelineno-0-142" name="sfapi_client.paths.AsyncRemotePath.is_file--source--__codelineno-0-142"></a>
+</span><span id="sfapi_client.paths.AsyncRemotePath.is_file--source--__span-0-143"><a id="sfapi_client.paths.AsyncRemotePath.is_file--source--__codelineno-0-143" name="sfapi_client.paths.AsyncRemotePath.is_file--source--__codelineno-0-143"></a>    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">perms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"-"</span>
+</span></code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="sfapi_client.paths.AsyncRemotePath.is_symlink" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">is_symlink</span><span class="p">()</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>sfapi_client/_async/paths.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.is_symlink--source--__codelineno-0-145">145</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.is_symlink--source--__codelineno-0-146">146</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.is_symlink--source--__codelineno-0-147">147</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.is_symlink--source--__codelineno-0-148">148</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.is_symlink--source--__codelineno-0-149">149</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="sfapi_client.paths.AsyncRemotePath.is_symlink--source--__span-0-145"><a id="sfapi_client.paths.AsyncRemotePath.is_symlink--source--__codelineno-0-145" name="sfapi_client.paths.AsyncRemotePath.is_symlink--source--__codelineno-0-145"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">is_symlink</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.is_symlink--source--__span-0-146"><a id="sfapi_client.paths.AsyncRemotePath.is_symlink--source--__codelineno-0-146" name="sfapi_client.paths.AsyncRemotePath.is_symlink--source--__codelineno-0-146"></a>    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">perms</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.is_symlink--source--__span-0-147"><a id="sfapi_client.paths.AsyncRemotePath.is_symlink--source--__codelineno-0-147" name="sfapi_client.paths.AsyncRemotePath.is_symlink--source--__codelineno-0-147"></a>        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.is_symlink--source--__span-0-148"><a id="sfapi_client.paths.AsyncRemotePath.is_symlink--source--__codelineno-0-148" name="sfapi_client.paths.AsyncRemotePath.is_symlink--source--__codelineno-0-148"></a>
+</span><span id="sfapi_client.paths.AsyncRemotePath.is_symlink--source--__span-0-149"><a id="sfapi_client.paths.AsyncRemotePath.is_symlink--source--__codelineno-0-149" name="sfapi_client.paths.AsyncRemotePath.is_symlink--source--__codelineno-0-149"></a>    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">perms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"l"</span>
+</span></code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="sfapi_client.paths.AsyncRemotePath.ls" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">ls</span><span class="p">()</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>List the current path</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="typing.List">List</span>[<a class="autorefs autorefs-internal" title="sfapi_client._async.paths.AsyncRemotePath" href="#sfapi_client.paths.AsyncRemotePath">AsyncRemotePath</a>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the list of child paths</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>sfapi_client/_async/paths.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.ls--source--__codelineno-0-242">242</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.ls--source--__codelineno-0-243">243</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.ls--source--__codelineno-0-244">244</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.ls--source--__codelineno-0-245">245</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.ls--source--__codelineno-0-246">246</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.ls--source--__codelineno-0-247">247</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.ls--source--__codelineno-0-248">248</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="sfapi_client.paths.AsyncRemotePath.ls--source--__span-0-242"><a id="sfapi_client.paths.AsyncRemotePath.ls--source--__codelineno-0-242" name="sfapi_client.paths.AsyncRemotePath.ls--source--__codelineno-0-242"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">ls</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="s2">"AsyncRemotePath"</span><span class="p">]:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.ls--source--__span-0-243"><a id="sfapi_client.paths.AsyncRemotePath.ls--source--__codelineno-0-243" name="sfapi_client.paths.AsyncRemotePath.ls--source--__codelineno-0-243"></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.ls--source--__span-0-244"><a id="sfapi_client.paths.AsyncRemotePath.ls--source--__codelineno-0-244" name="sfapi_client.paths.AsyncRemotePath.ls--source--__codelineno-0-244"></a><span class="sd">    List the current path</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.ls--source--__span-0-245"><a id="sfapi_client.paths.AsyncRemotePath.ls--source--__codelineno-0-245" name="sfapi_client.paths.AsyncRemotePath.ls--source--__codelineno-0-245"></a>
+</span><span id="sfapi_client.paths.AsyncRemotePath.ls--source--__span-0-246"><a id="sfapi_client.paths.AsyncRemotePath.ls--source--__codelineno-0-246" name="sfapi_client.paths.AsyncRemotePath.ls--source--__codelineno-0-246"></a><span class="sd">    :return: the list of child paths</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.ls--source--__span-0-247"><a id="sfapi_client.paths.AsyncRemotePath.ls--source--__codelineno-0-247" name="sfapi_client.paths.AsyncRemotePath.ls--source--__codelineno-0-247"></a><span class="sd">    """</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.ls--source--__span-0-248"><a id="sfapi_client.paths.AsyncRemotePath.ls--source--__codelineno-0-248" name="sfapi_client.paths.AsyncRemotePath.ls--source--__codelineno-0-248"></a>    <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ls</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compute</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">))</span>
+</span></code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="sfapi_client.paths.AsyncRemotePath.open" class="doc doc-heading">
+            <code class="highlight language-python"><span class="nb">open</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Open the file at this path.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>mode</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The mode to open the file. Valid options are 'rwb'.</p>
+<p>raises: IsDirectoryError: If the path is not a file.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>sfapi_client/_async/paths.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-309">309</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-310">310</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-311">311</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-312">312</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-313">313</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-314">314</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-315">315</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-316">316</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-317">317</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-318">318</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-319">319</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-320">320</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-321">321</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-322">322</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-323">323</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-324">324</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-325">325</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-326">326</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-327">327</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-328">328</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-329">329</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-330">330</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-331">331</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-332">332</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-333">333</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-334">334</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-335">335</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-336">336</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-337">337</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-338">338</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-339">339</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-340">340</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-341">341</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-342">342</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-343">343</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-344">344</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-345">345</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-346">346</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-347">347</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-348">348</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-349">349</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-350">350</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-351">351</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-352">352</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-353">353</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-354">354</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-355">355</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-356">356</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-357">357</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-358">358</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-359">359</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-360">360</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-361">361</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-362">362</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-363">363</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-364">364</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-365">365</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-309"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-309" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-309"></a><span class="nd">@asynccontextmanager</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-310"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-310" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-310"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IO</span><span class="p">[</span><span class="n">AnyStr</span><span class="p">]:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-311"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-311" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-311"></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-312"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-312" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-312"></a><span class="sd">    Open the file at this path.</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-313"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-313" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-313"></a>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-314"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-314" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-314"></a><span class="sd">    :param mode: The mode to open the file. Valid options are 'rwb'.</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-315"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-315" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-315"></a>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-316"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-316" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-316"></a><span class="sd">    raises: IsDirectoryError: If the path is not a file.</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-317"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-317" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-317"></a><span class="sd">    """</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-318"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-318" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-318"></a>    <span class="k">try</span><span class="p">:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-319"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-319" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-319"></a>        <span class="k">if</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-320"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-320" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-320"></a>            <span class="k">raise</span> <span class="ne">IsADirectoryError</span><span class="p">()</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-321"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-321" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-321"></a>    <span class="k">except</span> <span class="n">SfApiError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-322"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-322" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-322"></a>        <span class="c1"># Its a valid use case to add a open a new file to an exiting directory.</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-323"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-323" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-323"></a>        <span class="c1"># In this case the is_dir() will raise a SfApiError with</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-324"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-324" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-324"></a>        <span class="c1"># "No such file or directory" So we check for that and then see if the</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-325"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-325" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-325"></a>        <span class="c1"># parent directory exists, if it does we can just continue.</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-326"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-326" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-326"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_no_such</span><span class="p">(</span><span class="n">ex</span><span class="p">):</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-327"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-327" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-327"></a>            <span class="k">raise</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-328"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-328" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-328"></a>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-329"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-329" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-329"></a>        <span class="c1"># Check if the parent is a directory or symlink ( as in we are creating a new file ),</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-330"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-330" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-330"></a>        <span class="c1"># if not re raise the original exception</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-331"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-331" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-331"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span> <span class="ow">or</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">is_symlink</span><span class="p">()):</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-332"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-332" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-332"></a>            <span class="k">raise</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-333"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-333" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-333"></a>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-334"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-334" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-334"></a>    <span class="n">valid_modes_chars</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="s2">"rwb"</span><span class="p">)</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-335"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-335" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-335"></a>    <span class="n">mode_chars</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-336"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-336" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-336"></a>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-337"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-337" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-337"></a>    <span class="c1"># If we have duplicate raise exception</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-338"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-338" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-338"></a>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mode_chars</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mode</span><span class="p">):</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-339"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-339" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-339"></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"invalid mode: '</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-340"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-340" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-340"></a>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-341"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-341" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-341"></a>    <span class="c1"># check mode chars</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-342"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-342" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-342"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">mode_chars</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">valid_modes_chars</span><span class="p">):</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-343"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-343" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-343"></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"invalid mode: '</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-344"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-344" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-344"></a>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-345"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-345" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-345"></a>    <span class="c1"># we don't support read/write</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-346"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-346" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-346"></a>    <span class="k">if</span> <span class="s2">"r"</span> <span class="ow">in</span> <span class="n">mode_chars</span> <span class="ow">and</span> <span class="s2">"w"</span> <span class="ow">in</span> <span class="n">mode_chars</span><span class="p">:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-347"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-347" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-347"></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"invalid mode: '</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">', 'rw' not supported."</span><span class="p">)</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-348"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-348" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-348"></a>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-349"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-349" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-349"></a>    <span class="k">if</span> <span class="s2">"r"</span> <span class="ow">in</span> <span class="n">mode_chars</span><span class="p">:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-350"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-350" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-350"></a>        <span class="n">binary</span> <span class="o">=</span> <span class="s2">"b"</span> <span class="ow">in</span> <span class="n">mode_chars</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-351"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-351" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-351"></a>        <span class="k">yield</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">binary</span><span class="p">)</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-352"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-352" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-352"></a>    <span class="k">else</span><span class="p">:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-353"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-353" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-353"></a>        <span class="n">tmp</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-354"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-354" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-354"></a>        <span class="k">try</span><span class="p">:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-355"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-355" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-355"></a>            <span class="n">tmp</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-356"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-356" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-356"></a>            <span class="k">yield</span> <span class="n">tmp</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-357"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-357" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-357"></a>            <span class="n">tmp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-358"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-358" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-358"></a>            <span class="c1"># Now upload the changes, we have to reopen the file to</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-359"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-359" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-359"></a>            <span class="c1"># ensure binary mode</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-360"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-360" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-360"></a>            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">"rb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-361"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-361" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-361"></a>                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-362"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-362" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-362"></a>        <span class="k">finally</span><span class="p">:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-363"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-363" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-363"></a>            <span class="k">if</span> <span class="n">tmp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-364"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-364" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-364"></a>                <span class="n">tmp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.open--source--__span-0-365"><a id="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-365" name="sfapi_client.paths.AsyncRemotePath.open--source--__codelineno-0-365"></a>                <span class="n">Path</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+</span></code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="sfapi_client.paths.AsyncRemotePath.update" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">update</span><span class="p">()</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Update the path in the latest information from the resource.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>sfapi_client/_async/paths.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-250">250</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-251">251</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-252">252</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-253">253</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-254">254</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-255">255</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-256">256</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-257">257</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-258">258</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-259">259</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-260">260</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-261">261</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-262">262</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-263">263</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-264">264</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-265">265</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="sfapi_client.paths.AsyncRemotePath.update--source--__span-0-250"><a id="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-250" name="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-250"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.update--source--__span-0-251"><a id="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-251" name="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-251"></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.update--source--__span-0-252"><a id="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-252" name="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-252"></a><span class="sd">    Update the path in the latest information from the resource.</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.update--source--__span-0-253"><a id="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-253" name="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-253"></a><span class="sd">    """</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.update--source--__span-0-254"><a id="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-254" name="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-254"></a>    <span class="c1"># Here we pass filter_dots=False so that we with get . if this is a</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.update--source--__span-0-255"><a id="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-255" name="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-255"></a>    <span class="c1"># directory</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.update--source--__span-0-256"><a id="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-256" name="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-256"></a>    <span class="n">file_state</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ls</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compute</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">),</span> <span class="n">filter_dots</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.update--source--__span-0-257"><a id="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-257" name="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-257"></a>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">file_state</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.update--source--__span-0-258"><a id="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-258" name="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-258"></a>        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">)</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.update--source--__span-0-259"><a id="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-259" name="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-259"></a>
+</span><span id="sfapi_client.paths.AsyncRemotePath.update--source--__span-0-260"><a id="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-260" name="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-260"></a>    <span class="c1"># We update the name as it could be . from a directory listing and in that</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.update--source--__span-0-261"><a id="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-261" name="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-261"></a>    <span class="c1"># case we don't want to update the name</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.update--source--__span-0-262"><a id="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-262" name="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-262"></a>    <span class="n">new_state</span> <span class="o">=</span> <span class="n">file_state</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.update--source--__span-0-263"><a id="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-263" name="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-263"></a>    <span class="n">new_state</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.update--source--__span-0-264"><a id="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-264" name="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-264"></a>
+</span><span id="sfapi_client.paths.AsyncRemotePath.update--source--__span-0-265"><a id="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-265" name="sfapi_client.paths.AsyncRemotePath.update--source--__codelineno-0-265"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">new_state</span><span class="p">)</span>
+</span></code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="sfapi_client.paths.AsyncRemotePath.upload" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">upload</span><span class="p">(</span><span class="n">file</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>sfapi_client/_async/paths.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-274">274</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-275">275</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-276">276</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-277">277</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-278">278</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-279">279</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-280">280</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-281">281</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-282">282</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-283">283</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-284">284</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-285">285</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-286">286</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-287">287</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-288">288</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-289">289</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-290">290</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-291">291</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-292">292</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-293">293</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-294">294</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-295">295</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-296">296</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-297">297</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-298">298</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-299">299</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-300">300</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-301">301</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-302">302</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-303">303</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-304">304</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-305">305</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-306">306</a></span>
+<span class="normal"><a href="#sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-307">307</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-274"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-274" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-274"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">upload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">BytesIO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"AsyncRemotePath"</span><span class="p">:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-275"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-275" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-275"></a>    <span class="k">try</span><span class="p">:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-276"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-276" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-276"></a>        <span class="k">if</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-277"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-277" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-277"></a>            <span class="n">upload_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">)</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">file</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s2">"</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-278"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-278" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-278"></a>        <span class="k">else</span><span class="p">:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-279"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-279" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-279"></a>            <span class="n">upload_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">)</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-280"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-280" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-280"></a>    <span class="k">except</span> <span class="n">SfApiError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-281"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-281" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-281"></a>        <span class="c1"># Its a valid use case to add a upload a new file to an exiting directory.</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-282"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-282" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-282"></a>        <span class="c1"># In this case the is_dir() will raise a SfApiError with</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-283"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-283" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-283"></a>        <span class="c1"># "No such file or directory" So we check for that and then see if the</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-284"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-284" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-284"></a>        <span class="c1"># parent directory exists, if it does we can just continue.</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-285"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-285" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-285"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_no_such</span><span class="p">(</span><span class="n">ex</span><span class="p">):</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-286"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-286" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-286"></a>            <span class="k">raise</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-287"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-287" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-287"></a>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-288"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-288" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-288"></a>        <span class="c1"># Check if the parent is a directory or symlink ( as in we are creating a new file ),</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-289"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-289" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-289"></a>        <span class="c1"># if not re raise the original exception</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-290"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-290" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-290"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span> <span class="ow">or</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">is_symlink</span><span class="p">()):</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-291"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-291" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-291"></a>            <span class="k">raise</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-292"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-292" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-292"></a>        <span class="k">else</span><span class="p">:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-293"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-293" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-293"></a>            <span class="n">upload_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">)</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-294"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-294" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-294"></a>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-295"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-295" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-295"></a>    <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"utilities/upload/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">compute</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">upload_path</span><span class="si">}</span><span class="s2">"</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-296"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-296" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-296"></a>    <span class="n">files</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"file"</span><span class="p">:</span> <span class="n">file</span><span class="p">}</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-297"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-297" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-297"></a>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-298"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-298" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-298"></a>    <span class="n">r</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">)</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-299"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-299" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-299"></a>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-300"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-300" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-300"></a>    <span class="n">json_response</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-301"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-301" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-301"></a>    <span class="n">upload_response</span> <span class="o">=</span> <span class="n">UploadResponse</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">json_response</span><span class="p">)</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-302"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-302" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-302"></a>    <span class="k">if</span> <span class="n">upload_response</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">UploadResponseStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-303"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-303" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-303"></a>        <span class="k">raise</span> <span class="n">SfApiError</span><span class="p">(</span><span class="n">upload_response</span><span class="o">.</span><span class="n">error</span><span class="p">)</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-304"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-304" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-304"></a>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-305"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-305" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-305"></a>    <span class="n">remote_path</span> <span class="o">=</span> <span class="n">AsyncRemotePath</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">upload_path</span><span class="p">,</span> <span class="n">compute</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">compute</span><span class="p">)</span>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-306"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-306" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-306"></a>
+</span><span id="sfapi_client.paths.AsyncRemotePath.upload--source--__span-0-307"><a id="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-307" name="sfapi_client.paths.AsyncRemotePath.upload--source--__codelineno-0-307"></a>    <span class="k">return</span> <span class="n">remote_path</span>
+</span></code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["content.code.copy", "navigation.sections"], "search": "../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.c21346df.min.js"></script>
+      
+        <script src="../../../javascript/apiselector.js"></script>
+      
+    
+  <script data-mkdocs-jupyter-mathjax="{&quot;url&quot;: &quot;https://cdn.jsdelivr.net/npm/mathjax@4.1.3/tex-mml-chtml.js&quot;, &quot;version&quot;: 4}">
+/* Shared by full pages and Material's instant navigation. */
+(() => {
+  const config = JSON.parse(document.currentScript.dataset.mkdocsJupyterMathjax);
+  if (window.mkdocsJupyterMathJax) return;
+
+  let loading;
+  let queue = Promise.resolve();
+  let previous = [];
+
+  const ready = async () => {
+    if (!loading) {
+      loading = (async () => {
+        let math = window.MathJax;
+        if (!math?.typesetPromise) {
+          const url = new URL(config.url, document.baseURI).href;
+          const existing = Array.from(document.scripts).find(script =>
+            script.src && (script.src === url || script.id === 'MathJax-script' ||
+              (/mathjax/i.test(script.src) &&
+               /\/(?:MathJax|latest|(?:tex|mml)(?:-mml)?-(?:chtml|svg))\.js(?:[?#]|$)/i.test(script.src))));
+          if (existing) {
+            if (!math?.startup?.promise) {
+              await new Promise((resolve, reject) => {
+                existing.addEventListener('load', resolve, { once: true });
+                existing.addEventListener('error', reject, { once: true });
+              });
+            }
+          } else {
+            // Keep site macros, delimiters and startup hooks when supplied.
+            const options = math || {};
+            window.MathJax = {
+              ...options,
+              loader: {
+                ...options.loader,
+                load: Array.from(new Set(['ui/safe', ...(options.loader?.load || [])]))
+              },
+              startup: { typeset: false, ...options.startup },
+              tex: {
+                tags: 'ams',
+                useLabelIds: true,
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                processEnvironments: true,
+                ...options.tex
+              }
+            };
+            await new Promise((resolve, reject) => {
+              const script = document.createElement('script');
+              script.src = config.url;
+              script.id = 'MathJax-script';
+              script.async = true;
+              script.onload = resolve;
+              script.onerror = reject;
+              document.head.appendChild(script);
+            });
+          }
+        }
+        math = window.MathJax;
+        await math.startup.promise;
+        return math;
+      })();
+    }
+    const math = await loading;
+    // A site owner can extend the v3 queue again on each navigation.
+    await math.startup.promise;
+    return math;
+  };
+
+  const unrendered = node => {
+    if (node.matches('mjx-container')) return [];
+    if (!node.querySelector('mjx-container')) return [node];
+    // In v3, scanning generated assistive MathML again produces nested output.
+    return Array.from(node.children).flatMap(unrendered);
+  };
+
+  const refresh = () => {
+    // A separate chain also serializes v3, without changing v4's startup promise.
+    queue = queue.then(async () => {
+      const notebooks = Array.from(document.querySelectorAll('.jupyter-wrapper'));
+      if (!notebooks.length && !previous.length) return;
+      if (notebooks.length === previous.length &&
+          notebooks.every((node, index) => node === previous[index])) return;
+      const math = await ready();
+      if (previous.length) {
+        math.typesetClear(previous);
+        math.texReset();
+      }
+      previous = notebooks.filter(node => node.isConnected);
+      const pending = previous.flatMap(unrendered);
+      if (pending.length) await math.typesetPromise(pending);
+    }).catch(error => console.error('mkdocs-jupyter: MathJax rendering failed', error));
+    return queue;
+  };
+
+  window.mkdocsJupyterMathJax = { refresh };
+  const start = () => {
+    if (typeof document$ !== 'undefined') document$.subscribe(refresh);
+    else refresh();
+  };
+  // Theme bundles and user-provided MathJax scripts can follow notebook content.
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start, { once: true });
+  } else start();
+})();
+
+</script>
+</body>
+</html>
