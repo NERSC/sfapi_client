@@ -224,7 +224,17 @@ class AsyncCompute(ComputeBase):
         task = await self._run_task(args)
         await task._wait()
 
-        if task.result.error:
+        # A non-empty `error` (stderr) alone doesn't mean the command failed - many commands
+        # write non-fatal warnings to stderr while still exiting zero. `exit_code` is the
+        # authoritative success/failure signal when the API provides it; only fall back to
+        # treating a non-empty `error` as fatal if `exit_code` is unavailable.
+        if task.result.exit_code is not None:
+            if task.result.exit_code != 0:
+                raise SfApiError(
+                    task.result.error
+                    or f"Command exited with code {task.result.exit_code}"
+                )
+        elif task.result.error:
             raise SfApiError(task.result.error)
 
         return task.result.output

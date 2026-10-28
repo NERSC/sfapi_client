@@ -3,6 +3,7 @@ import asyncio
 import pytest
 from pathlib import Path
 
+from sfapi_client import SfApiError
 from sfapi_client.compute import AsyncCommandTask, TaskStatus
 from sfapi_client.jobs import JobState
 
@@ -138,6 +139,33 @@ async def test_run_arg_path(async_authenticated_client, test_machine):
         output = await machine.run(remote_path)
 
         assert output
+
+
+@pytest.mark.asyncio
+async def test_run_success_with_stderr(async_authenticated_client, test_machine):
+    async with async_authenticated_client as client:
+        machine = await client.compute(test_machine)
+        output = await machine.run("bash -lc 'echo hello; echo warning >&2; exit 0'")
+
+        assert output == "hello\n"
+
+
+@pytest.mark.asyncio
+async def test_run_failure_with_stderr(async_authenticated_client, test_machine):
+    async with async_authenticated_client as client:
+        machine = await client.compute(test_machine)
+
+        with pytest.raises(SfApiError, match="failing"):
+            await machine.run(_failing_command())
+
+
+@pytest.mark.asyncio
+async def test_run_failure_without_stderr(async_authenticated_client, test_machine):
+    async with async_authenticated_client as client:
+        machine = await client.compute(test_machine)
+
+        with pytest.raises(SfApiError, match="Command exited with code 7"):
+            await machine.run("bash -lc 'exit 7'")
 
 
 @pytest.mark.asyncio

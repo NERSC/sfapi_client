@@ -1,6 +1,9 @@
 import time
 from pathlib import Path
 
+import pytest
+
+from sfapi_client import SfApiError
 from sfapi_client.jobs import JobState
 from sfapi_client.compute import CommandTask, TaskStatus
 
@@ -123,6 +126,30 @@ def test_run_arg_path(authenticated_client, test_machine):
         output = machine.run(remote_path)
 
         assert output
+
+
+def test_run_success_with_stderr(authenticated_client, test_machine):
+    with authenticated_client as client:
+        machine = client.compute(test_machine)
+        output = machine.run("bash -lc 'echo hello; echo warning >&2; exit 0'")
+
+        assert output == "hello\n"
+
+
+def test_run_failure_with_stderr(authenticated_client, test_machine):
+    with authenticated_client as client:
+        machine = client.compute(test_machine)
+
+        with pytest.raises(SfApiError, match="failing"):
+            machine.run(_failing_command())
+
+
+def test_run_failure_without_stderr(authenticated_client, test_machine):
+    with authenticated_client as client:
+        machine = client.compute(test_machine)
+
+        with pytest.raises(SfApiError, match="Command exited with code 7"):
+            machine.run("bash -lc 'exit 7'")
 
 
 def test_run_task(authenticated_client, test_machine):
