@@ -47,6 +47,8 @@ The sfapi_client project relies on these libraries:
 
 ## Installation
 
+Requires Python 3.10 or newer.
+
 Install with pip:
 
 ```shell
