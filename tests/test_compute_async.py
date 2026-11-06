@@ -63,6 +63,36 @@ async def test_fetch_jobs(async_authenticated_client, test_machine, test_usernam
 
 
 @pytest.mark.asyncio
+async def test_fetch_jobs_filters(
+    async_authenticated_client, test_machine, test_job_path, test_job_account
+):
+    async with async_authenticated_client as client:
+        machine = await client.compute(test_machine)
+        submitted = await machine.submit_job(test_job_path)
+        await submitted.complete()
+        job = await machine.job(submitted.jobid)
+        assert job.account == test_job_account
+        assert job.qos
+
+        for filters in (
+            {"account": test_job_account},
+            {"qos": job.qos},
+            {"starttime": "now-1hour"},
+            {"endtime": "now"},
+            {
+                "account": test_job_account,
+                "qos": job.qos,
+                "starttime": "now-1hour",
+                "endtime": "now",
+            },
+        ):
+            jobs = await machine.jobs(jobids=[job.jobid], command="sacct", **filters)
+            assert [result.jobid for result in jobs] == [job.jobid], filters
+            assert jobs[0].account == test_job_account
+            assert jobs[0].qos == job.qos
+
+
+@pytest.mark.asyncio
 async def test_list_dir_contents(
     async_authenticated_client, test_machine, test_job_path
 ):

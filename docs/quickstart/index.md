@@ -78,7 +78,7 @@ And an example of getting the most recent outages for a resource such as Spin.
 
 ## Setting up credentials
 
-To get more detailed information from NERSC systems like your projects allocations or the current jobs in the queue you will need to provide credentials. 
+To get more detailed information from NERSC systems like your projects allocations or the current jobs in the queue you will need to provide credentials.
 The [NERSC Documentation](https://docs.nersc.gov/services/sfapi/authentication/#client) has more information about getting the `client_id` and `client_secret` from iris.
 Once you retrieve the keys there are a few ways to use them to activate the client.
 
@@ -227,6 +227,38 @@ If the key is stored in a different location, possibly as a secret file storage 
     JobState.PENDING
     JobState.PENDING
     JobState.RUNNING
+    ```
+
+## Filtering jobs
+
+Use `account` and `qos` to filter jobs with either `squeue` (the default) or `sacct`.
+Date-window queries using `starttime` or `endtime` require `command="sacct"`.
+Date strings are passed directly to Slurm, which determines the window semantics
+and maximum query range. The client uses `cached=false` for these queries.
+
+=== "async"
+    ```pycon
+    >>> async with AsyncClient(client_id, client_secret) as client:
+    ...     perlmutter = await client.compute(Machine.perlmutter)
+    ...     jobs = await perlmutter.jobs(
+    ...         command="sacct",
+    ...         account="acc1",
+    ...         starttime="2026-11-03",
+    ...         endtime="2026-11-04",
+    ...         qos="regular",
+    ...     )
+    ```
+=== "sync"
+    ```pycon
+    >>> with Client(client_id, client_secret) as client:
+    ...     perlmutter = client.compute(Machine.perlmutter)
+    ...     jobs = perlmutter.jobs(
+    ...         command="sacct",
+    ...         account="acc1",
+    ...         starttime="2026-11-03",
+    ...         endtime="2026-11-04",
+    ...         qos="regular",
+    ...     )
     ```
 
 ## Canceling a job
