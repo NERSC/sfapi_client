@@ -1,0 +1,2495 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../client/">
+      
+      
+        <link rel="next" href="../exceptions/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+    
+    
+      
+        <title>compute - sfapi_client</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.57a0d79d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#compute" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="sfapi_client" class="md-header__button md-logo" aria-label="sfapi_client" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            sfapi_client
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              compute
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="sfapi_client" class="md-nav__button md-logo" aria-label="sfapi_client" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    sfapi_client
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Usage
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    QuickStart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../examples/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/check_current_and_past_jobs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Check current and past jobs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/getting_bearer_token/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting bearer token
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/run_job_and_check_status/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Run job and check status
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Async
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Async
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../async/client/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    client
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../async/compute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    compute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../async/exceptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    exceptions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../async/groups/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    groups
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../async/jobs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    jobs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../async/paths/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    paths
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../async/projects/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    projects
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../async/users/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    users
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../async/resources/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    resources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sync
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Sync
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../client/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    client
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    compute
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    compute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#compute" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compute
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.AppRoutersStatusModelsStatus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AppRoutersStatusModelsStatus
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.AppRoutersStatusModelsStatus.description" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        description
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.AppRoutersStatusModelsStatus.full_name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        full_name
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.AppRoutersStatusModelsStatus.name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        name
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.AppRoutersStatusModelsStatus.notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        notes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.AppRoutersStatusModelsStatus.status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        status
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.AppRoutersStatusModelsStatus.system_type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        system_type
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.AppRoutersStatusModelsStatus.updated_at" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        updated_at
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.compute.Compute" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compute
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.compute.Compute.run_task" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        run_task
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.compute.Compute.submit_job" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        submit_job
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Machine
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.compute.Machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Machine
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.compute.Machine.dtn01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtn01
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.compute.Machine.dtns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtns
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.compute.Machine.perlmutter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        perlmutter
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exceptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    exceptions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../groups/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    groups
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../jobs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    jobs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../paths/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    paths
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../projects/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    projects
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../users/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    users
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../resources/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    resources
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Community
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Community
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../community/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#compute" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compute
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.AppRoutersStatusModelsStatus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AppRoutersStatusModelsStatus
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.AppRoutersStatusModelsStatus.description" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        description
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.AppRoutersStatusModelsStatus.full_name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        full_name
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.AppRoutersStatusModelsStatus.name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        name
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.AppRoutersStatusModelsStatus.notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        notes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.AppRoutersStatusModelsStatus.status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        status
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.AppRoutersStatusModelsStatus.system_type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        system_type
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client._models.AppRoutersStatusModelsStatus.updated_at" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        updated_at
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.compute.Compute" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compute
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.compute.Compute.run_task" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        run_task
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.compute.Compute.submit_job" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        submit_job
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Machine
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.compute.Machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Machine
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.compute.Machine.dtn01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtn01
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.compute.Machine.dtns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dtns
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sfapi_client.compute.Machine.perlmutter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        perlmutter
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>compute</h1>
+
+<h2 id="compute"><code>Compute</code></h2>
+<p>A compute resource.</p>
+<!-- mkdocsstring doesn't display inherited pydantic members, so we fake
+by include the parent explicitly. -->
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<a id="sfapi_client._models.AppRoutersStatusModelsStatus"></a>
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client._models.AppRoutersStatusModelsStatus.description" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">description</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Description'</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client._models.AppRoutersStatusModelsStatus.full_name" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">full_name</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Full Name'</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client._models.AppRoutersStatusModelsStatus.name" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">name</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Name'</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client._models.AppRoutersStatusModelsStatus.notes" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">notes</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Notes'</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client._models.AppRoutersStatusModelsStatus.status" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">status</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client._models.AppRoutersStatusModelsStatus.system_type" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">system_type</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'System Type'</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client._models.AppRoutersStatusModelsStatus.updated_at" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">updated_at</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Updated At'</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<a id="sfapi_client.compute.Compute"></a>
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+                  <details class="mkdocstrings-source">
+                    <summary>Source code in <code>sfapi_client/_sync/compute.py</code></summary>
+                    <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#sfapi_client.compute.Compute--source--__codelineno-0-103">103</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute--source--__codelineno-0-104">104</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute--source--__codelineno-0-105">105</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="sfapi_client.compute.Compute--source--__span-0-103"><a id="sfapi_client.compute.Compute--source--__codelineno-0-103" name="sfapi_client.compute.Compute--source--__codelineno-0-103"></a><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+</span><span id="sfapi_client.compute.Compute--source--__span-0-104"><a id="sfapi_client.compute.Compute--source--__codelineno-0-104" name="sfapi_client.compute.Compute--source--__codelineno-0-104"></a>    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</span><span id="sfapi_client.compute.Compute--source--__span-0-105"><a id="sfapi_client.compute.Compute--source--__codelineno-0-105" name="sfapi_client.compute.Compute--source--__codelineno-0-105"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_monitor</span> <span class="o">=</span> <span class="n">SyncJobMonitor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</span></code></pre></div></td></tr></table></div>
+                  </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="sfapi_client.compute.Compute.run_task" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">run_task</span><span class="p">(</span><span class="n">args</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>args</code>
+            </td>
+            <td>
+                  <code><span title="typing.Union">Union</span>[<span title="str">str</span>, <a class="autorefs autorefs-internal" title="sfapi_client._sync.paths.RemotePath" href="../paths/#sfapi_client.paths.RemotePath">RemotePath</a>, <span title="typing.List">List</span>[<span title="str">str</span>]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Command to execute.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="sfapi_client._sync.compute.CommandTask">CommandTask</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Task object that can be awaited ( version ), updated, or cancelled.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>sfapi_client/_sync/compute.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#sfapi_client.compute.Compute.run_task--source--__codelineno-0-257">257</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.run_task--source--__codelineno-0-258">258</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.run_task--source--__codelineno-0-259">259</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.run_task--source--__codelineno-0-260">260</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.run_task--source--__codelineno-0-261">261</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.run_task--source--__codelineno-0-262">262</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.run_task--source--__codelineno-0-263">263</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.run_task--source--__codelineno-0-264">264</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.run_task--source--__codelineno-0-265">265</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.run_task--source--__codelineno-0-266">266</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.run_task--source--__codelineno-0-267">267</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="sfapi_client.compute.Compute.run_task--source--__span-0-257"><a id="sfapi_client.compute.Compute.run_task--source--__codelineno-0-257" name="sfapi_client.compute.Compute.run_task--source--__codelineno-0-257"></a><span class="nd">@check_auth</span>
+</span><span id="sfapi_client.compute.Compute.run_task--source--__span-0-258"><a id="sfapi_client.compute.Compute.run_task--source--__codelineno-0-258" name="sfapi_client.compute.Compute.run_task--source--__codelineno-0-258"></a><span class="k">def</span><span class="w"> </span><span class="nf">run_task</span><span class="p">(</span>
+</span><span id="sfapi_client.compute.Compute.run_task--source--__span-0-259"><a id="sfapi_client.compute.Compute.run_task--source--__codelineno-0-259" name="sfapi_client.compute.Compute.run_task--source--__codelineno-0-259"></a>    <span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">RemotePath</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>
+</span><span id="sfapi_client.compute.Compute.run_task--source--__span-0-260"><a id="sfapi_client.compute.Compute.run_task--source--__codelineno-0-260" name="sfapi_client.compute.Compute.run_task--source--__codelineno-0-260"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CommandTask</span><span class="p">:</span>
+</span><span id="sfapi_client.compute.Compute.run_task--source--__span-0-261"><a id="sfapi_client.compute.Compute.run_task--source--__codelineno-0-261" name="sfapi_client.compute.Compute.run_task--source--__codelineno-0-261"></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="sfapi_client.compute.Compute.run_task--source--__span-0-262"><a id="sfapi_client.compute.Compute.run_task--source--__codelineno-0-262" name="sfapi_client.compute.Compute.run_task--source--__codelineno-0-262"></a><span class="sd">    Submit a command to the compute resource and return a task.</span>
+</span><span id="sfapi_client.compute.Compute.run_task--source--__span-0-263"><a id="sfapi_client.compute.Compute.run_task--source--__codelineno-0-263" name="sfapi_client.compute.Compute.run_task--source--__codelineno-0-263"></a>
+</span><span id="sfapi_client.compute.Compute.run_task--source--__span-0-264"><a id="sfapi_client.compute.Compute.run_task--source--__codelineno-0-264" name="sfapi_client.compute.Compute.run_task--source--__codelineno-0-264"></a><span class="sd">    :param args: Command to execute.</span>
+</span><span id="sfapi_client.compute.Compute.run_task--source--__span-0-265"><a id="sfapi_client.compute.Compute.run_task--source--__codelineno-0-265" name="sfapi_client.compute.Compute.run_task--source--__codelineno-0-265"></a><span class="sd">    :return: Task object that can be awaited ( version ), updated, or cancelled.</span>
+</span><span id="sfapi_client.compute.Compute.run_task--source--__span-0-266"><a id="sfapi_client.compute.Compute.run_task--source--__codelineno-0-266" name="sfapi_client.compute.Compute.run_task--source--__codelineno-0-266"></a><span class="sd">    """</span>
+</span><span id="sfapi_client.compute.Compute.run_task--source--__span-0-267"><a id="sfapi_client.compute.Compute.run_task--source--__codelineno-0-267" name="sfapi_client.compute.Compute.run_task--source--__codelineno-0-267"></a>    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_task</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+</span></code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="sfapi_client.compute.Compute.submit_job" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">submit_job</span><span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>script</code>
+            </td>
+            <td>
+                  <code><span title="typing.Union">Union</span>[<span title="str">str</span>, <a class="autorefs autorefs-internal" title="sfapi_client._sync.paths.RemotePath" href="../paths/#sfapi_client.paths.RemotePath">RemotePath</a>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Path to file on the compute system, or script to run beginning with <code>#!</code>.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>args</code>
+            </td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="typing.List">List</span>[<span title="str">str</span>]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>An optional list of command line arguments to pass to the script.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="sfapi_client._sync.jobs.JobSqueue" href="../jobs/#sfapi_client.jobs.JobSqueue">JobSqueue</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Object containing information about the job, its job id, and status on the system.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>sfapi_client/_sync/compute.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-128">128</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-129">129</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-130">130</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-131">131</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-132">132</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-133">133</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-134">134</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-135">135</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-136">136</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-137">137</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-138">138</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-139">139</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-140">140</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-141">141</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-142">142</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-143">143</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-144">144</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-145">145</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-146">146</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-147">147</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-148">148</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-149">149</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-150">150</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-151">151</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-152">152</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-153">153</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-154">154</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-155">155</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-156">156</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-157">157</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-158">158</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-159">159</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-160">160</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-161">161</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-162">162</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-163">163</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-164">164</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-165">165</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-166">166</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-167">167</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-168">168</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-169">169</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-170">170</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-171">171</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-172">172</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-173">173</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-174">174</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-175">175</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-176">176</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-177">177</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-178">178</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-179">179</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-180">180</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-181">181</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-182">182</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-183">183</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-184">184</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-185">185</a></span>
+<span class="normal"><a href="#sfapi_client.compute.Compute.submit_job--source--__codelineno-0-186">186</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-128"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-128" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-128"></a><span class="nd">@check_auth</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-129"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-129" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-129"></a><span class="k">def</span><span class="w"> </span><span class="nf">submit_job</span><span class="p">(</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-130"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-130" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-130"></a>    <span class="bp">self</span><span class="p">,</span> <span class="n">script</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">RemotePath</span><span class="p">],</span> <span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-131"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-131" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-131"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JobSqueue</span><span class="p">:</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-132"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-132" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-132"></a><span class="w">    </span><span class="sd">"""Submit a job to the compute resource</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-133"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-133" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-133"></a>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-134"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-134" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-134"></a><span class="sd">    :param script: Path to file on the compute system, or script to run beginning with `#!`.</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-135"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-135" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-135"></a><span class="sd">    :param args: An optional list of command line arguments to pass to the script.</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-136"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-136" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-136"></a><span class="sd">    :return: Object containing information about the job, its job id, and status on the system.</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-137"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-137" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-137"></a><span class="sd">    """</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-138"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-138" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-138"></a>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-139"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-139" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-139"></a>    <span class="n">is_path</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-140"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-140" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-140"></a>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-141"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-141" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-141"></a>    <span class="c1"># If it's a remote path we've already checked so just continue</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-142"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-142" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-142"></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="n">RemotePath</span><span class="p">):</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-143"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-143" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-143"></a>        <span class="k">pass</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-144"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-144" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-144"></a>    <span class="c1"># If the string input looks like a script we'll set is_path to false</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-145"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-145" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-145"></a>    <span class="k">elif</span> <span class="n">script</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"#!"</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> <span class="ow">in</span> <span class="n">script</span><span class="p">:</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-146"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-146" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-146"></a>        <span class="c1"># If it starts with shebang and has multiple lines</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-147"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-147" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-147"></a>        <span class="n">is_path</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-148"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-148" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-148"></a>    <span class="k">else</span><span class="p">:</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-149"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-149" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-149"></a>        <span class="c1"># If we're given a path make sure it exists</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-150"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-150" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-150"></a>        <span class="n">script_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ls</span><span class="p">(</span><span class="n">script</span><span class="p">)</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-151"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-151" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-151"></a>        <span class="n">is_file</span> <span class="o">=</span> <span class="n">script_path</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-152"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-152" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-152"></a>        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">script_path</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">is_file</span><span class="p">:</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-153"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-153" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-153"></a>            <span class="k">raise</span> <span class="n">SfApiError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Script path not present or is not a file, </span><span class="si">{</span><span class="n">script</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-154"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-154" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-154"></a>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-155"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-155" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-155"></a>    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"job"</span><span class="p">:</span> <span class="n">script</span><span class="p">,</span> <span class="s2">"isPath"</span><span class="p">:</span> <span class="n">is_path</span><span class="p">}</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-156"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-156" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-156"></a>    <span class="k">if</span> <span class="n">args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-157"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-157" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-157"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_path</span><span class="p">:</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-158"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-158" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-158"></a>            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-159"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-159" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-159"></a>                <span class="s2">"Command line arguments cannot be passed when the script is not a file."</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-160"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-160" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-160"></a>            <span class="p">)</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-161"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-161" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-161"></a>        <span class="n">data</span><span class="p">[</span><span class="s2">"args"</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-162"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-162" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-162"></a>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-163"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-163" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-163"></a>    <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="sa">f</span><span class="s2">"compute/jobs/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-164"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-164" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-164"></a>    <span class="n">r</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-165"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-165" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-165"></a>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-166"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-166" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-166"></a>    <span class="n">json_response</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-167"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-167" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-167"></a>    <span class="n">job_response</span> <span class="o">=</span> <span class="n">SubmitJobResponse</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">json_response</span><span class="p">)</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-168"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-168" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-168"></a>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-169"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-169" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-169"></a>    <span class="k">if</span> <span class="n">job_response</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">SubmitJobResponseStatus</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-170"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-170" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-170"></a>        <span class="k">raise</span> <span class="n">SfApiError</span><span class="p">(</span><span class="n">job_response</span><span class="o">.</span><span class="n">error</span><span class="p">)</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-171"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-171" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-171"></a>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-172"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-172" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-172"></a>    <span class="n">task_id</span> <span class="o">=</span> <span class="n">job_response</span><span class="o">.</span><span class="n">task_id</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-173"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-173" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-173"></a>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-174"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-174" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-174"></a>    <span class="c1"># We now need waiting for the task to complete!</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-175"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-175" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-175"></a>    <span class="n">task_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wait_for_task</span><span class="p">(</span><span class="n">task_id</span><span class="p">)</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-176"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-176" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-176"></a>    <span class="k">if</span> <span class="n">task_result</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s2">"error"</span><span class="p">:</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-177"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-177" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-177"></a>        <span class="k">raise</span> <span class="n">SfApiError</span><span class="p">(</span><span class="n">task_result</span><span class="o">.</span><span class="n">error</span><span class="p">)</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-178"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-178" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-178"></a>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-179"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-179" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-179"></a>    <span class="c1"># Get the jobid from the extra fields of the result</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-180"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-180" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-180"></a>    <span class="n">jobid</span> <span class="o">=</span> <span class="n">task_result</span><span class="o">.</span><span class="n">__pydantic_extra__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"jobid"</span><span class="p">)</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-181"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-181" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-181"></a>    <span class="k">if</span> <span class="n">jobid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-182"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-182" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-182"></a>        <span class="k">raise</span> <span class="n">SfApiError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unable to extract jobid if for task: </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-183"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-183" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-183"></a>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-184"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-184" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-184"></a>    <span class="n">job</span> <span class="o">=</span> <span class="n">JobSqueue</span><span class="p">(</span><span class="n">jobid</span><span class="o">=</span><span class="n">jobid</span><span class="p">,</span> <span class="n">compute</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-185"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-185" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-185"></a>
+</span><span id="sfapi_client.compute.Compute.submit_job--source--__span-0-186"><a id="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-186" name="sfapi_client.compute.Compute.submit_job--source--__codelineno-0-186"></a>    <span class="k">return</span> <span class="n">job</span>
+</span></code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="machine"><code>Machine</code></h2>
+<p>The possible compute resources.</p>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<a id="sfapi_client.compute.Machine"></a>
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="str">str</span></code>, <code><span title="enum.Enum">Enum</span></code></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client.compute.Machine.dtn01" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">dtn01</span> <span class="o">=</span> <span class="s1">'dtn01'</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client.compute.Machine.dtns" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">dtns</span> <span class="o">=</span> <span class="s1">'dtns'</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="sfapi_client.compute.Machine.perlmutter" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">perlmutter</span> <span class="o">=</span> <span class="s1">'perlmutter'</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["content.code.copy", "navigation.sections"], "search": "../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.c21346df.min.js"></script>
+      
+        <script src="../../../javascript/apiselector.js"></script>
+      
+    
+  <script data-mkdocs-jupyter-mathjax="{&quot;url&quot;: &quot;https://cdn.jsdelivr.net/npm/mathjax@4.1.3/tex-mml-chtml.js&quot;, &quot;version&quot;: 4}">
+/* Shared by full pages and Material's instant navigation. */
+(() => {
+  const config = JSON.parse(document.currentScript.dataset.mkdocsJupyterMathjax);
+  if (window.mkdocsJupyterMathJax) return;
+
+  let loading;
+  let queue = Promise.resolve();
+  let previous = [];
+
+  const ready = async () => {
+    if (!loading) {
+      loading = (async () => {
+        let math = window.MathJax;
+        if (!math?.typesetPromise) {
+          const url = new URL(config.url, document.baseURI).href;
+          const existing = Array.from(document.scripts).find(script =>
+            script.src && (script.src === url || script.id === 'MathJax-script' ||
+              (/mathjax/i.test(script.src) &&
+               /\/(?:MathJax|latest|(?:tex|mml)(?:-mml)?-(?:chtml|svg))\.js(?:[?#]|$)/i.test(script.src))));
+          if (existing) {
+            if (!math?.startup?.promise) {
+              await new Promise((resolve, reject) => {
+                existing.addEventListener('load', resolve, { once: true });
+                existing.addEventListener('error', reject, { once: true });
+              });
+            }
+          } else {
+            // Keep site macros, delimiters and startup hooks when supplied.
+            const options = math || {};
+            window.MathJax = {
+              ...options,
+              loader: {
+                ...options.loader,
+                load: Array.from(new Set(['ui/safe', ...(options.loader?.load || [])]))
+              },
+              startup: { typeset: false, ...options.startup },
+              tex: {
+                tags: 'ams',
+                useLabelIds: true,
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                processEnvironments: true,
+                ...options.tex
+              }
+            };
+            await new Promise((resolve, reject) => {
+              const script = document.createElement('script');
+              script.src = config.url;
+              script.id = 'MathJax-script';
+              script.async = true;
+              script.onload = resolve;
+              script.onerror = reject;
+              document.head.appendChild(script);
+            });
+          }
+        }
+        math = window.MathJax;
+        await math.startup.promise;
+        return math;
+      })();
+    }
+    const math = await loading;
+    // A site owner can extend the v3 queue again on each navigation.
+    await math.startup.promise;
+    return math;
+  };
+
+  const unrendered = node => {
+    if (node.matches('mjx-container')) return [];
+    if (!node.querySelector('mjx-container')) return [node];
+    // In v3, scanning generated assistive MathML again produces nested output.
+    return Array.from(node.children).flatMap(unrendered);
+  };
+
+  const refresh = () => {
+    // A separate chain also serializes v3, without changing v4's startup promise.
+    queue = queue.then(async () => {
+      const notebooks = Array.from(document.querySelectorAll('.jupyter-wrapper'));
+      if (!notebooks.length && !previous.length) return;
+      if (notebooks.length === previous.length &&
+          notebooks.every((node, index) => node === previous[index])) return;
+      const math = await ready();
+      if (previous.length) {
+        math.typesetClear(previous);
+        math.texReset();
+      }
+      previous = notebooks.filter(node => node.isConnected);
+      const pending = previous.flatMap(unrendered);
+      if (pending.length) await math.typesetPromise(pending);
+    }).catch(error => console.error('mkdocs-jupyter: MathJax rendering failed', error));
+    return queue;
+  };
+
+  window.mkdocsJupyterMathJax = { refresh };
+  const start = () => {
+    if (typeof document$ !== 'undefined') document$.subscribe(refresh);
+    else refresh();
+  };
+  // Theme bundles and user-provided MathJax scripts can follow notebook content.
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start, { once: true });
+  } else start();
+})();
+
+</script>
+</body>
+</html>
