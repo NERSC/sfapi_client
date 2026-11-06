@@ -382,13 +382,6 @@ class Client:
 
         return r
 
-    @tenacity.retry(
-        retry=tenacity.retry_if_exception_type(httpx.TimeoutException)
-        | tenacity.retry_if_exception_type(httpx.ConnectError)
-        | retry_if_http_status_error(),
-        wait=tenacity.wait_exponential(max=MAX_RETRY),
-        stop=tenacity.stop_after_attempt(MAX_RETRY),
-    )
     def post(
         self, url: str, data: Dict[str, Any] = None, json: Dict[str, Any] = None
     ) -> httpx.Response:
