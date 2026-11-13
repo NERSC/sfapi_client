@@ -37,7 +37,7 @@ More in depth developer documentation can be found in the [API reference](https:
 
 The sfapi_client project relies on these libraries:
 
-* `httpx` - HTTP support.
+* `httpx2` - HTTP support.
 * `authlib` - OAuth 2.0 authentication.
 * `pydantic` - Data models.
 * `tenacity` - Retry.

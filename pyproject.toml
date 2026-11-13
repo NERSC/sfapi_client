@@ -17,7 +17,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
   "authlib",
-  "httpx",
+  "httpx2",
   "pydantic~=2.0",
   "pydantic-settings",
   "tenacity"
