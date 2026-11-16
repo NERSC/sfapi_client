@@ -5,7 +5,7 @@ import json
 
 from authlib.integrations.httpx_client.oauth2_client import AsyncOAuth2Client
 from authlib.oauth2.rfc7523 import PrivateKeyJWT
-import httpx
+import httpx2
 import tenacity
 
 from .compute import Machine, AsyncCompute
@@ -29,21 +29,21 @@ SFAPI_BASE_URL = "https://api.nersc.gov/api/v1.2"
 MAX_RETRY = 10
 
 
-# Retry on httpx.HTTPStatusError recoverable status codes
+# Retry on httpx2.HTTPStatusError recoverable status codes
 class retry_if_http_status_error(tenacity.retry_if_exception):
     def __init__(self):
         super().__init__(self._retry)
 
     def _retry(self, e: Exception):
         retry_codes = [
-            httpx.codes.TOO_MANY_REQUESTS,
-            httpx.codes.BAD_GATEWAY,
-            httpx.codes.SERVICE_UNAVAILABLE,
-            httpx.codes.GATEWAY_TIMEOUT,
+            httpx2.codes.TOO_MANY_REQUESTS,
+            httpx2.codes.BAD_GATEWAY,
+            httpx2.codes.SERVICE_UNAVAILABLE,
+            httpx2.codes.GATEWAY_TIMEOUT,
         ]
         return (
-            isinstance(e, httpx.HTTPStatusError)
-            and cast(httpx.HTTPStatusError, e).response.status_code in retry_codes
+            isinstance(e, httpx2.HTTPStatusError)
+            and cast(httpx2.HTTPStatusError, e).response.status_code in retry_codes
         )
 
 
@@ -292,7 +292,7 @@ class AsyncClient:
             if self._access_token is not None:
                 headers.update({"Authorization": f"Bearer {self._access_token}"})
 
-            self.__http_client = httpx.AsyncClient(headers=headers)
+            self.__http_client = httpx2.AsyncClient(headers=headers)
 
         return self.__http_client
 
@@ -366,13 +366,13 @@ class AsyncClient:
             raise ClientKeyError(f"client_id not found in file {key_path}")
 
     @tenacity.retry(
-        retry=tenacity.retry_if_exception_type(httpx.TimeoutException)
-        | tenacity.retry_if_exception_type(httpx.ConnectError)
+        retry=tenacity.retry_if_exception_type(httpx2.TimeoutException)
+        | tenacity.retry_if_exception_type(httpx2.ConnectError)
         | retry_if_http_status_error(),
         wait=tenacity.wait_exponential(max=MAX_RETRY),
         stop=tenacity.stop_after_attempt(MAX_RETRY),
     )
-    async def get(self, url: str, params: Dict[str, Any] = {}) -> httpx.Response:
+    async def get(self, url: str, params: Dict[str, Any] = {}) -> httpx2.Response:
         client = await self._http_client()
         r = await client.get(
             f"{self._api_base_url}/{url}",
@@ -384,7 +384,7 @@ class AsyncClient:
 
     async def post(
         self, url: str, data: Dict[str, Any] = None, json: Dict[str, Any] = None
-    ) -> httpx.Response:
+    ) -> httpx2.Response:
         client = await self._http_client()
 
         r = await client.post(
@@ -397,15 +397,15 @@ class AsyncClient:
         return r
 
     @tenacity.retry(
-        retry=tenacity.retry_if_exception_type(httpx.TimeoutException)
-        | tenacity.retry_if_exception_type(httpx.ConnectError)
+        retry=tenacity.retry_if_exception_type(httpx2.TimeoutException)
+        | tenacity.retry_if_exception_type(httpx2.ConnectError)
         | retry_if_http_status_error(),
         wait=tenacity.wait_exponential(max=MAX_RETRY),
         stop=tenacity.stop_after_attempt(MAX_RETRY),
     )
     async def put(
         self, url: str, data: Dict[str, Any] = None, files: Dict[str, Any] = None
-    ) -> httpx.Response:
+    ) -> httpx2.Response:
         client = await self._http_client()
 
         r = await client.put(
@@ -418,13 +418,13 @@ class AsyncClient:
         return r
 
     @tenacity.retry(
-        retry=tenacity.retry_if_exception_type(httpx.TimeoutException)
-        | tenacity.retry_if_exception_type(httpx.ConnectError)
+        retry=tenacity.retry_if_exception_type(httpx2.TimeoutException)
+        | tenacity.retry_if_exception_type(httpx2.ConnectError)
         | retry_if_http_status_error(),
         wait=tenacity.wait_exponential(max=MAX_RETRY),
         stop=tenacity.stop_after_attempt(MAX_RETRY),
     )
-    async def delete(self, url: str) -> httpx.Response:
+    async def delete(self, url: str) -> httpx2.Response:
         client = await self._http_client()
 
         r = await client.delete(
