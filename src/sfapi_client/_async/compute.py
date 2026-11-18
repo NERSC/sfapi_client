@@ -204,15 +204,48 @@ class AsyncCompute(ComputeBase):
         user: Optional[str] = None,
         partition: Optional[str] = None,
         command: Optional[JobCommand] = JobCommand.squeue,
+        account: Optional[str] = None,
+        starttime: Optional[str] = None,
+        endtime: Optional[str] = None,
+        qos: Optional[str] = None,
     ) -> List[Union[AsyncJobSacct, AsyncJobSqueue]]:
+        """Get jobs matching the supplied Slurm filters.
+
+        :param jobids: Job IDs to retrieve.
+        :param user: Slurm username filter.
+        :param partition: Slurm partition filter.
+        :param command: Use `squeue` (default) or `sacct`.
+        :param account: Slurm account filter.
+        :param starttime: Start of the query window in Slurm time format; requires `sacct`.
+        :param endtime: End of the query window in Slurm time format; requires `sacct`.
+        :param qos: Slurm quality-of-service filter.
+
+        Queries use `cached=false`. Date strings are passed directly to Slurm,
+        which determines the time-window semantics and maximum query range.
+        """
+        if command != JobCommand.sacct and any(
+            value is not None for value in (starttime, endtime)
+        ):
+            raise ValueError("starttime and endtime require command='sacct'")
+
         Job = AsyncJobSacct if (command == JobCommand.sacct) else AsyncJobSqueue
 
         # If we have been given just jobids, use the monitor
-        if jobids is not None and user is None and partition is None:
+        if jobids is not None and all(
+            value is None
+            for value in (user, partition, account, starttime, endtime, qos)
+        ):
             return await self._monitor.fetch_jobs(job_type=Job, jobids=jobids)
         else:
             return await Job._fetch_jobs(
-                self, jobids=jobids, user=user, partition=partition
+                self,
+                jobids=jobids,
+                user=user,
+                partition=partition,
+                account=account,
+                starttime=starttime,
+                endtime=endtime,
+                qos=qos,
             )
 
     @check_auth

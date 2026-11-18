@@ -58,6 +58,35 @@ def test_fetch_jobs(authenticated_client, test_machine, test_username):
         machine.jobs(user=test_username)
 
 
+def test_fetch_jobs_filters(
+    authenticated_client, test_machine, test_job_path, test_job_account
+):
+    with authenticated_client as client:
+        machine = client.compute(test_machine)
+        submitted = machine.submit_job(test_job_path)
+        submitted.complete()
+        job = machine.job(submitted.jobid)
+        assert job.account == test_job_account
+        assert job.qos
+
+        for filters in (
+            {"account": test_job_account},
+            {"qos": job.qos},
+            {"starttime": "now-1hour"},
+            {"endtime": "now"},
+            {
+                "account": test_job_account,
+                "qos": job.qos,
+                "starttime": "now-1hour",
+                "endtime": "now",
+            },
+        ):
+            jobs = machine.jobs(jobids=[job.jobid], command="sacct", **filters)
+            assert [result.jobid for result in jobs] == [job.jobid], filters
+            assert jobs[0].account == test_job_account
+            assert jobs[0].qos == job.qos
+
+
 def test_list_dir_contents(authenticated_client, test_machine, test_job_path):
     with authenticated_client as client:
         machine = client.compute(test_machine)

@@ -23,6 +23,10 @@ def _fetch_raw_state(
     user: Optional[str] = None,
     partition: Optional[str] = None,
     sacct: Optional[bool] = False,
+    account: Optional[str] = None,
+    starttime: Optional[str] = None,
+    endtime: Optional[str] = None,
+    qos: Optional[str] = None,
 ):
     # For now we are pass cached=False to ensure we don't
     # break compatibility
@@ -35,13 +39,18 @@ def _fetch_raw_state(
         jobid_value = ",".join([str(j) for j in jobids])
         kwargs.append(f"jobid={jobid_value}")
 
-    if user is not None:
-        kwargs = params.setdefault("kwargs", [])
-        kwargs.append(f"user={user}")
-
-    if partition is not None:
-        kwargs = params.setdefault("kwargs", [])
-        kwargs.append(f"partition={partition}")
+    filters = {
+        "user": user,
+        "partition": partition,
+        "account": account,
+        "starttime": starttime,
+        "endtime": endtime,
+        "qos": qos,
+    }
+    for name, value in filters.items():
+        if value is not None:
+            kwargs = params.setdefault("kwargs", [])
+            kwargs.append(f"{name}={value}")
 
     r = compute.client.get(job_url, params)
 
@@ -61,9 +70,21 @@ def _fetch_jobs(
     jobids: Optional[List[int]] = None,
     user: Optional[str] = None,
     partition: Optional[str] = None,
+    account: Optional[str] = None,
+    starttime: Optional[str] = None,
+    endtime: Optional[str] = None,
+    qos: Optional[str] = None,
 ):
     job_states = _fetch_raw_state(
-        compute, jobids, user, partition, job_type._command == JobCommand.sacct
+        compute,
+        jobids,
+        user,
+        partition,
+        job_type._command == JobCommand.sacct,
+        account=account,
+        starttime=starttime,
+        endtime=endtime,
+        qos=qos,
     )
 
     jobs = [
@@ -206,8 +227,22 @@ class JobSacct(Job, JobSacctBase):
         jobids: Optional[List[int]] = None,
         user: Optional[str] = None,
         partition: Optional[str] = None,
+        account: Optional[str] = None,
+        starttime: Optional[str] = None,
+        endtime: Optional[str] = None,
+        qos: Optional[str] = None,
     ):
-        return _fetch_jobs(cls, compute, jobids, user, partition)
+        return _fetch_jobs(
+            cls,
+            compute,
+            jobids,
+            user,
+            partition,
+            account=account,
+            starttime=starttime,
+            endtime=endtime,
+            qos=qos,
+        )
 
 
 class JobSqueue(Job, JobSqueueBase):
@@ -248,5 +283,19 @@ class JobSqueue(Job, JobSqueueBase):
         jobids: Optional[List[int]] = None,
         user: Optional[str] = None,
         partition: Optional[str] = None,
+        account: Optional[str] = None,
+        starttime: Optional[str] = None,
+        endtime: Optional[str] = None,
+        qos: Optional[str] = None,
     ):
-        return _fetch_jobs(cls, compute, jobids, user, partition)
+        return _fetch_jobs(
+            cls,
+            compute,
+            jobids,
+            user,
+            partition,
+            account=account,
+            starttime=starttime,
+            endtime=endtime,
+            qos=qos,
+        )
